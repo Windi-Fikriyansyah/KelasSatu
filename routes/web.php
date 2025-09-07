@@ -24,22 +24,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [KursusController::class, 'kursus'])->name('home');
 Route::get('/course', [KursusController::class, 'course'])->name('course');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware(['auth', 'role:siswa,guru'])->group(function () {
     Route::get('/home', [DashboardController::class, 'dashboardUser'])->name('dashboardUser');
 });
 
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'role:admin,owner'])->group(function () {
 
-    Route::get('/dashboard-admin', [DashboardController::class, 'dashboardAdmin']);
+    Route::get('/dashboard', [DashboardController::class, 'dashboardOwner'])->name('dashboard');
 });
 
-Route::middleware(['auth', 'role:owner'])->group(function () {
-    Route::get('/dashboard-owner', [DashboardController::class, 'dashboardOwner'])->name('owner.dashboard');
+Route::middleware(['auth', 'role:owner,admin'])->group(function () {
+
     Route::prefix('pengguna')->name('pengguna.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/load', [UserController::class, 'load'])->name('load');

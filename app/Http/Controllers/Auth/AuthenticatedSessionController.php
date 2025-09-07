@@ -32,9 +32,8 @@ class AuthenticatedSessionController extends Controller
         return match ($role) {
             'siswa' => redirect('/home'),
             'guru' => redirect('/home'),
-            'admin' => redirect('/dashboard-admin'),
-            'owner' => redirect('/dashboard-owner'),
-            default => redirect()->route('dashboard'),
+            'admin' => redirect('/dashboard'),
+            'owner' => redirect('/dashboard'),
         };
     }
 

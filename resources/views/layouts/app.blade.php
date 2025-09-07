@@ -153,14 +153,20 @@
                     </button>
                 </div>
 
-                <!-- Logo - tetap di tengah pada mobile, kiri pada desktop -->
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <a href="/">
-                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
-                        </a>
+                        @auth
+                            <a href="{{ route('dashboardUser') }}">
+                                <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                            </a>
+                        @else
+                            <a href="/">
+                                <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                            </a>
+                        @endauth
                     </div>
                 </div>
+
 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">

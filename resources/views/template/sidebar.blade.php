@@ -1,7 +1,7 @@
 <ul class="menu-inner py-1">
     <!-- Dashboard -->
     <li class="menu-item active">
-        <a href="{{ route('owner.dashboard') }}" class="menu-link">
+        <a href="{{ route('dashboard') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-home-circle"></i>
             <div data-i18n="Analytics">Dashboard</div>
         </a>
@@ -16,12 +16,14 @@
             <div data-i18n="Account Settings">Data Master</div>
         </a>
         <ul class="menu-sub">
-            <li class="menu-item">
-                <a href="{{ route('admin.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-id-card"></i>
-                    <div data-i18n="Notifications">Data Admin</div>
-                </a>
-            </li>
+            @if (Auth::user()->role != 'admin')
+                <li class="menu-item">
+                    <a href="{{ route('admin.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bx-id-card"></i>
+                        <div data-i18n="Notifications">Data Admin</div>
+                    </a>
+                </li>
+            @endif
             <li class="menu-item">
                 <a href="{{ route('pengguna.index') }}" class="menu-link">
                     <i class="menu-icon tf-icons bx bx-user"></i>

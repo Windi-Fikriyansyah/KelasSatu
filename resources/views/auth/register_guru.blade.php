@@ -258,6 +258,57 @@
             <p>Platform Pembelajaran Modern</p>
         </div>
     </div>
+    @if ($errors->any())
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                // Buat container kalau belum ada
+                let container = document.getElementById("toast-container");
+                if (!container) {
+                    container = document.createElement("div");
+                    container.id = "toast-container";
+                    container.style.position = "fixed";
+                    container.style.top = "20px";
+                    container.style.right = "20px";
+                    container.style.zIndex = "9999";
+                    container.style.display = "flex";
+                    container.style.flexDirection = "column";
+                    container.style.gap = "10px"; // jarak antar toast
+                    document.body.appendChild(container);
+                }
+
+                @foreach ($errors->all() as $error)
+                    showToast("{{ $error }}");
+                @endforeach
+
+                function showToast(message) {
+                    let toast = document.createElement("div");
+                    toast.innerText = message;
+                    toast.style.background = "#e74c3c";
+                    toast.style.color = "white";
+                    toast.style.padding = "12px 20px";
+                    toast.style.borderRadius = "8px";
+                    toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+                    toast.style.opacity = "0";
+                    toast.style.transition = "opacity 0.5s ease";
+                    toast.style.fontSize = "14px";
+                    toast.style.fontWeight = "500";
+
+                    container.appendChild(toast);
+
+                    // animasi muncul
+                    setTimeout(() => {
+                        toast.style.opacity = "1";
+                    }, 100);
+
+                    // hilang setelah 4 detik
+                    setTimeout(() => {
+                        toast.style.opacity = "0";
+                        setTimeout(() => toast.remove(), 500);
+                    }, 4000);
+                }
+            });
+        </script>
+    @endif
 
     <script>
         // Lottie animation
