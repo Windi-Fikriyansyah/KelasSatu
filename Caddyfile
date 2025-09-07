@@ -1,0 +1,11 @@
+{
+    frankenphp
+    order php_server before file_server
+}
+
+kelassatu.com {
+    root * public
+    php_server
+    encode gzip
+    file_server
+}
