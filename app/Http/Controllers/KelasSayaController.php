@@ -53,6 +53,7 @@ class KelasSayaController extends Controller
         // Ambil modul materi untuk course ini
         $materis = DB::table('contents')
             ->where('course_id', $id)
+            ->where('type', 'pdf')
             ->orderBy('order', 'asc')
             ->get();
 
