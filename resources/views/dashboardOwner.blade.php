@@ -64,7 +64,7 @@
                                 <i class="bx bx-wallet text-success fs-3"></i>
                             </div>
                             <div>
-                                <span class="fw-semibold d-block mb-1">Total Amount</span>
+                                <span class="fw-semibold d-block mb-1">Total Pendapatan</span>
                                 <h3 class="card-title mb-2">
                                     <small class="text-muted" style="font-size: 18px;">Rp</small>
                                     <span style="font-size: 18px;">

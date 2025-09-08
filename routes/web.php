@@ -9,6 +9,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KelasSayaController;
 use App\Http\Controllers\KursusController;
+use App\Http\Controllers\LaporanTransaksiController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ModuleController;
@@ -134,6 +135,10 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::post('/load', [WithdrawController::class, 'load'])->name('load');
         Route::post('/{id}/approve', [WithdrawController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [WithdrawController::class, 'reject'])->name('reject');
+    });
+    Route::prefix('laporan_transaksi')->name('laporan_transaksi.')->group(function () {
+        Route::get('/', [LaporanTransaksiController::class, 'index'])->name('index');
+        Route::post('/load', [LaporanTransaksiController::class, 'load'])->name('load');
     });
 });
 

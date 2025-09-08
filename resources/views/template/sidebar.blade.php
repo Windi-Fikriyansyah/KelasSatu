@@ -84,5 +84,12 @@
         </a>
     </li>
 
+    <li class="menu-item">
+        <a href="{{ route('laporan_transaksi.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Laporan Transaksi</div>
+        </a>
+    </li>
+
 
 </ul>
