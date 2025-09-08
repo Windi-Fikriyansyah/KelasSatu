@@ -235,7 +235,7 @@
                     <a href="/" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
                     <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Beli
                         Kelas</a>
-                    <a href="" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kelas
+                    <a href="{{ route('kelas.index') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kelas
                         Saya</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
