@@ -7,39 +7,7 @@
                 <!-- Course Details - Left Side -->
                 <div class="lg:col-span-2">
                     <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <!-- Course Thumbnail -->
-                        <div class="relative h-64 bg-gradient-to-r from-primary-200 to-primary-100">
-                            @if ($course->thumbnail)
-                                <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                                    class="w-full h-full object-cover">
-                            @else
-                                <div class="flex items-center justify-center h-full">
-                                    <svg class="w-20 h-20 text-white opacity-50" fill="currentColor" viewBox="0 0 24 24">
-                                        <path
-                                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    </svg>
-                                </div>
-                            @endif
-                            <!-- Course Badge -->
-                            <div class="absolute top-4 left-4">
-                                @if ($course->is_free)
-                                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                        GRATIS
-                                    </span>
-                                @else
-                                    <span class="course-badge px-3 py-1 rounded-full text-sm font-semibold">
-                                        PREMIUM
-                                    </span>
-                                @endif
-                            </div>
-                            <!-- Access Type Badge -->
-                            <div class="absolute top-4 right-4">
-                                <span
-                                    class="bg-white bg-opacity-90 text-primary-200 px-3 py-1 rounded-full text-sm font-semibold capitalize">
-                                    {{ ucfirst($course->access_type ?? 'Lifetime') }}
-                                </span>
-                            </div>
-                        </div>
+
 
                         <!-- Course Content -->
                         <div class="p-6">
@@ -168,9 +136,9 @@
                             <div class="flex justify-between items-center">
                                 <span class="text-lg font-semibold text-gray-800">Total Pembayaran:</span>
                                 @if ($course->is_free)
-                                    <span class="text-2xl font-bold text-green-600">GRATIS</span>
+                                    <span class="text-xl font-bold text-green-600">GRATIS</span>
                                 @else
-                                    <span class="text-2xl font-bold text-primary-100">Rp
+                                    <span class="text-xl font-bold text-primary-100">Rp
                                         {{ number_format($course->price, 0, ',', '.') }}</span>
                                 @endif
                             </div>

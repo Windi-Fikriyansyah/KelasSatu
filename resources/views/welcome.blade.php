@@ -205,10 +205,10 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             <!-- Lottie Animation -->
+            <!-- Illustration Image -->
             <div class="flex justify-center">
-                <lottie-player src="https://assets1.lottiefiles.com/packages/lf20_vyLwnL.json" background="transparent"
-                    speed="1" style="width:100%; max-width:420px; height:auto;" loop autoplay>
-                </lottie-player>
+                <img src="{{ asset('image/join.PNG') }}" alt="How to Join Illustration"
+                    class="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-xl shadow-md">
             </div>
 
             <!-- How to Join Steps -->

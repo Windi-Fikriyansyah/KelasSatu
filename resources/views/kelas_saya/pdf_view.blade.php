@@ -242,38 +242,38 @@
             let touchStartX = 0;
             let touchStartY = 0;
 
-            canvas.addEventListener('touchstart', (e) => {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-            });
+            // canvas.addEventListener('touchstart', (e) => {
+            //     touchStartX = e.touches[0].clientX;
+            //     touchStartY = e.touches[0].clientY;
+            // });
 
-            canvas.addEventListener('touchend', (e) => {
-                if (!touchStartX || !touchStartY) return;
+            // canvas.addEventListener('touchend', (e) => {
+            //     if (!touchStartX || !touchStartY) return;
 
-                const touchEndX = e.changedTouches[0].clientX;
-                const touchEndY = e.changedTouches[0].clientY;
+            //     const touchEndX = e.changedTouches[0].clientX;
+            //     const touchEndY = e.changedTouches[0].clientY;
 
-                const deltaX = touchStartX - touchEndX;
-                const deltaY = Math.abs(touchStartY - touchEndY);
+            //     const deltaX = touchStartX - touchEndX;
+            //     const deltaY = Math.abs(touchStartY - touchEndY);
 
-                // Only trigger if horizontal swipe is dominant
-                if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 50) {
-                    if (deltaX > 0 && currentPage < pdfDoc.numPages) {
-                        // Swipe left - next page
-                        currentPage++;
-                        renderPage(currentPage);
-                        updateNavButtons();
-                    } else if (deltaX < 0 && currentPage > 1) {
-                        // Swipe right - previous page
-                        currentPage--;
-                        renderPage(currentPage);
-                        updateNavButtons();
-                    }
-                }
+            //     // Only trigger if horizontal swipe is dominant
+            //     if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 50) {
+            //         if (deltaX > 0 && currentPage < pdfDoc.numPages) {
+            //             // Swipe left - next page
+            //             currentPage++;
+            //             renderPage(currentPage);
+            //             updateNavButtons();
+            //         } else if (deltaX < 0 && currentPage > 1) {
+            //             // Swipe right - previous page
+            //             currentPage--;
+            //             renderPage(currentPage);
+            //             updateNavButtons();
+            //         }
+            //     }
 
-                touchStartX = 0;
-                touchStartY = 0;
-            });
+            //     touchStartX = 0;
+            //     touchStartY = 0;
+            // });
 
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
