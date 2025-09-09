@@ -207,7 +207,7 @@
             <!-- Lottie Animation -->
             <!-- Illustration Image -->
             <div class="flex justify-center">
-                <img src="{{ asset('image/join.PNG') }}" alt="How to Join Illustration"
+                <img src="{{ asset('image/join.png') }}" alt="How to Join Illustration"
                     class="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-xl shadow-md">
             </div>
 
