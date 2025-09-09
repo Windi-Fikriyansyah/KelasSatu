@@ -8,10 +8,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Header Course Info -->
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
-                <div class="md:flex">
+            <!-- Header Course Info -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 p-6">
+                <div class="md:flex md:justify-between md:items-start">
 
-                    <div class="md:w-2/3 p-6">
+                    <!-- Info Course -->
+                    <div class="md:w-2/3">
                         <div class="flex items-center mb-2">
                             <span class="bg-primary-100 text-white text-xs font-medium px-3 py-1 rounded-full mr-3">
                                 {{ $course->nama_kategori ?? 'Umum' }}
@@ -19,22 +21,13 @@
                             <span class="text-sm text-gray-500">
                                 Updated: {{ \Carbon\Carbon::parse($course->updated_at)->format('d M Y') }}
                             </span>
-
                         </div>
                         <h1 class="text-2xl md:text-3xl font-bold text-primary-200 mb-3">{{ $course->title }}</h1>
                         <p class="text-gray-600 mb-4">{{ $course->description }}</p>
 
-
-
                         <div class="flex flex-col items-start space-y-2">
-                            <a href="" target="_blank"
-                                class="bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fa-solid fa-download mr-2"></i> Download Sertifikat
-                            </a>
-
                             @php
                                 $accessType = strtolower($course->access_type);
-
                                 $badgeConfig = [
                                     'lifetime' => [
                                         'class' => 'bg-green-100 text-green-800',
@@ -49,24 +42,53 @@
                                         'label' => 'Subscription',
                                     ],
                                 ];
-
                                 $badge = $badgeConfig[$accessType] ?? [
                                     'class' => 'bg-gray-100 text-gray-800',
                                     'icon' => '',
                                     'label' => ucfirst($course->access_type),
                                 ];
                             @endphp
-
                             <span
                                 class="flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $badge['class'] }}">
                                 {!! $badge['icon'] !!} {{ $badge['label'] }}
                             </span>
                         </div>
-
-
                     </div>
+
+                    <!-- Tombol Download di sebelah kanan -->
+                    <div class="mt-4 md:mt-0 md:ml-4 flex-shrink-0">
+                        <div class="inline-block text-left">
+                            <button type="button"
+                                class="inline-flex justify-center bg-yellow-400 hover:bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                id="dropdownButton" aria-expanded="true" aria-haspopup="true">
+                                <i class="fa-solid fa-download mr-2"></i> Download Sertifikat
+                                <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown menu -->
+                            <div class="origin-top-right absolute right-0 mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none hidden"
+                                id="dropdownMenu">
+                                <div class="py-1">
+                                    <a href="{{ route('kelas.certificate.download', ['format' => 'pdf']) }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Download sebagai PDF
+                                    </a>
+                                    {{-- <a href="{{ route('kelas.certificate.download', ['format' => 'image']) }}"
+                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Download sebagai Gambar
+                                    </a> --}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
 
             <!-- Tab Navigation -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -471,6 +493,22 @@
                 }
             }
         }, true);
+
+
+        const dropdownButton = document.getElementById('dropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+
+        dropdownButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Klik di luar dropdown untuk menutup
+        window.addEventListener('click', function(e) {
+            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+            }
+        });
     </script>
 @endpush
 

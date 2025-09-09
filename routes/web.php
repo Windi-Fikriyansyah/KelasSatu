@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriController;
@@ -175,6 +176,12 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/latihan/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('latihan.riwayat');
         Route::get('/tryout/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('tryout.riwayat');
+
+        Route::get('/certificate/download', [CertificateController::class, 'download'])
+            ->name('certificate.download');
+
+        Route::get('/certificate/preview', [CertificateController::class, 'preview'])
+            ->name('certificate.preview');
     });
 
     Route::prefix('account')->name('account.')->group(function () {
