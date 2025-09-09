@@ -77,10 +77,10 @@
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Download sebagai PDF
                                     </a>
-                                    {{-- <a href="{{ route('kelas.certificate.download', ['format' => 'image']) }}"
+                                    <a href="{{ route('kelas.certificate.download', ['format' => 'image']) }}"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Download sebagai Gambar
-                                    </a> --}}
+                                    </a>
                                 </div>
                             </div>
                         </div>

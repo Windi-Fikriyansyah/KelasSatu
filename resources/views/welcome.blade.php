@@ -40,9 +40,10 @@
                         class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold transition-all transform hover:scale-105">
                         Mulai Belajar Sekarang
                     </a>
-                    <button class="btn-outline px-8 py-3 rounded-lg text-lg font-semibold hover:text-white transition-all">
+                    <a href="{{ route('course') }}"
+                        class="btn-outline px-8 py-3 rounded-lg text-lg font-semibold hover:text-white transition-all">
                         Jelajahi Kursus
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

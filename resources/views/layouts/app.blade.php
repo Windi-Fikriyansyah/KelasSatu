@@ -180,7 +180,7 @@
                             class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kelas
                             Saya</a>
                     @else
-                        <a href="#"
+                        <a href="/"
                             class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
                         <a href="{{ route('course') }}"
                             class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kursus</a>
@@ -243,7 +243,7 @@
                             class="w-full text-left px-3 py-2 text-gray-600 hover:text-primary-100">Logout</button>
                     </form>
                 @else
-                    <a href="#" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
+                    <a href="/" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
                     <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kursus</a>
                     <a href="#about" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Tentang</a>
                     <a href="#contact" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kontak</a>

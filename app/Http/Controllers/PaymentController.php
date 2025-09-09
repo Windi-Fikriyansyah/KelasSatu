@@ -59,7 +59,7 @@ class PaymentController extends Controller
             }
 
             // Configure Xendit with API Key
-            Configuration::setXenditKey(env('XENDIT_API_KEY'));
+            Configuration::setXenditKey(config('services.xendit.api_key'));
 
             // Generate external ID yang unik
             $externalId = 'course-' . $course->id . '-' . $user->id . '-' . time();
@@ -178,7 +178,7 @@ class PaymentController extends Controller
         try {
             // Verifikasi callback token dari Xendit
             $callbackToken = $request->header('x-callback-token');
-            if ($callbackToken !== env('XENDIT_CALLBACK_TOKEN')) {
+            if ($callbackToken !== config('services.xendit.callback_token')) {
                 Log::warning('Invalid callback token', ['token' => $callbackToken]);
                 return response()->json(['status' => 'invalid token'], 400);
             }
