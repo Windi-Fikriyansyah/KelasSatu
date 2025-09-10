@@ -165,11 +165,11 @@
                 <div class="flex-shrink-0 mx-auto md:mx-0">
                     @auth
                         <a href="{{ route('dashboardUser') }}">
-                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-16 w-auto">
                         </a>
                     @else
                         <a href="/">
-                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-16 w-auto">
                         </a>
                     @endauth
                 </div>
