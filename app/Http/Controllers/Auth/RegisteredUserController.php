@@ -23,9 +23,9 @@ class RegisteredUserController extends Controller
         return view('auth.register_siswa');
     }
 
-    public function create_guru(): View
+    public function create(): View
     {
-        return view('auth.register_guru');
+        return view('auth.register');
     }
 
     /**
@@ -52,17 +52,19 @@ class RegisteredUserController extends Controller
             'no_hp.unique' => 'No Hp sudah terdaftar.',
 
             'kabupaten.required' => 'Kabupaten wajib diisi.',
-            'kota.required' => 'Kota wajib diisi.',
+            'provinsi.required' => 'provinsi wajib diisi.',
+            'alamat.required' => 'alamat wajib diisi.',
             'instansi.required' => 'Instansi wajib diisi.',
             'role.required' => 'Role wajib dipilih.',
         ];
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'alamat' => ['required'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', 'min:8'],
             'no_hp' => ['required', 'string', 'max:20', 'unique:' . User::class],
             'kabupaten' => ['required', 'string', 'max:100'],
-            'kota' => ['required', 'string', 'max:100'],
+            'provinsi' => ['required', 'string', 'max:100'],
             'instansi' => ['required', 'string', 'max:255'],
             'role' => ['required', 'string'],
         ], $messages);
@@ -74,7 +76,8 @@ class RegisteredUserController extends Controller
             'no_hp' => $request->no_hp,
             'referral_code' => Str::random(8),
             'kabupaten' => $request->kabupaten,
-            'kota' => $request->kota,
+            'alamat' => $request->alamat,
+            'provinsi' => $request->provinsi,
             'instansi' => $request->instansi,
             'role' => $request->role,
         ]);

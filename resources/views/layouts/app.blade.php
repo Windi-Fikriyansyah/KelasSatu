@@ -219,10 +219,18 @@
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}"
-                            class="btn-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                            Masuk
-                        </a>
+                        <div class="hidden md:flex items-center space-x-2">
+                            <a href="{{ route('login') }}"
+                                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
+                  border-2 border-primary-100 text-primary-100 hover:bg-primary-100 hover:text-white shadow-sm">
+                                Masuk
+                            </a>
+                            <a href="{{ route('register.create') }}"
+                                class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
+                  bg-primary-100 text-white hover:bg-[#d45615] shadow-md">
+                                Daftar
+                            </a>
+                        </div>
                     @endauth
                 </div>
             </div>
@@ -247,7 +255,16 @@
                     <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kursus</a>
                     <a href="#about" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Tentang</a>
                     <a href="#contact" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kontak</a>
-                    <a href="{{ route('login') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Masuk</a>
+                    <a href="{{ route('login') }}"
+                        class="block w-full text-center px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
+                      border-2 border-primary-100 text-primary-100 hover:bg-primary-100 hover:text-white shadow-sm">
+                        Masuk
+                    </a>
+                    <a href="{{ route('register.create') }}"
+                        class="block w-full text-center px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
+                      bg-primary-100 text-white hover:bg-[#d45615] shadow-md">
+                        Daftar
+                    </a>
                 @endauth
             </div>
         </div>

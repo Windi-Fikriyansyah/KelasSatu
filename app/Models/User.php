@@ -30,7 +30,8 @@ class User extends Authenticatable
         'referral_code',
         'no_hp',
         'kabupaten',
-        'kota',
+        'provinsi',
+        'alamat',
         'instansi',
     ];
 

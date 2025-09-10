@@ -241,46 +241,29 @@
         }
 
         /* Tombol daftar */
-        .register-section h3 {
+        .register-section {
             text-align: center;
-            margin-bottom: 20px;
-            color: #254768;
-            font-size: 18px;
-        }
-
-        .register-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
             margin-top: 20px;
         }
 
-        .register-btn {
+        .register-section a {
+            display: inline-block;
             padding: 14px 20px;
-            border: 2px solid #254768;
-            background: white;
-            color: #254768;
             border-radius: 12px;
+            background: white;
+            border: 2px solid #254768;
             font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
+            color: #254768;
             text-decoration: none;
-            /* HILANGKAN GARIS BAWAH */
-            display: inline-block;
+            transition: all 0.3s ease;
         }
 
-        .register-btn:hover {
+        .register-section a:hover {
             background: #254768;
             color: white;
         }
 
-        .register-btn.guru:hover {
-            background: #eb631d;
-            border-color: #eb631d;
-            color: white;
-        }
 
         @media (max-width: 768px) {
             .login-wrapper {
@@ -327,13 +310,8 @@
 
 
                 <div class="divider"><span>Belum punya akun?</span></div>
-
                 <div class="register-section">
-                    <h3>Daftar Sebagai</h3>
-                    <div class="register-buttons">
-                        <a href="{{ route('register.siswa') }}" class="register-btn siswa">👨‍🎓 Siswa</a>
-                        <a href="{{ route('register.guru') }}" class="register-btn guru">👨‍🏫 Guru</a>
-                    </div>
+                    <a href="{{ route('register.create') }}">Daftar Sekarang</a>
                 </div>
             </div>
         </div>

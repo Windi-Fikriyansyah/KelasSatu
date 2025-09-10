@@ -15,11 +15,11 @@ use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
-    Route::get('register-siswa', [RegisteredUserController::class, 'create_siswa'])
-        ->name('register.siswa');
+    // Route::get('register-siswa', [RegisteredUserController::class, 'create_siswa'])
+    //     ->name('register.siswa');
 
-    Route::get('register-guru', [RegisteredUserController::class, 'create_guru'])
-        ->name('register.guru');
+    Route::get('register', [RegisteredUserController::class, 'create'])
+        ->name('register.create');
 
     Route::post('register', [RegisteredUserController::class, 'store'])->name('register');
 
