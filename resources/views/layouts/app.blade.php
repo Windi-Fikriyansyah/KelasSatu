@@ -63,8 +63,16 @@
             background-color: #254768;
         }
 
+        .bg-primary-500 {
+            background-color: #eb631d;
+        }
+
         .text-primary-100 {
             color: #eb631d;
+        }
+
+        .text-primary-500 {
+            color: white;
         }
 
         .text-primary-200 {
@@ -277,12 +285,13 @@
 
 
     <!-- Footer -->
-    <footer class="bg-primary-200 text-white py-12">
+    <footer class="bg-primary-500 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-2xl font-bold text-primary-100 mb-4">KelasSatu</h3>
-                    <p class="text-blue-100 mb-4">Platform e-learning terdepan untuk masa depan yang lebih cerah.</p>
+                    <h3 class="text-2xl font-bold text-primary-500 mb-4">KelasSatu</h3>
+                    <p class="text-primary-500 mb-4">Platform e-learning terdepan untuk masa depan yang lebih cerah.
+                    </p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-blue-100 hover:text-white transition-colors">
                             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -301,7 +310,7 @@
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Platform</h4>
-                    <ul class="space-y-2 text-blue-100">
+                    <ul class="space-y-2 text-primary-500">
                         <li><a href="#" class="hover:text-white transition-colors">Kursus</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Instruktur</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Sertifikasi</a></li>
@@ -311,7 +320,7 @@
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Dukungan</h4>
-                    <ul class="space-y-2 text-blue-100">
+                    <ul class="space-y-2 text-primary-500">
                         <li><a href="#" class="hover:text-white transition-colors">Bantuan</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Kontak</a></li>
@@ -321,7 +330,7 @@
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Perusahaan</h4>
-                    <ul class="space-y-2 text-blue-100">
+                    <ul class="space-y-2 text-primary-500">
                         <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Karir</a></li>
                         <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
@@ -330,7 +339,7 @@
                 </div>
             </div>
 
-            <div class="border-t border-blue-800 mt-8 pt-8 text-center text-blue-100">
+            <div class="border-t border-blue-800 mt-8 pt-8 text-center text-primary-500">
                 <p>&copy; 2024 KelasSatu. Seluruh hak cipta dilindungi.</p>
             </div>
         </div>
