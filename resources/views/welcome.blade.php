@@ -84,9 +84,13 @@
                         </div>
                         <div class="p-5">
                             <h3
-                                class="text-lg font-semibold text-primary-200 mb-2 line-clamp-2 group-hover:text-primary-100 transition-colors">
-                                {{ $course->title }}</h3>
-                            <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $course->description }}</p>
+                                class="text-lg font-semibold text-primary-200 mb-2 group-hover:text-primary-100 transition-colors">
+                                {{ $course->title }}
+                            </h3>
+                            <p class="text-gray-600 text-sm mb-3">
+                                {{ $course->description }}
+                            </p>
+
 
                             @php $features = json_decode($course->features, true); @endphp
                             @if (!empty($features) && count($features) > 0)
