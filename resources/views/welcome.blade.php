@@ -338,7 +338,7 @@
                         </div>
                         <div class="ml-4">
                             <h4 class="font-semibold text-primary-200">Ahmad Rizki</h4>
-                            <p class="text-sm text-gray-600">UI/UX Designer</p>
+                            <p class="text-sm text-gray-600">Peserta kelassatu.com 2025</p>
                         </div>
                     </div>
                     <div class="relative">
@@ -347,8 +347,10 @@
                                 d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                         </svg>
                         <p class="text-gray-700 relative z-10">
-                            "Kursus UI/UX Design di KelasSatu sangat membantu karir saya. Materi yang disampaikan mudah
-                            dipahami dan mentor selalu siap membantu."
+                            "Belajar di KelasSatu benar-benar jadi titik balik buat saya. Materinya lengkap sesuai kisi-kisi
+                            terbaru, soal-soalnya mirip dengan ujian asli, dan pembahasannya sangat jelas. Ditambah lagi,
+                            mentor selalu sigap menjawab pertanyaan kapan pun saya butuh. Berkat KelasSatu, saya lebih
+                            percaya diri menghadapi TKA dan akhirnya bisa lolos dengan hasil yang memuaskan."
                         </p>
                     </div>
                     <div class="flex mt-4">
@@ -384,7 +386,7 @@
                         </div>
                         <div class="ml-4">
                             <h4 class="font-semibold text-primary-200">Sari Dewi</h4>
-                            <p class="text-sm text-gray-600">Data Analyst</p>
+                            <p class="text-sm text-gray-600">Peserta kelassatu.com 2025</p>
                         </div>
                     </div>
                     <div class="relative">
@@ -393,8 +395,10 @@
                                 d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                         </svg>
                         <p class="text-gray-700 relative z-10">
-                            "Sebagai pemula di bidang data science, saya sangat terbantu dengan kursus di KelasSatu.
-                            Penjelasannya step by step dan projectnya relevan dengan industri."
+                            "Awalnya saya merasa TKA itu sulit dan membingungkan. Tapi setelah ikut kursus di KelasSatu,
+                            semuanya jadi lebih jelas. Materinya tersusun step by step, soal-soalnya sesuai kisi-kisi TKA
+                            2025, dan pembahasannya gampang dipahami. Sekarang saya jauh lebih siap menghadapi ujian dan
+                            yakin bisa meraih hasil terbaik."
                         </p>
                     </div>
                     <div class="flex mt-4">
@@ -430,7 +434,7 @@
                         </div>
                         <div class="ml-4">
                             <h4 class="font-semibold text-primary-200">Budi Santoso</h4>
-                            <p class="text-sm text-gray-600">Fullstack Developer</p>
+                            <p class="text-sm text-gray-600">Peserta kelassatu.com 2025</p>
                         </div>
                     </div>
                     <div class="relative">
@@ -439,8 +443,10 @@
                                 d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                         </svg>
                         <p class="text-gray-700 relative z-10">
-                            "Setelah menyelesaikan kursus Fullstack Development, skill coding saya meningkat drastis.
-                            Sekarang saya lebih percaya diri mengerjakan project kompleks."
+                            "Sebelum ikut kursus di kelassatu.com, saya sering ragu dan takut salah menjawab soal TKA. Tapi
+                            setelah menyelesaikan kursusnya, pemahaman saya meningkat drastis. Materi yang sesuai kisi-kisi
+                            dan latihan soal yang lengkap membuat saya jauh lebih siap. Sekarang saya punya keyakinan penuh
+                            menghadapi TKA 2025."
                         </p>
                     </div>
                     <div class="flex mt-4">
