@@ -13,6 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     const ROLE_SISWA = 'siswa';
+    const ROLE_USER = 'user';
     const ROLE_GURU = 'guru';
     const ROLE_ADMIN = 'admin';
     const ROLE_OWNER = 'owner';
@@ -27,6 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'profesi',
         'referral_code',
         'no_hp',
         'kabupaten',

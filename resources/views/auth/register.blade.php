@@ -210,7 +210,7 @@
                             placeholder="Masukkan nama lengkap">
                     </div>
                     <div class="form-group">
-                        <label for="no_hp">No HP</label>
+                        <label for="no_hp">No HP/WA</label>
                         <input type="text" id="no_hp" name="no_hp" required placeholder="08xxxxxxxxxx">
                     </div>
                     <div class="form-group">
@@ -234,14 +234,12 @@
                         <label for="instansi">Asal Instansi/Asal Sekolah/Asal Kampus</label>
                         <input type="text" id="instansi" name="instansi" required>
                     </div>
+
                     <div class="form-group">
-                        <label for="role">Profesi</label>
-                        <select id="role" name="role" required>
-                            <option value="" disabled selected>Pilih profesi</option>
-                            <option value="siswa">Siswa</option>
-                            <option value="guru">Guru</option>
-                        </select>
+                        <label for="profesi">Profesi</label>
+                        <input type="text" id="profesi" name="profesi" required>
                     </div>
+                    <input type="hidden" id="role" name="role" value="user" required>
 
 
                     <div class="form-group">

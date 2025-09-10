@@ -28,7 +28,7 @@ Route::get('/course', [KursusController::class, 'course'])->name('course');
 
 
 
-Route::middleware(['auth', 'role:siswa,guru'])->group(function () {
+Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/home', [DashboardController::class, 'dashboardUser'])->name('dashboardUser');
 });
 

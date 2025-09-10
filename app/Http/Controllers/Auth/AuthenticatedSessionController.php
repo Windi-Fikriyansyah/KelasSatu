@@ -30,8 +30,7 @@ class AuthenticatedSessionController extends Controller
         $role = Auth::user()->role;
 
         return match ($role) {
-            'siswa' => redirect('/home'),
-            'guru' => redirect('/home'),
+            'user' => redirect('/home'),
             'admin' => redirect('/dashboard'),
             'owner' => redirect('/dashboard'),
         };

@@ -56,6 +56,7 @@ class RegisteredUserController extends Controller
             'alamat.required' => 'alamat wajib diisi.',
             'instansi.required' => 'Instansi wajib diisi.',
             'role.required' => 'Role wajib dipilih.',
+            'profesi.required' => 'profesi wajib dipilih.',
         ];
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -67,6 +68,7 @@ class RegisteredUserController extends Controller
             'provinsi' => ['required', 'string', 'max:100'],
             'instansi' => ['required', 'string', 'max:255'],
             'role' => ['required', 'string'],
+            'profesi' => ['required', 'string'],
         ], $messages);
 
         $user = User::create([
@@ -80,6 +82,7 @@ class RegisteredUserController extends Controller
             'provinsi' => $request->provinsi,
             'instansi' => $request->instansi,
             'role' => $request->role,
+            'profesi' => $request->profesi,
         ]);
 
         event(new Registered($user));
