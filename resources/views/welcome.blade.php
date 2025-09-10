@@ -2,52 +2,63 @@
 @section('title', 'Home')
 @section('content')
     <!-- Hero Section with Slider -->
-    <section class="relative gradient-bg min-h-screen flex items-center">
+    <section id="beranda" class="relative gradient-bg h-[85vh] flex items-center">
         <div class="absolute inset-0 overflow-hidden">
             <div class="slider-container relative w-full h-full">
                 <!-- Slide 1 -->
+                <!-- Slide 1 -->
                 <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-100">
                     <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-                        alt="Students learning" class="w-full h-full object-cover opacity-20">
+                        alt="Students learning" class="w-full h-full object-cover">
+                    <!-- Overlay Orange Transparan -->
+                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
                 </div>
 
                 <!-- Slide 2 -->
                 <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
                     <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-                        alt="Online learning" class="w-full h-full object-cover opacity-20">
+                        alt="Online learning" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
                 </div>
 
                 <!-- Slide 3 -->
                 <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
                     <img src="https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-                        alt="Technology learning" class="w-full h-full object-cover opacity-20">
+                        alt="Technology learning" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
                 </div>
+
             </div>
         </div>
 
+        <!-- Overlay Orange Transparan -->
+        <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-orange-600/60"></div>
+
+        <!-- Teks Hero -->
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div class="animate-fade-in">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                <h1 class="text-4xl md:text-6xl font-bold text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.6)] mb-6">
                     Belajar Tanpa Batas
-                    <span class="block text-primary-100">Raih Masa Depan</span>
+                    <span class="block text-orange-300">Raih Masa Depan</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto">
+                <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto drop-shadow-[0_3px_4px_rgba(0,0,0,0.6)]">
                     Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025,
                     yang berisi Ringkasan Materi Pembahasan, disusun berdasarkan Kisi-Kisi Ujian TKA Terbaru Tahun 2025,
-                    Latihan Soal, Kunci Jawaban, Uraian atas Jawaban dan Try Out Sistem Computer Assisted Test (CAT)
+                    Latihan Soal, Kunci Jawaban, Uraian atas Jawaban dan Try Out Sistem Computer Assisted Test (CAT)
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('login') }}"
-                        class="btn-primary px-8 py-3 rounded-lg text-lg font-semibold transition-all transform hover:scale-105">
+                        class="px-8 py-3 rounded-lg text-lg font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg">
                         Mulai Belajar Sekarang
                     </a>
                     <a href="{{ route('course') }}"
-                        class="btn-outline px-8 py-3 rounded-lg text-lg font-semibold hover:text-white transition-all">
+                        class="px-8 py-3 rounded-lg text-lg font-semibold border border-white text-white hover:bg-orange-500 hover:border-orange-500 hover:text-white transition-all shadow-lg">
                         Jelajahi Kursus
                     </a>
                 </div>
             </div>
         </div>
+
 
         <!-- Slider Navigation -->
         <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
@@ -133,7 +144,7 @@
         </div>
     </section>
 
-    <section id="how-to-join" class="py-20 bg-white">
+    <section id="about" class="py-20 bg-white">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
 
             <!-- Illustration Image -->
@@ -168,9 +179,9 @@
 
 
 
-    <section class="py-20 bg-white">
+    <section id="why" class="py-5 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
+            <div class="text-center mb-5">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">Mengapa Memilih KelasSatu?</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">Kami menyediakan pengalaman belajar terbaik dengan
                     fitur-fitur unggulan</p>
@@ -356,9 +367,9 @@
 
 
     <!-- Testimonial Section -->
-    <section class="py-20 bg-white">
+    <section id="testimoni" class="py-5 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
+            <div class="text-center mb-10">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">Apa Kata Mereka?</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">Testimoni dari siswa yang telah merasakan pengalaman
                     belajar di KelasSatu</p>

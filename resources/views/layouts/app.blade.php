@@ -148,7 +148,8 @@
     <!-- Ganti bagian navigasi yang ada (baris sekitar 91-154) dengan kode ini: -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-start items-center h-16">
+
                 <!-- Mobile menu button - dipindah ke kiri -->
                 <div class="md:hidden">
                     <button
@@ -161,46 +162,56 @@
                     </button>
                 </div>
 
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        @auth
-                            <a href="{{ route('dashboardUser') }}">
-                                <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
-                            </a>
-                        @else
-                            <a href="/">
-                                <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
-                            </a>
-                        @endauth
-                    </div>
-                </div>
-
-
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
+                <div class="flex-shrink-0 mx-auto md:mx-0">
                     @auth
-                        <a href="{{ route('dashboardUser') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
-                        <a href="{{ route('course') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beli
-                            Kelas</a>
-                        <a href="{{ route('kelas.index') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kelas
-                            Saya</a>
+                        <a href="{{ route('dashboardUser') }}">
+                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                        </a>
                     @else
-                        <a href="/"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Beranda</a>
-                        <a href="{{ route('course') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kursus</a>
-                        <a href="#about"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Tentang</a>
-                        <a href="#contact"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-sm font-medium transition-colors">Kontak</a>
+                        <a href="/">
+                            <img src="{{ asset('image/logo.png') }}" alt="KelasSatu" class="h-12 w-auto">
+                        </a>
                     @endauth
                 </div>
 
+
+
+                <!-- Desktop Menu -->
+                <!-- Desktop Menu (pindah ke kiri dengan font lebih besar) -->
+                <div class="hidden md:flex items-center space-x-8 ml-8 text-base font-medium">
+
+                    @auth
+                        <a href="{{ route('dashboardUser') }}"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
+                        <a href="{{ route('course') }}"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beli
+                            Kelas</a>
+                        <a href="{{ route('kelas.index') }}"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kelas
+                            Saya</a>
+                        <a href="{{ route('account.index') }}"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pengaturan</a>
+                        <a href="{{ route('history.index') }}"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Transaksi</a>
+                    @else
+                        <a href="#beranda"
+                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
+                        <a href="#courses"
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kursus</a>
+                        <a href="#testimoni"
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Testimoni</a>
+                        <a href="#faq"
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pertanyaan
+                            Umum</a>
+                        <a href="#about"
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Tentang
+                            Kami</a>
+                    @endauth
+
+                </div>
+
                 <!-- Right Side - User menu atau Login button -->
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 ml-auto">
                     @auth
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
@@ -214,11 +225,9 @@
                             <!-- Dropdown -->
                             <div x-show="open" @click.away="open = false"
                                 class="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg py-2 z-50">
-                                <a href="{{ route('account.index') }}"
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a>
-                                <a href="{{ route('history.index') }}"
-                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">History
-                                    Transaksi</a>
+                                {{-- <a href="{{ route('account.index') }}"
+                                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Settings</a> --}}
+
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit"
@@ -253,27 +262,33 @@
                         Kelas</a>
                     <a href="{{ route('kelas.index') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kelas
                         Saya</a>
+                    <a href="{{ route('account.index') }}"
+                        class="block px-3 py-2 text-gray-600 hover:text-primary-100">Pengaturan</a>
+                    <a href="{{ route('history.index') }}"
+                        class="block px-3 py-2 text-gray-600 hover:text-primary-100">Transaksi</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
                             class="w-full text-left px-3 py-2 text-gray-600 hover:text-primary-100">Logout</button>
                     </form>
                 @else
-                    <a href="/" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
-                    <a href="{{ route('course') }}" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kursus</a>
-                    <a href="#about" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Tentang</a>
-                    <a href="#contact" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kontak</a>
+                    <a href="#beranda" class="block px-3 py-2 text-gray-900 font-medium">Beranda</a>
+                    <a href="#courses" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Kursus</a>
+                    <a href="#testimoni" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Testimoni</a>
+                    <a href="#faq" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Pertanyaan Umum</a>
+                    <a href="#about" class="block px-3 py-2 text-gray-600 hover:text-primary-100">Tentang Kami</a>
                     <a href="{{ route('login') }}"
                         class="block w-full text-center px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
-                      border-2 border-primary-100 text-primary-100 hover:bg-primary-100 hover:text-white shadow-sm">
+              border-2 border-primary-100 text-primary-100 hover:bg-primary-100 hover:text-white shadow-sm">
                         Masuk
                     </a>
                     <a href="{{ route('register.create') }}"
                         class="block w-full text-center px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300
-                      bg-primary-100 text-white hover:bg-[#d45615] shadow-md">
+              bg-primary-100 text-white hover:bg-[#d45615] shadow-md">
                         Daftar
                     </a>
                 @endauth
+
             </div>
         </div>
     </nav>
@@ -285,65 +300,87 @@
 
 
     <!-- Footer -->
+    <!-- Footer -->
+    <!-- Footer -->
     <footer class="bg-primary-500 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+            <div class="mb-12 w-full md:w-1/2">
+                <h4 class="text-lg font-semibold mb-4">Lokasi Kami</h4>
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0088144299074!2d110.41455517404056!3d-7.889898978415492!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a5717c444d4b1%3A0x5b54b92c6cda8c6a!2sUniversitas%20Negeri%20Yogyakarta!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid"
+                    width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen=""
+                    loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+                <div class="flex items-center mt-3 text-primary-500">
+                    <i class="fas fa-map-marker-alt mr-2 text-white"></i>
+                    <span>Jalan Sepakat 2, Pontianak, Kalimantan Barat</span>
+                </div>
+            </div>
+
+            <!-- Grid menu footer -->
             <div class="grid md:grid-cols-4 gap-8">
+
                 <div>
                     <h3 class="text-2xl font-bold text-primary-500 mb-4">KelasSatu</h3>
                     <p class="text-primary-500 mb-4">Platform e-learning terdepan untuk masa depan yang lebih cerah.
                     </p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="text-blue-100 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                            </svg>
-                        </a>
-                        <a href="#" class="text-blue-100 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.20-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
-                            </svg>
-                        </a>
-                    </div>
                 </div>
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Platform</h4>
                     <ul class="space-y-2 text-primary-500">
-                        <li><a href="#" class="hover:text-white transition-colors">Kursus</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Instruktur</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Sertifikasi</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Komunitas</a></li>
+                        <li><a href="#about" class="hover:text-white transition-colors">Tentang Kami</a></li>
+                        <li><a href="#courses" class="hover:text-white transition-colors">Kursus</a></li>
+                        <li><a href="#testimoni" class="hover:text-white transition-colors">Testimoni</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Dukungan</h4>
                     <ul class="space-y-2 text-primary-500">
-                        <li><a href="#" class="hover:text-white transition-colors">Bantuan</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Kontak</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Status</a></li>
+                        <li><a href="#faq" class="hover:text-white transition-colors">Pertanyaan Umum</a></li>
+                        <li><a href="#how-to-join" class="hover:text-white transition-colors">How To Join</a></li>
+                        <li><a href="#why" class="hover:text-white transition-colors">Why Kelassatu.com?</a></li>
                     </ul>
                 </div>
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Perusahaan</h4>
                     <ul class="space-y-2 text-primary-500">
-                        <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Karir</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Blog</a></li>
-                        <li><a href="#" class="hover:text-white transition-colors">Privacy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Hubungi Kami</a></li>
                     </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="https://wa.me/6281234567890" target="_blank"
+                            class="hover:text-white transition-colors">
+                            <i class="fab fa-whatsapp text-2xl"></i>
+                        </a>
+                        <a href="https://instagram.com/username" target="_blank"
+                            class="hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-2xl"></i>
+                        </a>
+                        <a href="https://tiktok.com/@username" target="_blank"
+                            class="hover:text-white transition-colors">
+                            <i class="fab fa-tiktok text-2xl"></i>
+                        </a>
+                        <a href="https://facebook.com/username" target="_blank"
+                            class="hover:text-white transition-colors">
+                            <i class="fab fa-facebook text-2xl"></i>
+                        </a>
+                    </div>
                 </div>
+
             </div>
 
+            <!-- Copyright -->
             <div class="border-t border-blue-800 mt-8 pt-8 text-center text-primary-500">
-                <p>&copy; 2024 KelasSatu. Seluruh hak cipta dilindungi.</p>
+                <p>&copy; 2025 PT KELAS SATU INDONESIA. Seluruh hak cipta dilindungi.</p>
             </div>
         </div>
     </footer>
+
+
+
     <script src="//unpkg.com/alpinejs" defer></script>
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
