@@ -32,8 +32,8 @@ class DashboardController extends Controller
     {
         $courses = DB::table('courses')
             ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
-            ->select('courses.id', 'courses.title', 'kategori.id as kategori_id', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
-            ->orderBy('courses.created_at', 'desc')
+            ->select('courses.id', 'courses.title', 'kategori.id as kategori_id', 'courses.description', 'courses.thumbnail', 'courses.urutan', 'courses.price', 'courses.features', 'kategori.nama_kategori')
+            ->orderBy('courses.urutan', 'asc')
             ->get();
         $kategori = DB::table('kategori')->get();
 

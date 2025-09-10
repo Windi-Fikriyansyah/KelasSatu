@@ -33,12 +33,13 @@ class KursusController extends Controller
                     'courses.price',
                     'courses.access_type',
                     'courses.is_free',
+                    'courses.urutan',
                     'courses.status',
                     'kategori.nama_kategori', // menampilkan nama kategori
                     'courses.created_at',
                     'courses.updated_at'
                 ])
-                ->orderBy('courses.created_at', 'desc');
+                ->orderBy('courses.urutan', 'asc');
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
@@ -103,6 +104,7 @@ class KursusController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'id_kategori' => 'required|string',
+            'urutan' => 'required|unique:courses,urutan',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'required|numeric|min:0',
             'is_free' => 'required|boolean',
@@ -126,6 +128,7 @@ class KursusController extends Controller
             // Insert course using Query Builder
             DB::table('courses')->insert([
                 'title' => $request->title,
+                'urutan' => $request->urutan,
                 'description' => $request->description,
                 'id_kategori' => $request->id_kategori,
                 'thumbnail' => $thumbnailPath,
@@ -169,6 +172,7 @@ class KursusController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
+            'urutan' => 'required|integer|unique:courses,urutan,' . $id,
             'id_kategori' => 'required|string',
             'description' => 'required|string',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -193,6 +197,7 @@ class KursusController extends Controller
 
             $dataUpdate = [
                 'title' => $request->title,
+                'urutan' => $request->urutan,
                 'id_kategori' => $request->id_kategori,
                 'description' => $request->description,
                 'price' => $price,
@@ -232,6 +237,7 @@ class KursusController extends Controller
         $courses = DB::table('courses')
             ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
             ->select('courses.id', 'courses.title', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
+            ->orderBy('courses.urutan', 'asc')
             ->limit(6)
             ->get();
 
@@ -244,7 +250,7 @@ class KursusController extends Controller
         $courses = DB::table('courses')
             ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
             ->select('courses.id', 'courses.title', 'kategori.id as kategori_id', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'kategori.nama_kategori')
-            ->orderBy('courses.created_at', 'desc')
+            ->orderBy('courses.urutan', 'asc')
             ->get();
         $kategori = DB::table('kategori')->get();
 

@@ -182,6 +182,17 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="urutan">Urutan</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="urutan" name="urutan"
+                                        class="form-control @error('urutan') is-invalid @enderror"
+                                        value="{{ old('urutan', $course->urutan ?? '') }}" required />
+                                    @error('urutan')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                             <!-- Features -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label">Fitur-Fitur</label>

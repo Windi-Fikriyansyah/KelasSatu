@@ -46,6 +46,7 @@
                                 <th>Kategori</th>
                                 <th>Harga</th>
                                 <th>Tipe Akses</th>
+                                <th>Urutan</th>
                                 <th>Status</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -164,6 +165,10 @@
                                 return '-';
                             }
                         }
+                    },
+                    {
+                        data: 'urutan',
+                        name: 'urutan'
                     },
                     {
                         data: 'status',

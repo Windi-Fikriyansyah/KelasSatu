@@ -146,12 +146,14 @@
                     <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                            </path>
+                                d="M12 6v12m0-12c-1.2-.8-2.8-1.3-4.5-1.3S4.2 5.2 3 6v12c1.2-.8 2.8-1.3 4.5-1.3S10.8 17.2 12 18m0-12c1.2-.8 2.8-1.3 4.5-1.3S19.8 5.2 21 6v12c-1.2-.8-2.8-1.3-4.5-1.3S13.2 17.2 12 18" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Kurikulum Terstruktur</h3>
-                    <p class="text-gray-600">Materi pembelajaran yang disusun sistematis untuk memaksimalkan pemahaman
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Materi TKA Sesuai Kisi-Kisi Terbaru 2025</h3>
+                    <p class="text-gray-600">Belajar tanpa ragu karena semua materi di kelassatu.com disusun langsung
+                        mengikuti kisi-kisi resmi terbaru 2025. Setiap topik dipilih dengan teliti agar Anda fokus pada hal
+                        yang benar-benar keluar di ujian. Hasilnya? Waktu belajar lebih efisien, pemahaman lebih mendalam,
+                        dan peluang sukses di TKA 2025 jauh lebih besar.
                     </p>
                 </div>
 
@@ -159,23 +161,76 @@
                     <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                d="M9 12l2 2 4-4m-6 6h8a2 2 0 002-2V7a2 2 0 00-2-2h-2l-2-2h-4l-2 2H7a2 2 0 00-2 2v9a2 2 0 002 2h2z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Sertifikat Resmi</h3>
-                    <p class="text-gray-600">Dapatkan sertifikat yang diakui industri setelah menyelesaikan kursus</p>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Latihan Soal & Pembahasan Mendalam</h3>
+                    <p class="text-gray-600">Tidak hanya banyak, tapi soal-soal di kelassatu.com dirancang mirip dengan pola
+                        ujian sebenarnya. Setiap jawaban disertai pembahasan detail yang mudah dipahami, sehingga Anda bukan
+                        sekadar menghafal, tapi benar-benar menguasai konsep kunci. Dengan berlatih terus-menerus, Anda akan
+                        lebih percaya diri, terlatih menghadapi berbagai variasi soal, dan siap menaklukkan TKA 2025.</p>
                 </div>
 
                 <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
                     <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z">
-                            </path>
+                                d="M3 5h18v11H3V5zm0 11h18v2H3v-2z" />
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Mentoring 24/7</h3>
-                    <p class="text-gray-600">Bimbingan langsung dari instruktur berpengalaman kapan saja dibutuhkan</p>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Try Out Premium dengan Sistem CAT</h3>
+                    <p class="text-gray-600">Rasakan pengalaman ujian yang nyata dengan Try Out Premium berbasis Computer
+                        Assisted Test (CAT) di kelassatu.com. Soal-soal dirancang menyerupai tes asli, lengkap dengan batas
+                        waktu dan sistem penilaian otomatis. Bukan hanya berlatih, Anda akan terbiasa menghadapi tekanan
+                        ujian sebenarnya, sehingga saat hari-H tiba, rasa gugup berganti jadi percaya diri penuh.</p>
+                </div>
+
+
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 17h4v-6H4v6zm6 0h4V7h-4v10zm6 0h4V3h-4v14z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Riwayat Hasil Latihan & Try Out</h3>
+                    <p class="text-gray-600">Belajar jadi lebih terarah dengan fitur rekam jejak kemajuan pribadi.
+                        Setiap latihan soal dan Try Out yang Anda kerjakan otomatis tersimpan rapi, sehingga Anda bisa
+                        memantau perkembangan skor dari waktu ke waktu.
+                        Dengan data ini, Anda akan tahu area mana yang sudah dikuasai dan bagian mana yang perlu
+                        ditingkatkan. Hasilnya? Strategi belajar jadi lebih cerdas, fokus, dan efektif untuk mencapai
+                        target TKA 2025.
+                    </p>
+                </div>
+
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m0-6a9 9 0 11-6 16.32V20l-2 2-2-2v-1.68A9 9 0 1115 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Sertifikat Resmi yang Diakui</h3>
+                    <p class="text-gray-600">Bukan sekadar belajar, di kelassatu.com Anda juga akan mendapatkan sertifikat
+                        resmi setelah menyelesaikan kursus. Sertifikat ini dapat menjadi bukti nyata kompetensi Anda—diakui
+                        industri dan bermanfaat untuk melengkapi CV, portofolio, maupun persyaratan karier. Dengan begitu,
+                        setiap langkah belajar Anda tidak hanya menambah ilmu, tapi juga membuka peluang kerja dan masa
+                        depan yang lebih cerah.</p>
+                </div>
+
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M9 20a4 4 0 006 0M12 12a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Dukungan Penuh dari Instruktur Berpengalaman
+                    </h3>
+                    <p class="text-gray-600">Belajar di kelassatu.com berarti Anda punya tim ahli yang selalu siap
+                        mendampingi. Instruktur berpengalaman akan menjawab pertanyaan, memberi arahan, dan membimbing Anda
+                        langkah demi langkah dalam persiapan Tes TKA 2025. Dengan dukungan ini, setiap tantangan terasa
+                        lebih ringan, dan Anda bisa fokus meraih hasil terbaik tanpa harus belajar sendirian.</p>
                 </div>
             </div>
         </div>
