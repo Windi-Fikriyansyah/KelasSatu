@@ -145,7 +145,7 @@
             <!-- How to Join Steps -->
             <div class="flex flex-col justify-center">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-6">
-                    Selamat Datang kelassatu.com
+                    Selamat Datang Di Kelassatu.com
                 </h2>
                 <div class="space-y-1.5">
                     <p class="text-lg text-gray-600">
