@@ -33,7 +33,7 @@
                 </h1>
                 <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto">
                     Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025,
-                    yang berisi Ringkasan Materi pembahasan, disusun berdasarkan Kisi-Kisi Ujian TKA Terbaru Tahun 2025,
+                    yang berisi Ringkasan Materi Pembahasan, disusun berdasarkan Kisi-Kisi Ujian TKA Terbaru Tahun 2025,
                     Latihan Soal, Kunci Jawaban, Uraian atas Jawaban dan Try Out Sistem Computer Assisted Test (CAT)
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
