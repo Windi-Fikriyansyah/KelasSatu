@@ -58,53 +58,6 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">Mengapa Memilih KelasSatu?</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Kami menyediakan pengalaman belajar terbaik dengan
-                    fitur-fitur unggulan</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Kurikulum Terstruktur</h3>
-                    <p class="text-gray-600">Materi pembelajaran yang disusun sistematis untuk memaksimalkan pemahaman
-                    </p>
-                </div>
-
-                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Sertifikat Resmi</h3>
-                    <p class="text-gray-600">Dapatkan sertifikat yang diakui industri setelah menyelesaikan kursus</p>
-                </div>
-
-                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
-                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z">
-                            </path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Mentoring 24/7</h3>
-                    <p class="text-gray-600">Bimbingan langsung dari instruktur berpengalaman kapan saja dibutuhkan</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Popular Courses Section -->
     <section id="courses" class="py-20 bg-primary-50">
@@ -177,6 +130,55 @@
             </div>
         </div>
     </section>
+
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">Mengapa Memilih KelasSatu?</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Kami menyediakan pengalaman belajar terbaik dengan
+                    fitur-fitur unggulan</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Kurikulum Terstruktur</h3>
+                    <p class="text-gray-600">Materi pembelajaran yang disusun sistematis untuk memaksimalkan pemahaman
+                    </p>
+                </div>
+
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Sertifikat Resmi</h3>
+                    <p class="text-gray-600">Dapatkan sertifikat yang diakui industri setelah menyelesaikan kursus</p>
+                </div>
+
+                <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
+                    <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-primary-200 mb-2">Mentoring 24/7</h3>
+                    <p class="text-gray-600">Bimbingan langsung dari instruktur berpengalaman kapan saja dibutuhkan</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <!-- Stats Section -->
     <section class="py-20 bg-primary-200">
