@@ -279,19 +279,19 @@
             <div class="grid md:grid-cols-4 gap-8 text-center text-white">
                 <div>
                     <div class="text-4xl font-bold mb-2">50,000+</div>
-                    <div class="text-blue-100">Siswa Aktif</div>
+                    <div class="text-primary-500">Siswa Aktif</div>
                 </div>
                 <div>
                     <div class="text-4xl font-bold mb-2">200+</div>
-                    <div class="text-blue-100">Kursus Tersedia</div>
+                    <div class="text-primary-500">Kursus Tersedia</div>
                 </div>
                 <div>
                     <div class="text-4xl font-bold mb-2">95%</div>
-                    <div class="text-blue-100">Tingkat Kepuasan</div>
+                    <div class="text-primary-500">Tingkat Kepuasan</div>
                 </div>
                 <div>
                     <div class="text-4xl font-bold mb-2">24/7</div>
-                    <div class="text-blue-100">Dukungan</div>
+                    <div class="text-primary-500">Dukungan</div>
                 </div>
             </div>
         </div>
