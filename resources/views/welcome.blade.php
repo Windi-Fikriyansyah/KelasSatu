@@ -133,6 +133,41 @@
         </div>
     </section>
 
+    <section id="how-to-join" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
+
+            <!-- Illustration Image -->
+            <div class="flex">
+                <img src="{{ asset('image/logo.png') }}" alt="How to Join Illustration"
+                    class="w-full h-full object-contain rounded-xl shadow-md">
+            </div>
+
+            <!-- How to Join Steps -->
+            <div class="flex flex-col justify-center">
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-6">
+                    Selamat Datang kelassatu.com
+                </h2>
+                <div class="space-y-1.5">
+                    <p class="text-lg text-gray-600">
+                        kelassatu.com adalah platform pembelajaran daring yang menyatukan
+                        siswa, mahasiswa, calon guru, guru, hingga para pencari kerja dalam satu ruang belajar yang
+                        inklusif. Dengan semangat “satu kelas untuk semua”, kelassatu.com menembus batas
+                        jenjang pendidikan dan mempertemukan lintas generasi untuk saling berbagi ilmu, pengalaman, dan
+                        inspirasi.
+                    </p>
+                    <p class="text-lg text-gray-600">
+                        Di sini, setiap orang memiliki kesempatan yang sama untuk
+                        berkembang—dalam pengetahuan, keterampilan, maupun karakter—melalui pembelajaran yang interaktif,
+                        kolaboratif, dan relevan dengan kebutuhan zaman.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
@@ -165,7 +200,8 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold text-primary-200 mb-2">Latihan Soal & Pembahasan Mendalam</h3>
-                    <p class="text-gray-600">Tidak hanya banyak, tapi soal-soal di kelassatu.com dirancang mirip dengan pola
+                    <p class="text-gray-600">Tidak hanya banyak, tapi soal-soal di kelassatu.com dirancang mirip dengan
+                        pola
                         ujian sebenarnya. Setiap jawaban disertai pembahasan detail yang mudah dipahami, sehingga Anda bukan
                         sekadar menghafal, tapi benar-benar menguasai konsep kunci. Dengan berlatih terus-menerus, Anda akan
                         lebih percaya diri, terlatih menghadapi berbagai variasi soal, dan siap menaklukkan TKA 2025.</p>
