@@ -84,7 +84,7 @@
                         </div>
                         <div class="p-5">
                             <h3
-                                class="text-lg font-semibold text-primary-200 mb-2 group-hover:text-primary-100 transition-colors">
+                                class="text-lg font-semibold leading-none text-primary-200 mb-2 group-hover:text-primary-100 transition-colors">
                                 {{ $course->title }}
                             </h3>
                             <p class="text-gray-600 text-sm mb-3">
