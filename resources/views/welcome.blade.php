@@ -1,13 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Home')
 @section('content')
-    <!-- Hero Section with Slider -->
-    <!-- Hero Section with Slider - Mobile Optimized -->
-    <!-- Hero Section with Slider - Mobile Optimized with proper spacing -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white flex items-center justify-center z-50">
-        <div class="loader border-4 border-t-4 border-orange-500 border-t-transparent rounded-full w-12 h-12 animate-spin">
-        </div>
-    </div>
+
     <section id="beranda"
         class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[75vh] lg:min-h-[80vh] flex items-center overflow-hidden">
 
@@ -434,70 +428,11 @@
                 display: none;
             }
         }
-
-        .loader {
-            border-width: 4px;
-            border-top-color: transparent;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
     </style>
 @endpush
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        function hideLoading() {
-            const overlay = document.getElementById('loading-overlay');
-            if (overlay) overlay.style.display = 'none';
-        }
-
-        function preloadHeroImages() {
-            const heroImages = [
-                @if ($landingPage->hero_image_1)
-                    "{{ asset('storage/' . $landingPage->hero_image_1) }}",
-                @endif
-                @if ($landingPage->hero_image_2)
-                    "{{ asset('storage/' . $landingPage->hero_image_2) }}",
-                @endif
-                @if ($landingPage->hero_image_3)
-                    "{{ asset('storage/' . $landingPage->hero_image_3) }}",
-                @endif
-            ];
-
-            let loadedCount = 0;
-            const total = heroImages.length;
-
-            if (total === 0) {
-                hideLoading(); // jika tidak ada gambar
-                return;
-            }
-
-            heroImages.forEach(src => {
-                const img = new Image();
-                img.src = src;
-                img.onload = img.onerror = () => {
-                    loadedCount++;
-                    if (loadedCount === total) {
-                        hideLoading();
-                    }
-                };
-            });
-        }
-
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', preloadHeroImages);
-        } else {
-            preloadHeroImages();
-        }
-
         function preloadImages() {
             @if ($landingPage->hero_image_1)
                 new Image().src = "{{ asset('storage/' . $landingPage->hero_image_1) }}";
