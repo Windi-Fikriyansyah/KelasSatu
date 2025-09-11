@@ -3,7 +3,9 @@
 @section('content')
     <!-- Hero Section with Slider -->
     <!-- Hero Section with Slider - Mobile Optimized -->
-    <section id="beranda" class="relative gradient-bg h-[70vh] sm:h-[75vh] md:h-[85vh] flex items-center">
+    <!-- Hero Section with Slider - Mobile Optimized with proper spacing -->
+    <section id="beranda"
+        class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[85vh] flex items-center overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
             <div class="slider-container relative w-full h-full">
                 <!-- Slide 1 -->
