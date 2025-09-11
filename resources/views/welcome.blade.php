@@ -2,7 +2,8 @@
 @section('title', 'Home')
 @section('content')
     <!-- Hero Section with Slider -->
-    <section id="beranda" class="relative gradient-bg h-[85vh] flex items-center">
+    <!-- Hero Section with Slider - Mobile Optimized -->
+    <section id="beranda" class="relative gradient-bg h-[70vh] sm:h-[75vh] md:h-[85vh] flex items-center">
         <div class="absolute inset-0 overflow-hidden">
             <div class="slider-container relative w-full h-full">
                 <!-- Slide 1 -->
@@ -34,34 +35,45 @@
         <!-- Overlay Orange Transparan -->
         <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-orange-600/60"></div>
 
-        <!-- Teks Hero -->
+        <!-- Teks Hero - Mobile Optimized -->
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div class="animate-fade-in">
-                <h1 class="text-4xl md:text-6xl font-bold text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.6)] mb-6">
+                <!-- Title - Responsive text sizes -->
+                <h1
+                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.6)] mb-3 sm:mb-4 md:mb-6 leading-tight">
                     {{ $landingPage->hero_title ?? 'Belajar Tanpa Batas' }}
-                    <span class="block text-orange-300">{{ $landingPage->hero_subtitle ?? 'Raih Masa Depan' }}</span>
+                    <span
+                        class="block text-orange-300 mt-1 sm:mt-2">{{ $landingPage->hero_subtitle ?? 'Raih Masa Depan' }}</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-white mb-8 max-w-3xl mx-auto drop-shadow-[0_3px_4px_rgba(0,0,0,0.6)]">
+
+                <!-- Description - More readable on mobile -->
+                <p
+                    class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto drop-shadow-[0_3px_4px_rgba(0,0,0,0.6)] leading-relaxed px-2">
                     {{ $landingPage->hero_description ?? 'Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025, yang berisi Ringkasan Materi Pembahasan, disusun berdasarkan Kisi-Kisi Ujian TKA Terbaru Tahun 2025, Latihan Soal, Kunci Jawaban, Uraian atas Jawaban dan Try Out Sistem Computer Assisted Test (CAT)' }}
                 </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+
+                <!-- Buttons - Stack on mobile, inline on larger screens -->
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
                     <a href="{{ route('login') }}"
-                        class="px-8 py-3 rounded-lg text-lg font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg">
+                        class="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base md:text-lg font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg text-center">
                         {{ $landingPage->hero_btn_primary ?? 'Mulai Belajar Sekarang' }}
                     </a>
                     <a href="{{ route('course') }}"
-                        class="px-8 py-3 rounded-lg text-lg font-semibold border border-white text-white hover:bg-orange-500 hover:border-orange-500 hover:text-white transition-all shadow-lg">
+                        class="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base md:text-lg font-semibold border border-white text-white hover:bg-orange-500 hover:border-orange-500 hover:text-white transition-all shadow-lg text-center">
                         {{ $landingPage->hero_btn_secondary ?? 'Jelajahi Kursus' }}
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Slider Navigation -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <button class="slider-dot w-3 h-3 rounded-full bg-white opacity-100" onclick="currentSlide(1)"></button>
-            <button class="slider-dot w-3 h-3 rounded-full bg-white opacity-50" onclick="currentSlide(2)"></button>
-            <button class="slider-dot w-3 h-3 rounded-full bg-white opacity-50" onclick="currentSlide(3)"></button>
+        <!-- Slider Navigation - Adjusted for mobile -->
+        <div class="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-100"
+                onclick="currentSlide(1)"></button>
+            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-50"
+                onclick="currentSlide(2)"></button>
+            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-50"
+                onclick="currentSlide(3)"></button>
         </div>
     </section>
 
