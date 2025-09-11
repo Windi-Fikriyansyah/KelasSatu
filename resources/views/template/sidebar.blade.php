@@ -8,6 +8,25 @@
     </li>
 
     <li class="menu-header small text-uppercase">
+        <span class="menu-header-text">Landing Page</span>
+    </li>
+    <li class="menu-item">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+            <i class="menu-icon tf-icons bx bx-collection"></i>
+            <div data-i18n="Account Settings">Landing Page</div>
+        </a>
+        <ul class="menu-sub">
+
+            <li class="menu-item">
+                <a href="{{ route('landing.index') }}" class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-user"></i>
+                    <div data-i18n="Notifications">Pengaturan Landing</div>
+                </a>
+            </li>
+        </ul>
+    </li>
+
+    <li class="menu-header small text-uppercase">
         <span class="menu-header-text">Data Master</span>
     </li>
     <li class="menu-item">

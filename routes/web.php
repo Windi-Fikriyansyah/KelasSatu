@@ -10,6 +10,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KelasSayaController;
 use App\Http\Controllers\KursusController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LaporanTransaksiController;
 use App\Http\Controllers\LatihanController;
 use App\Http\Controllers\MateriController;
@@ -48,6 +49,12 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('landing')->name('landing.')->group(function () {
+        Route::get('/', [LandingController::class, 'index'])->name('index');
+        Route::post('/', [LandingController::class, 'store'])->name('store');
+        Route::put('/{id}', [LandingController::class, 'update'])->name('update');
     });
 
     Route::prefix('admin')->name('admin.')->group(function () {

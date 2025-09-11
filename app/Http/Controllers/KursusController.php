@@ -241,9 +241,30 @@ class KursusController extends Controller
             ->limit(6)
             ->get();
 
-        // Kirim data ke view (misalnya ke halaman landing page kamu)
-        return view('welcome', compact('courses'));
+        // Ambil data landing page sections
+        $landingPage = DB::table('landing_page_sections')->first();
+
+        // Ambil data features
+        $featurespage = DB::table('landing_page_features')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+        // Ambil data testimonials
+        $testimonials = DB::table('landing_page_testimonials')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        // Ambil data FAQs
+        $faqs = DB::table('landing_page_faqs')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
+        // Kirim data ke view
+        return view('welcome', compact('courses', 'landingPage', 'featurespage', 'testimonials', 'faqs'));
     }
+
     public function course()
     {
         // Ambil semua data course dari tabel 'courses'
