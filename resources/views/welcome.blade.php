@@ -12,8 +12,7 @@
                     <img src="{{ $landingPage->hero_image_1
                         ? asset('storage/' . $landingPage->hero_image_1)
                         : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                        alt="Students learning" class="w-full h-full object-cover" loading="eager"
-                        onload="this.classList.add('loaded')">
+                        alt="Students learning" class="w-full h-full object-cover">
                     <!-- Overlay Orange Transparan -->
                     <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
                 </div>
@@ -433,24 +432,6 @@
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
-        function preloadImages() {
-            @if ($landingPage->hero_image_1)
-                new Image().src = "{{ asset('storage/' . $landingPage->hero_image_1) }}";
-            @endif
-            @if ($landingPage->hero_image_2)
-                new Image().src = "{{ asset('storage/' . $landingPage->hero_image_2) }}";
-            @endif
-            @if ($landingPage->hero_image_3)
-                new Image().src = "{{ asset('storage/' . $landingPage->hero_image_3) }}";
-            @endif
-        }
-
-        // Jalankan preload saat DOM siap
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', preloadImages);
-        } else {
-            preloadImages();
-        }
         const testimonialSwiper = new Swiper('.testimonial-swiper', {
             loop: true,
             spaceBetween: 20,
