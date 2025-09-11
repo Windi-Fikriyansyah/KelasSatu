@@ -5,7 +5,8 @@
     <!-- Hero Section with Slider - Mobile Optimized -->
     <!-- Hero Section with Slider - Mobile Optimized with proper spacing -->
     <section id="beranda"
-        class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[85vh] flex items-center overflow-hidden">
+        class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[75vh] lg:min-h-[80vh] flex items-center overflow-hidden">
+
         <div class="absolute inset-0 overflow-hidden">
             <div class="slider-container relative w-full h-full">
                 <!-- Slide 1 -->
@@ -38,7 +39,8 @@
         <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-orange-600/60"></div>
 
         <!-- Teks Hero - Mobile Optimized -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-8 md:pb-12">
+
             <div class="animate-fade-in">
                 <!-- Title - Responsive text sizes -->
                 <h1
