@@ -12,16 +12,44 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificateController extends Controller
 {
+    private function monthToRoman($month)
+    {
+        $romans = [
+            1 => 'I',
+            2 => 'II',
+            3 => 'III',
+            4 => 'IV',
+            5 => 'V',
+            6 => 'VI',
+            7 => 'VII',
+            8 => 'VIII',
+            9 => 'IX',
+            10 => 'X',
+            11 => 'XI',
+            12 => 'XII'
+        ];
+        return $romans[$month] ?? '';
+    }
+
+    private function generateCertificateNumber($userId)
+    {
+        $nomorUrut = str_pad($userId, 3, '0', STR_PAD_LEFT);
+        $kode = 'TKA'; // kode tetap
+        $bulanRomawi = $this->monthToRoman(date('n'));
+        $tahun = date('Y');
+
+        return "{$nomorUrut}/{$kode}/{$bulanRomawi}/{$tahun}";
+    }
+
     public function preview()
     {
         $user = Auth::user();
         $templatePath = public_path('image/template.JPG');
 
-        // Untuk Intervention Image v3 (Laravel 10+)
         $manager = new ImageManager(new Driver());
         $image = $manager->read($templatePath);
 
-        // Tambahkan nama user ke gambar
+        // Tambahkan nama user
         $image->text($user->name, 600, 400, function ($font) {
             $font->file(public_path('fonts/arial.ttf'));
             $font->size(48);
@@ -30,20 +58,18 @@ class CertificateController extends Controller
             $font->valign('middle');
         });
 
+        // Tambahkan nomor sertifikat
+        $certificateNumber = $this->generateCertificateNumber($user->id);
+        $image->text($certificateNumber, 600, 470, function ($font) {
+            $font->file(public_path('fonts/arial.ttf'));
+            $font->size(32);
+            $font->color('#000000');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
         return response($image->toJpeg(), 200)
             ->header('Content-Type', 'image/jpeg');
-    }
-
-    public function download(Request $request)
-    {
-        $user = Auth::user();
-        $format = $request->get('format', 'pdf');
-
-        if ($format === 'image') {
-            return $this->downloadImage($user);
-        }
-
-        return $this->downloadPDF($user);
     }
 
     private function downloadImage($user)
@@ -55,17 +81,29 @@ class CertificateController extends Controller
         }
 
         try {
-            // Inisialisasi ImageManager langsung di method
             $imageManager = new ImageManager(new Driver());
             $image = $imageManager->read($templatePath);
 
-            // Tambahkan nama user ke gambar
+            // Tambahkan nama user
             $image->text($user->name, 800, 500, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
                     $font->filename($fontPath);
                 }
                 $font->size(50);
+                $font->color('#000000');
+                $font->align('center');
+                $font->valign('middle');
+            });
+
+            // Tambahkan nomor sertifikat
+            $certificateNumber = $this->generateCertificateNumber($user->id);
+            $image->text($certificateNumber, 850, 335, function ($font) {
+                $fontPath = public_path('fonts/arialbd.ttf');
+                if (file_exists($fontPath)) {
+                    $font->filename($fontPath);
+                }
+                $font->size(30);
                 $font->color('#000000');
                 $font->align('center');
                 $font->valign('middle');
@@ -85,6 +123,20 @@ class CertificateController extends Controller
         }
     }
 
+    public function download(Request $request)
+    {
+        $user = Auth::user();
+        $format = $request->get('format', 'pdf');
+
+        if ($format === 'image') {
+            return $this->downloadImage($user);
+        }
+
+        return $this->downloadPDF($user);
+    }
+
+
+
     private function downloadPDF($user)
     {
         $templatePath = public_path('image/template.JPG');
@@ -92,10 +144,13 @@ class CertificateController extends Controller
         list($width, $height) = getimagesize($templatePath);
         $orientation = $width > $height ? 'landscape' : 'portrait';
 
+        // Generate nomor sertifikat
+        $certificateNumber = $this->generateCertificateNumber($user->id);
+
         $data = [
             'user' => $user,
             'template' => $templatePath,
-            'certificateId' => 'CERT-' . $user->id . '-' . time(),
+            'certificateNumber' => $certificateNumber,
         ];
 
         $pdf = PDF::loadView('kelas_saya.pdf', $data);
@@ -103,7 +158,7 @@ class CertificateController extends Controller
         $pdf->setOption('dpi', 150);
         $pdf->setOption('defaultFont', 'Arial');
 
-        // Pastikan tidak ada margin yang menyebabkan konten terpotong
+        // Hilangkan margin biar tidak terpotong
         $pdf->setOption('margin-top', 0);
         $pdf->setOption('margin-right', 0);
         $pdf->setOption('margin-bottom', 0);

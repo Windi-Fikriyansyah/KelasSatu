@@ -6,31 +6,34 @@
         class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[75vh] lg:min-h-[80vh] flex items-center overflow-hidden">
 
         <div class="absolute inset-0 overflow-hidden">
-            <div class="slider-container relative w-full h-full">
-                <!-- Slide 1 -->
-                <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-100">
-                    <img src="{{ $landingPage->hero_image_1
-                        ? asset('storage/' . $landingPage->hero_image_1)
-                        : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                        alt="Students learning" class="w-full h-full object-cover">
-                    <!-- Overlay Orange Transparan -->
-                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-                </div>
-
-                <!-- Slide 2 -->
-                <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-                    <img src="{{ asset('storage/' . $landingPage->hero_image_2) ?? 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                        alt="Online learning" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-                </div>
-
-                <!-- Slide 3 -->
-                <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-                    <img src="{{ asset('storage/' . $landingPage->hero_image_3) ?? 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                        alt="Technology learning" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-                </div>
+            <!-- Slide 1 -->
+            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-100">
+                <img src="{{ $landingPage->hero_image_1
+                    ? asset('storage/' . $landingPage->hero_image_1)
+                    : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
+                    alt="Students learning" class="w-full h-full object-cover object-top">
+                <!-- Overlay Orange Transparan -->
+                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
             </div>
+
+            <!-- Slide 2 -->
+            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
+                <img src="{{ $landingPage->hero_image_2
+                    ? asset('storage/' . $landingPage->hero_image_2)
+                    : 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
+                    alt="Online learning" class="w-full h-full object-cover object-top">
+                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
+                <img src="{{ $landingPage->hero_image_3
+                    ? asset('storage/' . $landingPage->hero_image_3)
+                    : 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
+                    alt="Technology learning" class="w-full h-full object-cover object-top">
+                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
+            </div>
+
         </div>
 
         <!-- Overlay Orange Transparan -->

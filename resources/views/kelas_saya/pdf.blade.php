@@ -16,8 +16,7 @@
             position: relative;
             width: 100%;
             height: 842px;
-            /* A4 portrait height in px at 72dpi */
-            /* Jika landscape, gunakan 595px height */
+            /* A4 portrait */
         }
 
         .certificate-background {
@@ -28,7 +27,6 @@
             height: 100%;
             background-image: url("{{ $template }}");
             background-size: contain;
-            /* cover agar sesuai halaman */
             background-repeat: no-repeat;
             background-position: center;
         }
@@ -36,7 +34,6 @@
         .certificate-name {
             position: absolute;
             top: 45%;
-            /* vertical center */
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 36px;
@@ -46,33 +43,25 @@
             width: 80%;
         }
 
-        .certificate-date {
+        .certificate-number {
             position: absolute;
-            bottom: 10%;
-            left: 50%;
+            top: 28%;
+            /* sedikit di bawah nama */
+            left: 52%;
             transform: translateX(-50%);
-            font-size: 16px;
+            font-size: 20px;
+            font-weight: bold;
             color: #000000;
             text-align: center;
         }
-
-        .certificate-id {
-            position: absolute;
-            bottom: 5%;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 12px;
-            color: #666666;
-            text-align: center;
-        }
     </style>
-
 </head>
 
 <body>
     <div class="certificate-container">
         <div class="certificate-background"></div>
         <div class="certificate-name">{{ $user->name }}</div>
+        <div class="certificate-number">{{ $certificateNumber }}</div>
     </div>
 </body>
 
