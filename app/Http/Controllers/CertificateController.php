@@ -44,7 +44,7 @@ class CertificateController extends Controller
     public function preview()
     {
         $user = Auth::user();
-        $templatePath = public_path('image/template.JPG');
+        $templatePath = public_path('image/template.jpg');
 
         $manager = new ImageManager(new Driver());
         $image = $manager->read($templatePath);
@@ -74,7 +74,7 @@ class CertificateController extends Controller
 
     private function downloadImage($user)
     {
-        $templatePath = public_path('image/template.JPG');
+        $templatePath = public_path('image/template.jpg');
 
         if (!file_exists($templatePath)) {
             return response()->json(['error' => 'Template not found at: ' . $templatePath], 404);
@@ -139,7 +139,7 @@ class CertificateController extends Controller
 
     private function downloadPDF($user)
     {
-        $templatePath = public_path('image/template.JPG');
+        $templatePath = public_path('image/template.jpg');
 
         list($width, $height) = getimagesize($templatePath);
         $orientation = $width > $height ? 'landscape' : 'portrait';
