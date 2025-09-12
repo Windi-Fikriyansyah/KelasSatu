@@ -353,19 +353,19 @@
                         <li><a href="#" class="hover:text-white transition-colors">Hubungi Kami</a></li>
                     </ul>
                     <div class="flex space-x-4 mt-4">
-                        <a href="https://wa.me/6281234567890" target="_blank"
+                        <a href="https://wa.me/628991111901" target="_blank"
                             class="hover:text-white transition-colors">
                             <i class="fab fa-whatsapp text-2xl"></i>
                         </a>
-                        <a href="https://instagram.com/username" target="_blank"
+                        <a href="https://www.instagram.com/kelassatu_official?igsh=bnpyNWgydjR4NXVs" target="_blank"
                             class="hover:text-white transition-colors">
                             <i class="fab fa-instagram text-2xl"></i>
                         </a>
-                        <a href="https://tiktok.com/@username" target="_blank"
+                        <a href="https://www.tiktok.com/@kelassatu.com?_t=ZS-8zeZ3XZ9Ulk&_r=1" target="_blank"
                             class="hover:text-white transition-colors">
                             <i class="fab fa-tiktok text-2xl"></i>
                         </a>
-                        <a href="https://facebook.com/username" target="_blank"
+                        <a href="https://www.facebook.com/share/17A6JjVm8m/" target="_blank"
                             class="hover:text-white transition-colors">
                             <i class="fab fa-facebook text-2xl"></i>
                         </a>
