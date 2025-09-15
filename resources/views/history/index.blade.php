@@ -1,6 +1,26 @@
 @extends('layouts.app')
 
 @section('content')
+    <div x-data="{ show: {{ session('toast') ? 'true' : 'false' }} }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="fixed top-5 right-5 z-50">
+        @if (session('toast'))
+            <div :class="{
+                'bg-green-500 text-white': '{{ session('toast.type') }}'
+                === 'success',
+                'bg-yellow-500 text-white': '{{ session('toast.type') }}'
+                === 'info',
+                'bg-red-500 text-white': '{{ session('toast.type') }}'
+                === 'error'
+            }"
+                class="px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16h-1v-4h-1m1 4v2m0-10a1 1 0 112 0 1 1 0 01-2 0z" />
+                </svg>
+                <span>{{ session('toast.message') }}</span>
+            </div>
+        @endif
+    </div>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12" x-data="{ tab: 'all' }">
         <!-- Header Section -->
         <div class="mb-8 sm:mb-12">
@@ -37,12 +57,18 @@
                         ],
                         ['key' => 'PAID', 'label' => 'Berhasil', 'color' => 'green-500', 'icon' => 'M5 13l4 4L19 7'],
                         [
-                            'key' => 'PENDING',
+                            'key' => 'UNPAID',
                             'label' => 'Menunggu',
                             'color' => 'yellow-500',
                             'icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
                         ],
                         ['key' => 'FAILED', 'label' => 'Gagal', 'color' => 'red-500', 'icon' => 'M6 18L18 6M6 6l12 12'],
+                        [
+                            'key' => 'EXPIRED',
+                            'label' => 'Kadaluarsa',
+                            'color' => 'red-500',
+                            'icon' => 'M6 18L18 6M6 6l12 12',
+                        ],
                     ];
                 @endphp
                 @foreach ($tabs as $t)
@@ -75,7 +101,7 @@
                     <!-- Status Indicator -->
                     <div
                         class="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 transform rotate-45 translate-x-6 -translate-y-6 sm:translate-x-8 sm:-translate-y-8
-                {{ $transaction->status === 'PAID' ? 'bg-green-500' : ($transaction->status === 'PENDING' ? 'bg-yellow-500' : 'bg-red-500') }}
+                {{ $transaction->status === 'PAID' ? 'bg-green-500' : ($transaction->status === 'UNPAID' ? 'bg-yellow-500' : 'bg-red-500') }}
                 opacity-10 group-hover:opacity-20 transition-opacity">
                     </div>
 
@@ -107,10 +133,10 @@
                             class="px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-bold tracking-wide mt-2 sm:mt-0
                         {{ $transaction->status === 'PAID'
                             ? 'bg-green-100 text-green-800 border border-green-200'
-                            : ($transaction->status === 'PENDING'
+                            : ($transaction->status === 'UNPAID'
                                 ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                                 : 'bg-red-100 text-red-800 border border-red-200') }}">
-                            {{ $transaction->status === 'PAID' ? 'BERHASIL' : ($transaction->status === 'PENDING' ? 'MENUNGGU' : 'GAGAL') }}
+                            {{ $transaction->status === 'PAID' ? 'BERHASIL' : ($transaction->status === 'UNPAID' ? 'MENUNGGU' : 'GAGAL') }}
                         </span>
                     </div>
 
@@ -146,19 +172,29 @@
                     </div>
 
                     <!-- Action Button -->
-                    @if ($transaction->status === 'PENDING')
-                        <div class="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-100">
-                            <a href="{{ route('payment.index', ['encryptedCourseId' => Crypt::encryptString($transaction->course_id)]) }}"
-                                class="w-full bg-primary-100 hover:bg-orange-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-1 sm:space-x-2 text-sm sm:text-base break-words">
-                                <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z">
-                                    </path>
-                                </svg>
-                                <span>Lanjutkan Pembayaran</span>
-                            </a>
-                        </div>
+                    <!-- Action Button -->
+                    @if ($transaction->status === 'UNPAID')
+                        @php
+                            $tripayData = json_decode($transaction->tripay_data, true);
+                            $checkoutUrl = $tripayData['checkout_url'] ?? null;
+                        @endphp
+
+                        @if ($checkoutUrl)
+                            <div class="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-100">
+                                <a href="{{ $checkoutUrl }}" target="_blank"
+                                    class="w-full bg-primary-100 hover:bg-orange-600 text-white font-semibold py-2 sm:py-3 px-3 sm:px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-1 sm:space-x-2 text-sm sm:text-base break-words">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a2 2 0 00-3 3v8a2 2 0 003 3z">
+                                        </path>
+                                    </svg>
+                                    <span>Lanjutkan Pembayaran</span>
+                                </a>
+                            </div>
+                        @endif
                     @endif
+
                 </div>
             @endforeach
         </div>

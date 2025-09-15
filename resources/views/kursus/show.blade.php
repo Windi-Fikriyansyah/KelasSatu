@@ -201,34 +201,37 @@
                                             </svg>
                                             Masuk ke Kursus
                                         </a>
+                                    @elseif(isset($unpaidTrx) && $unpaidTrx)
+                                        {{-- Ada transaksi UNPAID/PENDING --}}
+                                        @php
+                                            $trxData = json_decode($unpaidTrx->tripay_data, true);
+                                        @endphp
+                                        <a href="{{ $trxData['checkout_url'] ?? '#' }}" target="_blank"
+                                            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-yellow-500 hover:bg-yellow-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M3 3h14a1 1 0 010 2H3a1 1 0 010-2zm0 6h14a1 1 0 010 2H3a1 1 0 010-2zm0 6h14a1 1 0 010 2H3a1 1 0 010-2z">
+                                                </path>
+                                            </svg>
+                                            Lanjutkan Pembayaran
+                                        </a>
                                     @elseif($course->is_free)
-                                        <form action="{{ route('payment.create', Crypt::encryptString($course->id)) }}"
-                                            method="POST" class="w-full sm:w-auto">
+                                        {{-- Kursus gratis --}}
+                                        <form action="{{ route('payment.index', Crypt::encryptString($course->id)) }}"
+                                            method="POST">
                                             @csrf
-                                            <button type="submit"
-                                                class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-                                                Dapatkan Kursus Gratis
-                                            </button>
+                                            <button type="submit" class="btn-blue">Dapatkan Kursus Gratis</button>
                                         </form>
                                     @else
-                                        <form action="{{ route('payment.create', Crypt::encryptString($course->id)) }}"
-                                            method="POST" class="w-full sm:w-auto">
-                                            @csrf
-                                            <button type="submit"
-                                                class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-primary-100 to-orange-600 hover:from-orange-600 hover:to-primary-100 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-                                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path
-                                                        d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z">
-                                                    </path>
-                                                </svg>
-                                                Beli Sekarang
-                                            </button>
-                                        </form>
+                                        <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}"
+                                            class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 border border-transparent
+          text-base font-medium rounded-xl text-white bg-orange-600 hover:bg-orange-700 transform hover:scale-105
+          transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M12 4.354a4 4 0 11-4 0M6 8h12l-1.5 9h-9zM6 8L4 19h16" />
+                                            </svg>
+                                            Beli Sekarang
+                                        </a>
                                     @endif
                                 </div>
                             </div>

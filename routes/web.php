@@ -208,8 +208,11 @@ Route::group(['middleware' => 'auth'], function () {
     // routes/web.php
     Route::get('/payment/{encryptedCourseId}', [PaymentController::class, 'createPayment'])->name('payment.index');
 
-    Route::get('/payment/success/{course}', [PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/failed/{course}', [PaymentController::class, 'failed'])->name('payment.failed');
+
+    Route::get('/payment/success/{id}', [PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/failed/{id}', [PaymentController::class, 'failed'])->name('payment.failed');
+    Route::get('/payment/redirect/{id}', [PaymentController::class, 'redirectAfterPayment'])->name('payment.redirect');
+    Route::post('/payment/process/{id}', [PaymentController::class, 'processPayment'])->name('payment.process');
 
 
     Route::prefix('history')->name('history.')->group(function () {
