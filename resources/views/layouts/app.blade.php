@@ -329,7 +329,7 @@
                     </p>
                 </div>
 
-                {{-- <div>
+                <div>
                     <h4 class="text-lg font-semibold mb-4">Platform</h4>
                     <ul class="space-y-2 text-primary-500">
                         <li><a href="#about" class="hover:text-white transition-colors">Tentang Kami</a></li>
@@ -345,7 +345,7 @@
                         <li><a href="#how-to-join" class="hover:text-white transition-colors">How To Join</a></li>
                         <li><a href="#why" class="hover:text-white transition-colors">Why Kelassatu.com?</a></li>
                     </ul>
-                </div> --}}
+                </div>
 
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Perusahaan</h4>
