@@ -65,7 +65,7 @@ class PaymentController extends Controller
             // --- Ambil daftar payment channel dari Tripay ---
             $apiKey = config('services.tripay.api_key');
             $url    = config('services.tripay.sandbox')
-                ? 'https://tripay.co.id/api-sandbox/merchant/payment-channel'
+                ? 'https://tripay.co.id/api/merchant/payment-channel'
                 : 'https://tripay.co.id/api/merchant/payment-channel';
 
             $response = Http::withHeaders([
@@ -160,8 +160,8 @@ class PaymentController extends Controller
                 'signature'     => $signature,
             ];
 
-            $url = config('services.tripay.sandbox')
-                ? 'https://tripay.co.id/api-sandbox/transaction/create'
+            $url = config('services.tripay.urlcreatetripay')
+                ? 'https://tripay.co.id/api/transaction/create'
                 : 'https://tripay.co.id/api/transaction/create';
 
             $response = Http::withHeaders([
