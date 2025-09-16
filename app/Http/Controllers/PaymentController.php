@@ -154,9 +154,7 @@ class PaymentController extends Controller
                 'signature'     => $signature,
             ];
 
-            $url = config('services.tripay.urlcreatetripay')
-                ? 'https://tripay.co.id/api/transaction/create'
-                : 'https://tripay.co.id/api/transaction/create';
+            $url = config('services.tripay.urlcreatetripay');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey
