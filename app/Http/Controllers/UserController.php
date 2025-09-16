@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -24,14 +26,14 @@ class UserController extends Controller
             $currentUserId = auth()->id();
 
             // Mengambil data pengguna dengan role guru atau siswa
-            $users = User::whereIn('role', ['guru', 'siswa'])
+            $users = User::where('role', 'user')
                 ->select([
                     'id',
                     'name',
                     'no_hp',
                     'email',
                     'kabupaten',
-                    'kota',
+                    'provinsi',
                     'instansi',
                     'created_at'
                 ])
@@ -89,5 +91,9 @@ class UserController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
+    }
+    public function export()
+    {
+        return Excel::download(new UsersExport, 'pengguna.xlsx');
     }
 }

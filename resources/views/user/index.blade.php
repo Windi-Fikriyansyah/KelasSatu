@@ -30,7 +30,9 @@
             <div class="card-header">
                 <div class="d-flex align-items-center justify-content-between">
                     <h5 class="card-title mb-0">Daftar Pengguna</h5>
-
+                    <a href="{{ route('pengguna.export') }}" class="btn btn-success btn-sm">
+                        <i class="bi bi-file-earmark-excel"></i> Export Excel
+                    </a>
                 </div>
             </div>
             <div class="card-body">
@@ -43,7 +45,7 @@
                                 <th>No HP</th>
                                 <th>Email</th>
                                 <th>Kabupaten</th>
-                                <th>Kota</th>
+                                <th>Provinsi</th>
                                 <th>Instansi</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -105,8 +107,8 @@
                         name: 'kabupaten'
                     },
                     {
-                        data: 'kota',
-                        name: 'kota'
+                        data: 'provinsi',
+                        name: 'provinsi'
                     },
                     {
                         data: 'instansi',

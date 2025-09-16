@@ -10,10 +10,8 @@ class DashboardController extends Controller
     public function dashboardOwner(Request $request)
     {
         // Hitung jumlah siswa
-        $jumlahSiswa = DB::table('users')->where('role', 'siswa')->count();
+        $jumlahSiswa = DB::table('users')->where('role', 'user')->count();
 
-        // Hitung jumlah guru
-        $jumlahGuru = DB::table('users')->where('role', 'guru')->count();
 
         // Hitung jumlah transaksi dengan status paid
         $jumlahTransaksiPaid = DB::table('transactions')->where('status', 'PAID')->count();
@@ -23,7 +21,6 @@ class DashboardController extends Controller
 
         return view('dashboardOwner', compact(
             'jumlahSiswa',
-            'jumlahGuru',
             'jumlahTransaksiPaid',
             'totalAmount'
         ));

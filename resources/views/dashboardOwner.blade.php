@@ -13,7 +13,7 @@
                                 <i class="bx bx-user text-primary fs-3"></i>
                             </div>
                             <div>
-                                <span class="fw-semibold d-block mb-1">Jumlah Siswa</span>
+                                <span class="fw-semibold d-block mb-1">Jumlah User</span>
                                 <h3 class="card-title mb-2">{{ $jumlahSiswa }}</h3>
                             </div>
                         </div>
@@ -21,22 +21,7 @@
                 </div>
             </div>
 
-            <!-- Jumlah Guru -->
-            <div class="col-lg-3 col-md-6 col-12">
-                <div class="card">
-                    <div class="card-body d-flex justify-content-between align-items-start">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar flex-shrink-0 me-3 bg-light-info rounded p-2">
-                                <i class="bx bx-chalkboard text-info fs-3"></i>
-                            </div>
-                            <div>
-                                <span class="fw-semibold d-block mb-1">Jumlah Guru</span>
-                                <h3 class="card-title mb-2">{{ $jumlahGuru }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Jumlah Transaksi Paid -->
             <div class="col-lg-3 col-md-6 col-12">

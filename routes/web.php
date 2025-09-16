@@ -49,6 +49,7 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/{id}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
+        Route::get('/export', [UserController::class, 'export'])->name('export');
     });
 
     Route::prefix('landing')->name('landing.')->group(function () {
