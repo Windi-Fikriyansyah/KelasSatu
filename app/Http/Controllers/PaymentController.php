@@ -31,7 +31,6 @@ class PaymentController extends Controller
             $user     = Auth::user();
             $referralCode = request()->query('referral_code');
 
-            // Cek apakah sudah punya akses
             $hasAccess = DB::table('enrollments')
                 ->where('user_id', $user->id)
                 ->where('course_id', $course->id)
@@ -62,11 +61,9 @@ class PaymentController extends Controller
                 return $this->grantFreeAccess($user->id, $course->id, $encryptedCourseId);
             }
 
-            // --- Ambil daftar payment channel dari Tripay ---
+
             $apiKey = config('services.tripay.api_key');
-            $url    = config('services.tripay.sandbox')
-                ? 'https://tripay.co.id/api/merchant/payment-channel'
-                : 'https://tripay.co.id/api/merchant/payment-channel';
+            $url    = config('services.tripay.sandbox');
 
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey
@@ -122,7 +119,6 @@ class PaymentController extends Controller
                     ]);
             }
 
-            // Ambil channel yang dipilih user
             $channel = $request->input('channel');
             $referralCode = $request->input('referral_code');
 
@@ -134,10 +130,8 @@ class PaymentController extends Controller
             $privateKey   = config('services.tripay.private_key');
             $apiKey       = config('services.tripay.api_key');
 
-            // Signature wajib
             $signature = hash_hmac('sha256', $merchantCode . $merchantRef . $amount, $privateKey);
 
-            // Payload sesuai dokumentasi
             $payload = [
                 'method'        => $channel,
                 'merchant_ref'  => $merchantRef,
@@ -185,7 +179,7 @@ class PaymentController extends Controller
             $data = $result['data'];
 
             $invoiceId = $data['reference'] ?? $merchantRef;
-            // Simpan transaksi ke DB
+
             DB::table('transactions')->insert([
                 'external_id'     => $merchantRef,
                 'invoice_id'      => $invoiceId,
@@ -207,8 +201,7 @@ class PaymentController extends Controller
                 'user_id' => $user->id
             ]);
 
-            return redirect($data['checkout_url']); // arahkan ke halaman pembayaran Tripay
-
+            return redirect($data['checkout_url']);
         } catch (\Exception $e) {
             Log::error('processTransaction error', [
                 'error' => $e->getMessage(),
@@ -218,7 +211,7 @@ class PaymentController extends Controller
         }
     }
 
-    // Tambahkan method ini di PaymentController
+
 
     public function redirectAfterPayment(Request $request, $encryptedCourseId)
     {
@@ -238,7 +231,7 @@ class PaymentController extends Controller
             $trx = DB::table('transactions')->where('invoice_id', $reference)->first();
 
             if (!$trx) {
-                // Coba mencari dengan external_id sebagai fallback
+
                 $trx = DB::table('transactions')->where('external_id', $reference)->first();
 
                 if (!$trx) {
@@ -248,7 +241,7 @@ class PaymentController extends Controller
                 }
             }
 
-            // Periksa apakah user yang mengakses adalah pemilik transaksi
+
             if ($trx->user_id !== Auth::id()) {
                 return redirect()->route('course.show', $encryptedCourseId)
                     ->with('error', 'Anda tidak memiliki akses ke transaksi ini.');
@@ -278,13 +271,10 @@ class PaymentController extends Controller
         try {
             $privateKey = config('services.tripay.private_key');
 
-            // Ambil raw body JSON (harus asli)
             $json = $request->getContent();
 
-            // Buat signature sendiri
             $signature = hash_hmac('sha256', $json, $privateKey);
 
-            // Cocokkan dengan header dari Tripay
             if ($request->header('X-Callback-Signature') !== $signature) {
                 Log::warning('Invalid callback signature', [
                     'received' => $request->header('X-Callback-Signature'),
@@ -296,12 +286,11 @@ class PaymentController extends Controller
 
             $data = json_decode($json, true);
 
-            // Validasi event
             if ($request->header('X-Callback-Event') !== 'payment_status') {
                 return response()->json(['success' => false, 'message' => 'Invalid event'], 400);
             }
 
-            // Ambil data transaksi dari DB berdasarkan reference
+
             $trx = DB::table('transactions')->where('invoice_id', $data['reference'])->first();
 
             if (!$trx) {
@@ -309,7 +298,6 @@ class PaymentController extends Controller
                 return response()->json(['success' => false], 404);
             }
 
-            // Update status transaksi sesuai dari Tripay
             DB::table('transactions')
                 ->where('id', $trx->id)
                 ->update([
@@ -318,13 +306,12 @@ class PaymentController extends Controller
                     'updated_at' => now(),
                 ]);
 
-            // Bisa juga update progress user (misalnya beri akses kursus kalau PAID)
+
             if ($data['status'] === 'PAID') {
 
                 $this->grantCourseAccess($trx->user_id, $trx->course_id, 'PAID');
             }
 
-            // Tripay hanya menganggap sukses kalau balas {"success": true}
             return response()->json(['success' => true]);
         } catch (\Exception $e) {
             Log::error('Callback error', ['error' => $e->getMessage()]);
@@ -336,14 +323,12 @@ class PaymentController extends Controller
     private function grantFreeAccess($userId, $courseId, $encryptedCourseId)
     {
         try {
-            // Berikan akses gratis
             DB::table('enrollments')->insert([
                 'user_id' => $userId,
                 'course_id' => $courseId,
                 'enrolled_at' => now()
             ]);
 
-            // Simpan transaksi gratis untuk tracking
             DB::table('transactions')->insert([
                 'external_id' => 'free-' . $courseId . '-' . $userId . '-' . time(),
                 'invoice_id' => 'FREE-' . time(),
