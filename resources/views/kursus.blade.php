@@ -59,7 +59,7 @@
                             @php $features = json_decode($course->features, true); @endphp
                             @if (!empty($features) && count($features) > 0)
                                 <ul class="space-y-1 text-sm text-gray-700 mb-4">
-                                    @foreach (array_slice($features, 0, 2) as $feature)
+                                    @foreach ($features as $feature)
                                         <li class="flex items-start">
                                             <svg class="w-4 h-4 text-primary-100 mr-2 mt-0.5 flex-shrink-0"
                                                 fill="currentColor" viewBox="0 0 20 20">
@@ -70,9 +70,7 @@
                                             <span class="text-xs">{{ $feature }}</span>
                                         </li>
                                     @endforeach
-                                    @if (count($features) > 2)
-                                        <li class="text-xs text-gray-500">+{{ count($features) - 2 }} fitur lainnya</li>
-                                    @endif
+
                                 </ul>
                             @endif
 
