@@ -310,13 +310,13 @@
             <div class="mb-12 w-full md:w-1/2">
                 <h4 class="text-lg font-semibold mb-4">Lokasi Kami</h4>
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.0088144299074!2d110.41455517404056!3d-7.889898978415492!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a5717c444d4b1%3A0x5b54b92c6cda8c6a!2sUniversitas%20Negeri%20Yogyakarta!5e0!3m2!1sid!2sid!4v1699999999999!5m2!1sid!2sid"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1431.2427521196817!2d109.33811276039734!3d-0.05538906681528149!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e1d599996e32fcd%3A0x4d13685c032879a4!2sJl.%20Adi%20Perdana%20No.50%2C%20Parit%20Tokaya%2C%20Kec.%20Pontianak%20Sel.%2C%20Kota%20Pontianak%2C%20Kalimantan%20Barat%2078115!5e1!3m2!1sid!2sid!4v1758098363266!5m2!1sid!2sid"
                     width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen=""
                     loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
                 <div class="flex items-center mt-3 text-primary-500">
                     <i class="fas fa-map-marker-alt mr-2 text-white"></i>
-                    <span>Jalan Sepakat 2, Pontianak, Kalimantan Barat</span>
+                    <span>Jalan Adi Perdana No.50, Pontianak, Kalimantan Barat</span>
                 </div>
             </div>
 

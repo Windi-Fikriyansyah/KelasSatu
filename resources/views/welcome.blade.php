@@ -2,85 +2,163 @@
 @section('title', 'Home')
 @section('content')
 
+    <!-- Enhanced Hero Section -->
     <section id="beranda"
-        class="relative gradient-bg min-h-[70vh] sm:min-h-[75vh] md:min-h-[75vh] lg:min-h-[80vh] flex items-center overflow-hidden">
+        class="relative bg-gradient-to-br from-primary-200 via-primary-100 to-primary-100 min-h-screen flex items-center overflow-hidden">
+        <!-- Background Pattern/Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-200/20 via-primary-100/10 to-primary-100/20"></div>
+        <div class="absolute inset-0 bg-black/10"></div>
 
-        <div class="absolute inset-0 overflow-hidden">
-            <!-- Slide 1 -->
-            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-100">
-                <img src="{{ $landingPage->hero_image_1
-                    ? asset('storage/' . $landingPage->hero_image_1)
-                    : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                    alt="Students learning" class="w-full h-full object-cover object-top">
-                <!-- Overlay Orange Transparan -->
-                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-            </div>
-
-            <!-- Slide 2 -->
-            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-                <img src="{{ $landingPage->hero_image_2
-                    ? asset('storage/' . $landingPage->hero_image_2)
-                    : 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                    alt="Online learning" class="w-full h-full object-cover object-top">
-                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-            </div>
-
-            <!-- Slide 3 -->
-            <div class="slide absolute inset-0 transition-opacity duration-1000 opacity-0">
-                <img src="{{ $landingPage->hero_image_3
-                    ? asset('storage/' . $landingPage->hero_image_3)
-                    : 'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80' }}"
-                    alt="Technology learning" class="w-full h-full object-cover object-top">
-                <div class="absolute inset-0 bg-orange-500 bg-opacity-40"></div>
-            </div>
-
+        <!-- Animated Background Elements -->
+        <div class="absolute top-20 left-10 w-32 h-32 bg-primary-100/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-48 h-48 bg-primary-200/10 rounded-full blur-3xl animate-pulse delay-1000">
+        </div>
+        <div class="absolute top-1/2 left-1/3 w-24 h-24 bg-primary-100/10 rounded-full blur-2xl animate-pulse delay-2000">
         </div>
 
-        <!-- Overlay Orange Transparan -->
-        <div class="absolute inset-0 bg-gradient-to-r from-orange-900/70 to-orange-600/60"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10 py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
-        <!-- Teks Hero - Mobile Optimized -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pb-8 md:pb-12">
+                <!-- Hero Text Content -->
+                <div class="relative animate-fade-in text-left space-y-8 order-2 lg:order-1">
+                    <!-- Badge/Tag -->
+                    <div
+                        class="inline-flex items-center px-4 py-2 rounded-full bg-white/20 border border-white/30 backdrop-blur-sm">
+                        <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+                        <span class="text-white text-sm font-medium">Platform Pembelajaran #1 di Indonesia</span>
+                    </div>
 
-            <div class="animate-fade-in">
-                <!-- Title - Responsive text sizes -->
-                <h1
-                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white drop-shadow-[0_4px_6px_rgba(0,0,0,0.6)] mb-3 sm:mb-4 md:mb-6 leading-tight">
-                    {{ $landingPage->hero_title ?? 'Belajar Tanpa Batas' }}
-                    <span
-                        class="block text-orange-300 mt-1 sm:mt-2">{{ $landingPage->hero_subtitle ?? 'Raih Masa Depan' }}</span>
-                </h1>
+                    <!-- Main Title -->
+                    <div class="space-y-4">
+                        <h1
+                            class="text-4xl sm:text-5xl md:text-6xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight tracking-tight">
+                            <span class="block animate-fade-in-up">
+                                {{ $landingPage->hero_title ?? 'Belajar Tanpa Batas' }}
+                            </span>
+                            <span
+                                class="block text-transparent bg-gradient-to-r from-white to-orange-100 bg-clip-text animate-fade-in-up delay-200 mt-2">
+                                {{ $landingPage->hero_subtitle ?? 'Raih Masa Depan' }}
+                            </span>
+                        </h1>
+                    </div>
 
-                <!-- Description - More readable on mobile -->
-                <p
-                    class="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mb-6 sm:mb-8 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl mx-auto drop-shadow-[0_3px_4px_rgba(0,0,0,0.6)] leading-relaxed px-2">
-                    {{ $landingPage->hero_description ?? 'Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025, yang berisi Ringkasan Materi Pembahasan, disusun berdasarkan Kisi-Kisi Ujian TKA Terbaru Tahun 2025, Latihan Soal, Kunci Jawaban, Uraian atas Jawaban dan Try Out Sistem Computer Assisted Test (CAT)' }}
-                </p>
+                    <!-- Description -->
+                    <p class="text-lg sm:text-xl text-white/90 max-w-2xl leading-relaxed animate-fade-in-up delay-300">
+                        {{ $landingPage->hero_description ?? 'Nikmati Kemudahan lolos TES KEMAMPUAN AKADEMIK (TKA) melalui Kelas Premium Prediksi TKA 2025 dengan metode pembelajaran inovatif dan mentor berpengalaman.' }}
+                    </p>
 
-                <!-- Buttons - Stack on mobile, inline on larger screens -->
-                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4 sm:px-0">
-                    <a href="{{ route('login') }}"
-                        class="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base md:text-lg font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-all transform hover:scale-105 shadow-lg text-center">
-                        {{ $landingPage->hero_btn_primary ?? 'Mulai Belajar Sekarang' }}
-                    </a>
-                    <a href="{{ route('course') }}"
-                        class="w-full sm:w-auto px-6 sm:px-8 py-3 rounded-lg text-sm sm:text-base md:text-lg font-semibold border border-white text-white hover:bg-orange-500 hover:border-orange-500 hover:text-white transition-all shadow-lg text-center">
-                        {{ $landingPage->hero_btn_secondary ?? 'Jelajahi Kursus' }}
-                    </a>
+
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 animate-fade-in-up delay-500">
+                        <a href="{{ route('login') }}"
+                            class="group relative px-8 py-4 rounded-2xl text-lg font-semibold bg-primary-100 text-white hover:bg-primary-200 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-xl hover:shadow-2xl shadow-primary-100/25 text-center overflow-hidden">
+                            <span class="relative z-10 flex items-center justify-center">
+                                {{ $landingPage->hero_btn_primary ?? 'Mulai Belajar Sekarang' }}
+                                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-300"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                                </svg>
+                            </span>
+                            <div
+                                class="absolute inset-0 bg-primary-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            </div>
+                        </a>
+
+                        <a href="#courses"
+                            class="group px-8 py-4 rounded-2xl text-lg font-semibold border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm shadow-lg text-center">
+                            <span class="flex items-center justify-center">
+                                {{ $landingPage->hero_btn_secondary ?? 'Jelajahi Kursus' }}
+                                <svg class="w-5 h-5 ml-2 group-hover:rotate-45 transition-transform duration-300"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14">
+                                    </path>
+                                </svg>
+                            </span>
+                        </a>
+                    </div>
                 </div>
+
+                <!-- Hero Image/Slider Section -->
+                <!-- Hero Image/Slider Section -->
+                <div class="relative animate-fade-in-up delay-300 order-1 lg:order-2 mb-8 lg:mb-0">
+                    <div class="relative max-w-lg mx-auto w-full">
+                        <!-- Main Image Container -->
+                        <div
+                            class="relative rounded-3xl overflow-hidden shadow-2xl backdrop-blur-sm bg-white/5 border border-white/20">
+
+                            <!-- Image Slider -->
+                            <div class="image-slider relative">
+                                <div class="slide active relative">
+                                    <img src="{{ $landingPage->hero_image_1
+                                        ? asset('storage/' . $landingPage->hero_image_1)
+                                        : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Students learning"
+                                        class="w-full h-auto object-contain transition-all duration-700">
+
+                                    <!-- Overlay Gradient -->
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+
+                                </div>
+
+                                <div class="slide relative">
+                                    <img src="{{ $landingPage->hero_image_2 ? asset('storage/' . $landingPage->hero_image_2) : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Online learning"
+                                        class="w-full h-full object-cover transition-all duration-700">
+
+
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+                                </div>
+
+                                <div class="slide relative">
+                                    <img src="{{ $landingPage->hero_image_3 ? asset('storage/' . $landingPage->hero_image_3) : 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80' }}"
+                                        alt="Online learning"
+                                        class="w-full h-full object-cover transition-all duration-700">
+
+
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Navigation Dots -->
+                            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                                <button
+                                    class="slider-dot active w-3 h-3 rounded-full bg-white transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(1)"></button>
+                                <button
+                                    class="slider-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(2)"></button>
+                                <button
+                                    class="slider-dot w-3 h-3 rounded-full bg-white/50 transition-all duration-300 hover:scale-125"
+                                    onclick="currentSlide(3)"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
 
-        <!-- Slider Navigation - Adjusted for mobile -->
-        <div class="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-100"
-                onclick="currentSlide(1)"></button>
-            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-50"
-                onclick="currentSlide(2)"></button>
-            <button class="slider-dot w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white opacity-50"
-                onclick="currentSlide(3)"></button>
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div class="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-white rounded-full mt-2 animate-pulse"></div>
+            </div>
         </div>
     </section>
+
 
     <!-- Popular Courses Section -->
     <section id="courses" class="py-20 bg-primary-50">
@@ -191,7 +269,8 @@
                 @foreach ($featurespage as $feature)
                     @if (is_object($feature) && isset($feature->title))
                         <div class="text-center p-6 rounded-xl hover:shadow-lg transition-shadow">
-                            <div class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div
+                                class="w-16 h-16 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg class="w-8 h-8 text-primary-200" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -402,6 +481,121 @@
 @push('style')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
     <style>
+        /* Enhanced Animations */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 1s ease-out;
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 0.8s ease-out;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-400 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-500 {
+            animation-delay: 0.5s;
+        }
+
+        .delay-1000 {
+            animation-delay: 1s;
+        }
+
+        .delay-2000 {
+            animation-delay: 2s;
+        }
+
+        /* Image Slider Styles */
+        .image-slider .slide {
+            display: none;
+        }
+
+        .image-slider .slide.active {
+            display: block;
+        }
+
+        .slider-dot.active {
+            background-color: white;
+            transform: scale(1.2);
+        }
+
+        /* Gradient Background */
+        .gradient-bg {
+            background: linear-gradient(135deg,
+                    #1e3a8a 0%,
+                    #3730a3 25%,
+                    #7c2d12 50%,
+                    #ea580c 75%,
+                    #f59e0b 100%);
+        }
+
+        /* Glass Effect */
+        .backdrop-blur-sm {
+            backdrop-filter: blur(8px);
+        }
+
+        /* Enhanced Button Hover Effects */
+        .group:hover .group-hover\:translate-x-1 {
+            transform: translateX(0.25rem);
+        }
+
+        .group:hover .group-hover\:rotate-45 {
+            transform: rotate(45deg);
+        }
+
+        /* Text Gradient */
+        .bg-clip-text {
+            -webkit-background-clip: text;
+            background-clip: text;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .animate-fade-in-up {
+                animation-delay: 0s;
+            }
+
+            .delay-200,
+            .delay-300,
+            .delay-400,
+            .delay-500 {
+                animation-delay: 0s;
+            }
+        }
+
         #whatsapp-fab a:hover {
             box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
         }
@@ -434,6 +628,34 @@
 @endpush
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let slides = document.querySelectorAll(".image-slider .slide");
+            let dots = document.querySelectorAll(".slider-dot");
+            slides.forEach((s, i) => {
+                s.style.display = "none";
+                dots[i].classList.remove("active", "bg-white");
+                dots[i].classList.add("bg-white/50");
+            });
+            slideIndex++;
+            if (slideIndex > slides.length) {
+                slideIndex = 1
+            }
+            slides[slideIndex - 1].style.display = "block";
+            dots[slideIndex - 1].classList.add("active", "bg-white");
+            dots[slideIndex - 1].classList.remove("bg-white/50");
+            setTimeout(showSlides, 5000); // ganti slide tiap 5 detik
+        }
+
+        function currentSlide(n) {
+            slideIndex = n - 1; // reset ke index tertentu
+            showSlides();
+        }
+    </script>
+
     <script>
         const testimonialSwiper = new Swiper('.testimonial-swiper', {
             loop: true,
