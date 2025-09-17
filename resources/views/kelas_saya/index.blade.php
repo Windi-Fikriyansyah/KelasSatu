@@ -24,7 +24,7 @@
                             class="course-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-shadow duration-300 group">
                             <div class="relative overflow-hidden">
                                 <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                                    class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    class="w-full h-full object-contain bg-white group-hover:scale-105 transition-transform duration-500">
                                 <span
                                     class="absolute top-3 left-3 bg-primary-100 text-white text-xs font-medium px-3 py-1 rounded-full shadow">
                                     {{ $course->nama_kategori ?? 'Umum' }}

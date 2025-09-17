@@ -96,7 +96,7 @@
                         class="course-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-shadow duration-300 group">
                         <div class="relative overflow-hidden">
                             <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                                class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300">
+                                class="w-full h-full object-contain bg-white group-hover:scale-105 transition-transform duration-500">
                             <span
                                 class="absolute top-3 left-3 bg-primary-100 text-white text-xs font-medium px-3 py-1 rounded-full shadow">
                                 {{ $course->nama_kategori ?? 'Umum' }}
@@ -235,7 +235,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <!-- Illustration Image -->
             <div class="flex justify-center">
-                <img src="{{ asset('image/join.png') }}" alt="How to Join Illustration"
+                <img src="{{ asset('image/join1.jpg') }}" alt="How to Join Illustration"
                     class="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-xl shadow-md">
             </div>
 
@@ -247,34 +247,34 @@
                 <ol class="space-y-6">
                     <li class="flex items-start">
                         <span
-                            class="flex items-center justify-center w-10 aspect-square rounded-full bg-primary-200 text-white font-bold tabular-nums mr-4">
+                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
                             1
                         </span>
-                        <p class="text-gray-700"><strong>Buat Akun:</strong> Daftar gratis dengan email atau akun
+                        <p class="text-gray-700 pt-2"><strong>Buat Akun:</strong> Daftar gratis dengan email atau akun
                             Google.</p>
                     </li>
                     <li class="flex items-start">
                         <span
-                            class="flex items-center justify-center w-10 aspect-square rounded-full bg-primary-200 text-white font-bold tabular-nums mr-4">
+                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
                             2
                         </span>
-                        <p class="text-gray-700"><strong>Pilih Kursus:</strong> Jelajahi kursus sesuai kebutuhan dan
+                        <p class="text-gray-700 pt-2"><strong>Pilih Kursus:</strong> Jelajahi kursus sesuai kebutuhan dan
                             minat Anda.</p>
                     </li>
                     <li class="flex items-start">
                         <span
-                            class="flex items-center justify-center w-10 aspect-square rounded-full bg-primary-200 text-white font-bold tabular-nums mr-4">
+                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
                             3
                         </span>
-                        <p class="text-gray-700"><strong>Lakukan Pembayaran:</strong> Amankan kursus pilihan dengan
+                        <p class="text-gray-700 pt-2"><strong>Lakukan Pembayaran:</strong> Amankan kursus pilihan dengan
                             metode pembayaran mudah.</p>
                     </li>
                     <li class="flex items-start">
                         <span
-                            class="flex items-center justify-center w-10 aspect-square rounded-full bg-primary-200 text-white font-bold tabular-nums mr-4">
+                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
                             4
                         </span>
-                        <p class="text-gray-700"><strong>Mulai Belajar:</strong> Akses materi kapan saja dan nikmati
+                        <p class="text-gray-700 pt-2"><strong>Mulai Belajar:</strong> Akses materi kapan saja dan nikmati
                             pengalaman belajar interaktif.</p>
                     </li>
                 </ol>

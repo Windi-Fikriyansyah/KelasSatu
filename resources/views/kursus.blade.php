@@ -34,15 +34,15 @@
             </div>
 
             <!-- Daftar Kursus -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="course-list">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="course-list">
                 @foreach ($courses as $course)
                     <div class="course-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-1 transform transition-shadow duration-300 group"
                         data-kategori="{{ $course->kategori_id }}">
-                        <div class="relative overflow-hidden h-44">
+                        <div class="relative overflow-hidden">
                             <img src="{{ asset('storage/' . $course->thumbnail) }}" alt="{{ $course->title }}"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                class="w-full h-full object-contain bg-white group-hover:scale-105 transition-transform duration-500">
                             <span
-                                class="absolute top-3 left-3 bg-primary-100 text-white text-xs font-medium px-3 py-1 rounded-full shadow z-10">
+                                class="absolute top-3 left-3 bg-primary-100 text-white text-xs font-medium px-3 py-1 rounded-full shadow">
                                 {{ $course->nama_kategori ?? 'Umum' }}
                             </span>
                             <div
@@ -132,17 +132,6 @@
 
 @push('style')
     <style>
-        .course-card img {
-            object-fit: cover;
-            object-position: center;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .course-card:hover img {
-            border-color: #3b82f6;
-            /* Primary color border saat hover */
-        }
-
         .line-clamp-2 {
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -162,20 +151,6 @@
             animation: fadeIn 0.5s ease-out forwards;
             opacity: 0;
             transform: translateY(10px);
-        }
-
-        @media (max-width: 640px) {
-            .course-card .relative {
-                height: 200px;
-                /* Sedikit lebih tinggi di mobile */
-            }
-        }
-
-        @media (min-width: 1024px) {
-            .course-card .relative {
-                height: 180px;
-                /* Sesuaikan untuk desktop */
-            }
         }
 
         @keyframes fadeIn {
