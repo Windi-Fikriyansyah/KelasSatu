@@ -180,33 +180,34 @@
 
                 <!-- Desktop Menu -->
                 <!-- Desktop Menu (pindah ke kiri dengan font lebih besar) -->
-                <div class="hidden md:flex items-center space-x-8 ml-8 text-base font-medium">
+                <div class="hidden md:flex items-center space-x-8 ml-8 text-base font-medium"
+                    style="font-family: Calibri, sans-serif;">
 
                     @auth
                         <a href="{{ route('dashboardUser') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beranda</a>
                         <a href="{{ route('course') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beli
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beli
                             Kelas</a>
                         <a href="{{ route('kelas.index') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kelas
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Kelas
                             Saya</a>
                         <a href="{{ route('account.index') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pengaturan</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Pengaturan</a>
                         <a href="{{ route('history.index') }}"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Transaksi</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Transaksi</a>
                     @else
                         <a href="#beranda"
-                            class="text-gray-900 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beranda</a>
                         <a href="#courses"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kursus</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Kursus</a>
                         <a href="#testimoni"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Testimoni</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Testimoni</a>
                         <a href="#faq"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pertanyaan
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Pertanyaan
                             Umum</a>
                         <a href="#about"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Tentang
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Tentang
                             Kami</a>
                     @endauth
 
