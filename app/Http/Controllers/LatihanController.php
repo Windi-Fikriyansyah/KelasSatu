@@ -104,6 +104,7 @@ class LatihanController extends Controller
                     'quiz.created_at',
                     'quiz.updated_at'
                 ])
+                ->where('quiz_type', 'latihan')
                 ->where('quiz.course_id', $decryptedId)
                 ->orderBy('quiz.created_at', 'desc');
 
