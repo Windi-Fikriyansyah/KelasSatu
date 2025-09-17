@@ -307,19 +307,18 @@
     <footer class="bg-primary-500 text-white py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="mb-12 w-full md:w-1/2">
+            {{-- <div class="mb-12 w-full md:w-1/2">
                 <h4 class="text-lg font-semibold mb-4">Lokasi Kami</h4>
                 <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d230.62064394796434!2d109.3598401158935!3d0.01404695066977168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sid!2sid!4v1758100513781!5m2!1sid!2sid"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3101.4602199841984!2d109.3700997!3d-0.015600800000000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e1d59003d47d307%3A0x48068b786fb05b41!2sSegar%20Dingin%20Office!5e1!3m2!1sid!2sid!4v1758106665595!5m2!1sid!2sid"
                     width="100%" height="250" style="border:0; border-radius: 12px;" allowfullscreen=""
                     loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
                 <div class="flex items-center mt-3 text-primary-500">
                     <i class="fas fa-map-marker-alt mr-2 text-white"></i>
-                    <span>Jl. Parit Pangeran Gg. Samhan, Siantan Hulu, Kec. Pontianak Utara, Kota Pontianak, Kalimantan
-                        Barat</span>
+                    <span>Siantan Hulu, Kec. Pontianak Utara, Kota Pontianak, Kalimantan Barat 78242</span>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Grid menu footer -->
             <div class="grid md:grid-cols-4 gap-8">
