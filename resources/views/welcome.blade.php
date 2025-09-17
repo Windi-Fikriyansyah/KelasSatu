@@ -161,7 +161,7 @@
 
 
     <!-- Popular Courses Section -->
-    <section id="courses" class="py-20 bg-primary-50">
+    <section id="courses" class="pt-20 pb-10 bg-primary-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-4">Kursus Populer</h2>
@@ -230,7 +230,7 @@
         </div>
     </section>
 
-    <section id="about" class="py-20 bg-white">
+    <section id="about" class="pt-10 pb-20 bg-white">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-stretch">
             <!-- Illustration Image -->
             <div class="flex">
