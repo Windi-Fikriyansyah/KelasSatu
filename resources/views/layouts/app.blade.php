@@ -185,29 +185,29 @@
 
                     @auth
                         <a href="{{ route('dashboardUser') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beranda</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
                         <a href="{{ route('course') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beli
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beli
                             Kelas</a>
                         <a href="{{ route('kelas.index') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Kelas
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kelas
                             Saya</a>
                         <a href="{{ route('account.index') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Pengaturan</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pengaturan</a>
                         <a href="{{ route('history.index') }}"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Transaksi</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Transaksi</a>
                     @else
                         <a href="#beranda"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Beranda</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Beranda</a>
                         <a href="#courses"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Kursus</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Kursus</a>
                         <a href="#testimoni"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Testimoni</a>
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Testimoni</a>
                         <a href="#faq"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Pertanyaan
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Pertanyaan
                             Umum</a>
                         <a href="#about"
-                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-base font-medium transition-colors">Tentang
+                            class="text-gray-600 hover:text-primary-100 px-3 py-2 text-lg font-medium transition-colors">Tentang
                             Kami</a>
                     @endauth
 
@@ -354,7 +354,7 @@
                         <li><a href="#" class="hover:text-white transition-colors">Hubungi Kami</a></li>
                     </ul>
                     <div class="flex space-x-4 mt-4">
-                        <a href="https://wa.me/628991111901" target="_blank"
+                        <a href="https://wa.me/6281311117096" target="_blank"
                             class="hover:text-white transition-colors">
                             <i class="fab fa-whatsapp text-2xl"></i>
                         </a>
