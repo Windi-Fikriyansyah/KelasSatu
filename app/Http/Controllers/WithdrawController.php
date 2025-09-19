@@ -26,6 +26,8 @@ class WithdrawController extends Controller
                     'w.id',
                     'u.name as user_name',
                     'b.nama_bank as bank_name',
+                    'b.nama_pemilik',
+                    'b.no_rekening',
                     'w.amount',
                     'w.status',
                     'w.notes',

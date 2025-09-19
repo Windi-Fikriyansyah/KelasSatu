@@ -77,8 +77,9 @@ class MateriController extends Controller
         $kursuss = DB::table('courses')
             ->select('courses.*')
             ->get();
+        $modules = DB::table('course_modules')->get();
 
-        return view('materi.create', compact('courses', 'kursuss'));
+        return view('materi.create', compact('courses', 'kursuss', 'modules'));
     }
 
     public function edit($id)
@@ -97,9 +98,46 @@ class MateriController extends Controller
 
         $kursuss = DB::table('courses')->get();
 
-        return view('materi.create', compact('kursuss', 'materi'));
+        $modules = DB::table('course_modules')
+            ->where('course_id', $materi->course_id)
+            ->get();
+
+
+
+
+        return view('materi.create', compact('kursuss', 'materi', 'modules'));
     }
 
+    // Ubah method getModulesByCourse untuk menerima parameter melalui request
+    public function getModulesByCourse(Request $request)
+    {
+        try {
+            $courseId = $request->input('course_id');
+
+            if (!$courseId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Course ID is required'
+                ], 400);
+            }
+
+            $modules = DB::table('course_modules')
+                ->where('course_id', $courseId)
+                ->orderBy('order', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'modules' => $modules
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error getting modules: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
     /**
      * Handle chunk upload untuk video
      */
@@ -198,6 +236,7 @@ class MateriController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
+            'module_id' => 'required|exists:course_modules,id',
             'type' => 'required|in:pdf,video',
             'title' => 'required|string|max:255',
             'description' => 'nullable',
@@ -221,6 +260,7 @@ class MateriController extends Controller
 
             DB::table('contents')->insert([
                 'course_id' => $request->course_id,
+                'module_id' => $request->module_id,
                 'type' => $request->type,
                 'title' => $request->title,
                 'description' => $request->description,
@@ -241,6 +281,7 @@ class MateriController extends Controller
     {
         $request->validate([
             'course_id' => 'required|exists:courses,id',
+            'module_id' => 'required|exists:course_modules,id',
             'type' => 'required|in:pdf,video',
             'title' => 'required|string|max:255',
             'description' => 'nullable',
@@ -291,6 +332,7 @@ class MateriController extends Controller
 
             DB::table('contents')->where('id', $id)->update([
                 'course_id' => $request->course_id,
+                'module_id' => $request->module_id,
                 'type' => $request->type,
                 'title' => $request->title,
                 'description' => $request->description,

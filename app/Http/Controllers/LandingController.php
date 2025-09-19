@@ -28,6 +28,11 @@ class LandingController extends Controller
                 ->where('landing_page_id', $landing->id)
                 ->orderBy('order')
                 ->get();
+
+            $landing->how_to_join_steps = DB::table('landing_page_how_to_join_steps')
+                ->where('landing_page_id', $landing->id)
+                ->orderBy('order')
+                ->get();
         }
 
         return view('landing.index', compact('landing'));
@@ -49,14 +54,15 @@ class LandingController extends Controller
 
         try {
             // Handle file uploads
-            $data = $request->except(['_token', '_method', 'features', 'testimonials', 'faqs']);
+            $data = $request->except(['_token', '_method', 'features', 'testimonials', 'faqs', 'how_to_join_steps', 'how_to_join_image']);
 
             // Process image uploads
             $imageFields = [
                 'hero_image_1',
                 'hero_image_2',
                 'hero_image_3',
-                'about_image'
+                'about_image',
+                'how_to_join_image'
             ];
 
             foreach ($imageFields as $field) {
@@ -145,6 +151,25 @@ class LandingController extends Controller
                 }
             }
 
+            if ($request->has('how_to_join_steps')) {
+                DB::table('landing_page_how_to_join_steps')
+                    ->where('landing_page_id', $landingId)
+                    ->delete();
+
+                foreach ($request->how_to_join_steps as $index => $step) {
+                    if (!empty($step['title']) && !empty($step['description'])) {
+                        DB::table('landing_page_how_to_join_steps')->insert([
+                            'landing_page_id' => $landingId,
+                            'order' => $index,
+                            'title' => $step['title'],
+                            'description' => $step['description'],
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ]);
+                    }
+                }
+            }
+
             DB::commit();
 
             return redirect()->route('landing.index')
@@ -154,6 +179,53 @@ class LandingController extends Controller
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
                 ->withInput();
+        }
+    }
+
+    public function deleteHowToJoinStep(Request $request)
+    {
+        try {
+            $stepId = $request->input('step_id');
+            $landingId = $request->input('landing_id');
+
+            // Cek apakah masih ada minimal 2 langkah
+            $totalSteps = DB::table('landing_page_how_to_join_steps')
+                ->where('landing_page_id', $landingId)
+                ->count();
+
+            if ($totalSteps <= 1) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Minimal harus ada 1 langkah'
+                ]);
+            }
+
+            DB::table('landing_page_how_to_join_steps')
+                ->where('id', $stepId)
+                ->where('landing_page_id', $landingId)
+                ->delete();
+
+            // Update order untuk langkah yang tersisa
+            $remainingSteps = DB::table('landing_page_how_to_join_steps')
+                ->where('landing_page_id', $landingId)
+                ->orderBy('order')
+                ->get();
+
+            foreach ($remainingSteps as $index => $step) {
+                DB::table('landing_page_how_to_join_steps')
+                    ->where('id', $step->id)
+                    ->update(['order' => $index]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Langkah berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ]);
         }
     }
 }

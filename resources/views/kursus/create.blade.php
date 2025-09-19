@@ -50,6 +50,42 @@
                                 </div>
                             </div>
 
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="mapel">Mapel</label>
+                                <div class="col-sm-10">
+                                    <select id="mapel" name="mapel"
+                                        class="form-control @error('mapel') is-invalid @enderror" required>
+                                        <option value="">-- Pilih --</option>
+                                        <option value="wajib"
+                                            {{ old('mapel', $course->mapel ?? '') == 'wajib' ? 'selected' : '' }}>Wajib
+                                        </option>
+                                        <option value="pilihan"
+                                            {{ old('mapel', $course->mapel ?? '') == 'pilihan' ? 'selected' : '' }}>Pilihan
+                                        </option>
+                                        <option value="tidak ada"
+                                            {{ old('mapel', $course->mapel ?? '') == 'tidak ada' ? 'selected' : '' }}>Tidak
+                                            Ada
+                                        </option>
+                                    </select>
+                                    @error('mapel')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3 max-module-wrapper d-none">
+                                <label class="col-sm-2 col-form-label" for="limit">Max Module Pilihan</label>
+                                <div class="col-sm-10">
+                                    <input type="number" id="limit" name="limit"
+                                        class="form-control @error('limit') is-invalid @enderror"
+                                        value="{{ old('limit', $course->limit ?? '') }}" min="1"
+                                        placeholder="Masukkan jumlah maksimal module">
+                                    @error('limit')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Description -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="description">Deskripsi</label>
@@ -260,6 +296,23 @@
         });
     </script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapelSelect = document.getElementById('mapel');
+            const maxModuleWrapper = document.querySelector('.max-module-wrapper');
+
+            function toggleMaxModule() {
+                if (mapelSelect.value === 'pilihan') {
+                    maxModuleWrapper.classList.remove('d-none');
+                } else {
+                    maxModuleWrapper.classList.add('d-none');
+                    document.getElementById('limit').value = '';
+                }
+            }
+
+            mapelSelect.addEventListener('change', toggleMaxModule);
+            toggleMaxModule(); // jalankan saat load halaman
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const wrapper = document.getElementById('features-wrapper');
 

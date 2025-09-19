@@ -40,9 +40,8 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>Thumbnail</th>
-                                <th>Judul</th>
-                                <th>Kategori</th>
-                                <th>Tipe Akses</th>
+                                <th>Judul Kursus</th>
+                                <th>Judul Modul</th>
                                 <th>Status</th>
                                 <th width="15%">Aksi</th>
                             </tr>
@@ -131,29 +130,16 @@
                         }
                     },
                     {
+                        data: 'title_course',
+                        name: 'courses.title'
+                    },
+                    {
                         data: 'title',
                         name: 'title'
                     },
                     {
-                        data: 'nama_kategori',
-                        name: 'kategori.nama_kategori'
-                    },
-                    {
-                        data: 'access_type',
-                        name: 'access_type',
-                        render: function(data, type, row) {
-                            if (data === 'lifetime') {
-                                return 'Selamanya';
-                            } else if (data === 'subscription') {
-                                return 'Langganan';
-                            } else {
-                                return '-';
-                            }
-                        }
-                    },
-                    {
                         data: 'status',
-                        name: 'status',
+                        name: 'courses.status',
                         render: function(data, type, row) {
                             if (data === 'active') {
                                 return '<span class="status-badge status-active">Aktif</span>';

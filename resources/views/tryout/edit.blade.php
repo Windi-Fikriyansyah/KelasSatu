@@ -27,7 +27,7 @@
                             @endif
 
                             <input type="hidden" name="course_id" value="{{ $course->id }}">
-                            <input type="hidden" name="quiz_id" value="{{ $soal->id }}">
+                            <input type="hidden" name="quiz_id" value="{{ $soal->id ?? '' }}">
                             <input type="hidden" name="quiz_type" value="tryout">
 
                             <!-- Title -->
@@ -60,7 +60,11 @@
                                     <div class="d-flex align-items-center justify-content-between">
                                         <h5 class="card-title mb-0">Daftar Soal-Soal</h5>
                                         <div class="d-flex justify-content-end mb-3">
-
+                                            @if (!isset($soal))
+                                                <button type="button" class="btn btn-success me-2" id="saveDraftBtn">
+                                                    <i class="bi bi-save"></i> Simpan Draft
+                                                </button>
+                                            @endif
                                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                 data-bs-target="#soalModal">
                                                 <i class="bi bi-plus"></i> Tambah Soal
@@ -107,10 +111,10 @@
                     <form id="questionForm">
                         <input type="hidden" id="editIndex" value="">
 
-                        <!-- Pertanyaan -->
+                        <!-- Pertanyaan (pakai CKEditor) -->
                         <div class="mb-3">
                             <label for="question" class="form-label">Pertanyaan *</label>
-                            <textarea name="question" id="question" class="form-control" rows="4" required></textarea>
+                            <textarea name="question" id="question" class="form-control ckeditor" rows="4" required></textarea>
                             <div class="invalid-feedback">Pertanyaan harus diisi</div>
                         </div>
 
@@ -119,30 +123,25 @@
                             <label class="form-label">Pilihan Jawaban *</label>
                             <div class="input-group mb-2">
                                 <span class="input-group-text">A</span>
-                                <input type="text" name="option_a" id="option_a" class="form-control"
-                                    placeholder="Pilihan A" required>
+                                <textarea name="option_a" id="option_a" class="form-control ckeditor" placeholder="Pilihan A" required></textarea>
                                 <div class="invalid-feedback">Pilihan A harus diisi</div>
                             </div>
                             <div class="input-group mb-2">
                                 <span class="input-group-text">B</span>
-                                <input type="text" name="option_b" id="option_b" class="form-control"
-                                    placeholder="Pilihan B" required>
+                                <textarea name="option_b" id="option_b" class="form-control ckeditor" placeholder="Pilihan B" required></textarea>
                                 <div class="invalid-feedback">Pilihan B harus diisi</div>
                             </div>
                             <div class="input-group mb-2">
                                 <span class="input-group-text">C</span>
-                                <input type="text" name="option_c" id="option_c" class="form-control"
-                                    placeholder="Pilihan C">
+                                <textarea name="option_c" id="option_c" class="form-control ckeditor" placeholder="Pilihan C"></textarea>
                             </div>
                             <div class="input-group mb-2">
                                 <span class="input-group-text">D</span>
-                                <input type="text" name="option_d" id="option_d" class="form-control"
-                                    placeholder="Pilihan D">
+                                <textarea name="option_d" id="option_d" class="form-control ckeditor" placeholder="Pilihan D"></textarea>
                             </div>
                             <div class="input-group mb-2">
                                 <span class="input-group-text">E</span>
-                                <input type="text" name="option_e" id="option_e" class="form-control"
-                                    placeholder="Pilihan E">
+                                <textarea name="option_e" id="option_e" class="form-control ckeditor" placeholder="Pilihan E"></textarea>
                             </div>
                         </div>
 
@@ -157,12 +156,14 @@
                                 <option value="D">D</option>
                                 <option value="E">E</option>
                             </select>
-                            <div class="invalid-feedback">Jawaban benar harus dipilih</div>
+                            <div class="invalid-feedback" id="correct_answer_feedback">
+                                Jawaban benar harus dipilih dan pilihan tersebut harus sudah diisi.
+                            </div>
                         </div>
-                        <!-- Di dalam modal soal (setelah correct_answer) -->
+                        <!-- Pembahasan (pakai CKEditor) -->
                         <div class="mb-3">
                             <label for="explanation" class="form-label">Pembahasan</label>
-                            <textarea name="explanation" id="explanation" class="form-control" rows="4"
+                            <textarea name="explanation" id="explanation" class="form-control ckeditor" rows="4"
                                 placeholder="Pembahasan jawaban (opsional)"></textarea>
                         </div>
                     </form>
@@ -184,6 +185,14 @@
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap5-theme@1.3.2/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
     <style>
+        .explanation-content {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0dcaf0;
+            padding: 12px;
+            border-radius: 0 4px 4px 0;
+            margin-top: 10px;
+        }
+
         .question-card {
             border: 1px solid #dee2e6;
             border-radius: 8px;
@@ -235,17 +244,114 @@
         .invalid-feedback {
             display: block;
         }
+
+        .ck-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .ck-content table th,
+        .ck-content table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .ck-content table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .ck-content img {
+            max-width: 200px !important;
+            height: auto !important;
+            display: inline-block !important;
+            float: left !important;
+            margin: 5px 10px 5px 0 !important;
+        }
+
+        .input-group-text {
+            min-width: 40px;
+            justify-content: center;
+        }
+
+        .ck-editor__editable {
+            min-height: 100px;
+        }
     </style>
 @endpush
 
 @push('js')
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        let questions = [];
+        let editorInstances = {};
         let editingIndex = -1;
+        let questions = [];
         let autosaveTimer;
 
+        // Fungsi untuk init CKEditor
+        function initCKEditor(id) {
+            ClassicEditor.create(document.querySelector('#' + id), {
+                ckfinder: {
+                    uploadUrl: "{{ route('tryout.ckeditor.upload') }}?_token={{ csrf_token() }}"
+                },
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'insertTable', 'imageUpload', '|',
+                        'undo', 'redo'
+                    ]
+                },
+                table: {
+                    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                }
+            }).then(editor => {
+                editorInstances[id] = editor;
+
+                // Event listener untuk auto-remove validation error
+                editor.model.document.on('change:data', () => {
+                    $('#' + id).removeClass('is-invalid border-warning');
+
+                    // Jika field yang diubah sesuai dengan jawaban benar yang dipilih, hilangkan error
+                    if (id.startsWith('option_')) {
+                        const fieldLetter = id.split('_')[1].toUpperCase();
+                        const correctAnswer = $('#correct_answer').val();
+
+                        if (fieldLetter === correctAnswer && getEditorData(id).trim()) {
+                            $('#correct_answer').removeClass('is-invalid');
+                        }
+                    }
+                });
+            }).catch(error => console.error(error));
+        }
+
+        // Fungsi helper untuk mendapatkan data dari CKEditor
+        function getEditorData(editorId) {
+            if (editorInstances[editorId]) {
+                return editorInstances[editorId].getData();
+            }
+            return '';
+        }
+
+        // Fungsi helper untuk set data ke CKEditor
+        function setEditorData(editorId, data) {
+            if (editorInstances[editorId]) {
+                editorInstances[editorId].setData(data || '');
+            }
+        }
+
         $(document).ready(function() {
+            // Init CKEditor untuk semua field yang diperlukan
+            const editorIds = ['question', 'explanation', 'option_a', 'option_b', 'option_c', 'option_d',
+                'option_e'
+            ];
+            editorIds.forEach(id => {
+                initCKEditor(id);
+            });
+
             // Load existing questions jika dalam mode edit
             @if (isset($soal) && $soal->questions)
                 questions = {!! json_encode(
@@ -258,8 +364,8 @@
                             'option_d' => $q->option_d ?? '',
                             'option_e' => $q->option_e ?? '',
                             'correct_answer' => $q->correct_answer,
-                            'explanation' => $q->pembahasan ?? '',
-                            'id' => $q->id, // Pastikan ID disertakan untuk update
+                            'explanation' => $q->explanation ?? '',
+                            'id' => $q->id,
                         ];
                     }),
                 ) !!};
@@ -273,6 +379,7 @@
             @if (!isset($soal))
                 autosaveTimer = setInterval(saveDraftToDatabase, 30000);
                 $('#title').on('input change', debounce(saveDraftToDatabase, 3000));
+                $('#durasi').on('input change', debounce(saveDraftToDatabase, 3000));
             @endif
 
             // Initialize Select2
@@ -315,6 +422,9 @@
                         if (response.data.title) {
                             $('#title').val(response.data.title);
                         }
+                        if (response.data.durasi) {
+                            $('#durasi').val(response.data.durasi);
+                        }
 
                         // Load questions
                         if (response.data.questions && response.data.questions.length > 0) {
@@ -347,10 +457,9 @@
                         course_id: {{ $course->id }},
                         quiz_type: 'tryout',
                         title: $('#title').val(),
+                        durasi: $('#durasi').val(),
                         questions: questions,
-                        form_data: {
-                            // Data form tambahan jika diperlukan
-                        }
+                        form_data: {}
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -387,6 +496,7 @@
                     course_id: {{ $course->id }},
                     quiz_type: 'tryout',
                     title: $('#title').val(),
+                    durasi: $('#durasi').val(),
                     questions: questions,
                     form_data: {}
                 },
@@ -451,22 +561,75 @@
             $('#saveQuestionBtnText').text('Simpan Soal');
             editingIndex = -1;
 
+            // Reset semua CKEditor
+            Object.keys(editorInstances).forEach(editorId => {
+                setEditorData(editorId, '');
+            });
+
             // Remove validation classes
             $('.is-invalid').removeClass('is-invalid');
+        }
+
+        // Validate form
+        function validateForm() {
+            let isValid = true;
+            $('.is-invalid').removeClass('is-invalid');
+
+            // Validasi pertanyaan (menggunakan CKEditor)
+            const questionData = getEditorData('question');
+            if (!questionData.trim()) {
+                $('#question').addClass('is-invalid');
+                isValid = false;
+            }
+
+            // Validasi pilihan A dan B (wajib) - menggunakan CKEditor
+            const optionAData = getEditorData('option_a');
+            if (!optionAData.trim()) {
+                $('#option_a').addClass('is-invalid');
+                isValid = false;
+            }
+
+            const optionBData = getEditorData('option_b');
+            if (!optionBData.trim()) {
+                $('#option_b').addClass('is-invalid');
+                isValid = false;
+            }
+
+            // Validasi jawaban benar
+            const correctAnswer = $('#correct_answer').val();
+            if (!correctAnswer) {
+                $('#correct_answer').addClass('is-invalid');
+                isValid = false;
+            } else {
+                // Validasi bahwa pilihan untuk jawaban benar sudah diisi
+                const optionData = getEditorData('option_' + correctAnswer.toLowerCase());
+                if (!optionData.trim()) {
+                    $('#correct_answer').addClass('is-invalid');
+                    $('#correct_answer').siblings('.invalid-feedback').text(
+                        `Anda memilih ${correctAnswer} sebagai jawaban benar, tetapi pilihan ${correctAnswer} masih kosong.`
+                    );
+                    isValid = false;
+
+                    // Highlight field yang perlu diisi
+                    $('#option_' + correctAnswer.toLowerCase()).addClass('is-invalid');
+                }
+            }
+
+            return isValid;
         }
 
         // Save question
         $('#saveQuestionBtn').click(function() {
             if (validateForm()) {
                 const questionData = {
-                    question: $('#question').val().trim(),
-                    option_a: $('#option_a').val().trim(),
-                    option_b: $('#option_b').val().trim(),
-                    option_c: $('#option_c').val().trim(),
-                    option_d: $('#option_d').val().trim(),
-                    option_e: $('#option_e').val().trim(),
+                    question: getEditorData('question'),
+                    option_a: getEditorData('option_a'),
+                    option_b: getEditorData('option_b'),
+                    option_c: getEditorData('option_c'),
+                    option_d: getEditorData('option_d'),
+                    option_e: getEditorData('option_e'),
                     correct_answer: $('#correct_answer').val(),
-                    explanation: $('#explanation').val().trim()
+                    explanation: getEditorData('explanation')
                 };
 
                 // Jika dalam mode edit, pertahankan ID soal
@@ -494,56 +657,6 @@
                 resetForm();
             }
         });
-        // Validate form
-        function validateForm() {
-            const required = [{
-                    id: 'question',
-                    message: 'Pertanyaan harus diisi'
-                },
-                {
-                    id: 'option_a',
-                    message: 'Pilihan A harus diisi'
-                },
-                {
-                    id: 'option_b',
-                    message: 'Pilihan B harus diisi'
-                },
-                {
-                    id: 'correct_answer',
-                    message: 'Jawaban benar harus dipilih'
-                }
-            ];
-
-            let isValid = true;
-
-            // Reset previous validation
-            $('.is-invalid').removeClass('is-invalid');
-
-            required.forEach(field => {
-                const element = $('#' + field.id);
-                const value = element.val().trim();
-
-                if (!value) {
-                    element.addClass('is-invalid');
-                    element.siblings('.invalid-feedback').text(field.message);
-                    isValid = false;
-                }
-            });
-
-            // Validate correct answer matches available options
-            const correctAnswer = $('#correct_answer').val();
-            if (correctAnswer) {
-                const optionValue = $('#option_' + correctAnswer.toLowerCase()).val().trim();
-                if (!optionValue) {
-                    $('#correct_answer').addClass('is-invalid');
-                    $('#correct_answer').siblings('.invalid-feedback').text(
-                        'Jawaban benar harus sesuai dengan pilihan yang tersedia');
-                    isValid = false;
-                }
-            }
-
-            return isValid;
-        }
 
         // Render questions
         function renderQuestions() {
@@ -558,115 +671,126 @@
             $('#noQuestionsMsg').hide();
 
             questions.forEach((q, index) => {
-                const options = [];
-                if (q.option_a) options.push({
-                    key: 'A',
-                    value: q.option_a,
-                    isCorrect: q.correct_answer === 'A'
-                });
-                if (q.option_b) options.push({
-                    key: 'B',
-                    value: q.option_b,
-                    isCorrect: q.correct_answer === 'B'
-                });
-                if (q.option_c) options.push({
-                    key: 'C',
-                    value: q.option_c,
-                    isCorrect: q.correct_answer === 'C'
-                });
-                if (q.option_d) options.push({
-                    key: 'D',
-                    value: q.option_d,
-                    isCorrect: q.correct_answer === 'D'
-                });
-                if (q.option_e) options.push({
-                    key: 'E',
-                    value: q.option_e,
-                    isCorrect: q.correct_answer === 'E'
-                });
-
-                const optionsHtml = options.map(opt =>
-                    `<div class="option-item ${opt.isCorrect ? 'correct-answer' : ''}">${opt.key}. ${opt.value}</div>`
-                ).join('');
-
-                const hasExplanation = q.explanation && q.explanation.trim() !== '';
-                const explanationHtml = hasExplanation ?
-                    `<div class="mt-3" id="explanation-${index}">
-                <strong>Pembahasan:</strong>
-                <div class="explanation-content mt-2">${escapeHtml(q.explanation)}</div>
-            </div>` :
-                    `<div class="mt-3" id="explanation-${index}" style="display: none;">
-                <strong>Pembahasan:</strong>
-                <div class="explanation-content mt-2">Tidak ada pembahasan</div>
-            </div>`;
-
-                const questionHtml = `
-        <div class="question-card" data-index="${index}">
-            <div class="question-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="mb-0">Soal ${index + 1}</h6>
-                    <div>
-                        <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="editQuestion(${index})">
-                            <i class="bi bi-pencil"></i> Edit
-                        </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(${index})">
-                            <i class="bi bi-trash"></i> Hapus
-                        </button>
-                        <!-- Di dalam question header (setelah tombol edit dan hapus) -->
-<button type="button" class="btn btn-sm btn-outline-info me-1" onclick="toggleExplanation(${index})">
-    <i class="bi bi-chat-text"></i> Pembahasan
-</button>
-                    </div>
-                </div>
-            </div>
-            <div class="question-body">
-                <div class="mb-3">
-                    <strong>Pertanyaan:</strong>
-                    <div class="mt-2">${escapeHtml(q.question)}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-8">
-                        <strong>Pilihan Jawaban:</strong>
-                        <div class="mt-2">${optionsHtml}</div>
-                    </div>
-                    <div class="col-md-4">
-                        <strong>Jawaban Benar:</strong>
-                        <div class="mt-2">
-                            <span class="badge bg-success">${q.correct_answer}</span>
+                // Buat container untuk setiap soal
+                const questionCard = $(`
+            <div class="question-card" data-index="${index}">
+                <div class="question-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Soal ${index + 1}</h6>
+                        <div>
+                            <button type="button" class="btn btn-sm btn-outline-primary me-1" onclick="editQuestion(${index})">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteQuestion(${index})">
+                                <i class="bi bi-trash"></i> Hapus
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-info me-1" onclick="toggleExplanation(${index})">
+                                <i class="bi bi-chat-text"></i> Pembahasan
+                            </button>
                         </div>
                     </div>
-                    ${explanationHtml}
                 </div>
-
-                <!-- Hidden inputs untuk submit -->
-                ${q.id ? `<input type="hidden" name="questions[${index}][id]" value="${q.id}">` : ''}
-                <input type="hidden" name="questions[${index}][question]" value="${escapeHtml(q.question)}">
-                <input type="hidden" name="questions[${index}][option_a]" value="${escapeHtml(q.option_a || '')}">
-                <input type="hidden" name="questions[${index}][option_b]" value="${escapeHtml(q.option_b || '')}">
-                <input type="hidden" name="questions[${index}][option_c]" value="${escapeHtml(q.option_c || '')}">
-                <input type="hidden" name="questions[${index}][option_d]" value="${escapeHtml(q.option_d || '')}">
-                <input type="hidden" name="questions[${index}][option_e]" value="${escapeHtml(q.option_e || '')}">
-                <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
-                <input type="hidden" name="questions[${index}][explanation]" value="${escapeHtml(q.explanation || '')}">
+                <div class="question-body">
+                    <div class="mb-3">
+                        <strong>Pertanyaan:</strong>
+                        <div class="mt-2 question-content-display ck-content"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <strong>Pilihan Jawaban:</strong>
+                            <div class="mt-2" id="options-display-${index}"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <strong>Jawaban Benar:</strong>
+                            <div class="mt-2">
+                                <span class="badge bg-success">${q.correct_answer}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3" id="explanation-${index}" style="${q.explanation ? '' : 'display: none;'}">
+                        <strong>Pembahasan:</strong>
+                        <div class="mt-2 explanation-content-display ck-content"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-    `;
-                container.append(questionHtml);
+        `);
+
+                // Set konten pertanyaan menggunakan .html() untuk render HTML dengan benar
+                questionCard.find('.question-content-display').html(q.question || '');
+
+                // Render pilihan jawaban
+                const optionsContainer = questionCard.find(`#options-display-${index}`);
+                const options = [{
+                        key: 'A',
+                        value: q.option_a
+                    },
+                    {
+                        key: 'B',
+                        value: q.option_b
+                    },
+                    {
+                        key: 'C',
+                        value: q.option_c
+                    },
+                    {
+                        key: 'D',
+                        value: q.option_d
+                    },
+                    {
+                        key: 'E',
+                        value: q.option_e
+                    }
+                ];
+
+                options.forEach(opt => {
+                    if (opt.value && opt.value.trim()) {
+                        const isCorrect = q.correct_answer === opt.key;
+                        const optionElement = $(`
+                    <div class="option-item ${isCorrect ? 'correct-answer' : ''}">
+                        <strong>${opt.key}.</strong>
+                        <span class="option-content-display ck-content"></span>
+                    </div>
+                `);
+
+                        // Set konten pilihan menggunakan .html()
+                        optionElement.find('.option-content-display').html(opt.value);
+                        optionsContainer.append(optionElement);
+                    }
+                });
+
+                // Set pembahasan jika ada
+                if (q.explanation) {
+                    questionCard.find('.explanation-content-display').html(q.explanation);
+                }
+
+                // Tambahkan hidden inputs untuk form submission
+                const hiddenInputsHtml = `
+            ${q.id ? `<input type="hidden" name="questions[${index}][id]" value="${q.id}">` : ''}
+            <input type="hidden" name="questions[${index}][question]" value="${escapeForInput(q.question)}">
+            <input type="hidden" name="questions[${index}][option_a]" value="${escapeForInput(q.option_a)}">
+            <input type="hidden" name="questions[${index}][option_b]" value="${escapeForInput(q.option_b)}">
+            <input type="hidden" name="questions[${index}][option_c]" value="${escapeForInput(q.option_c)}">
+            <input type="hidden" name="questions[${index}][option_d]" value="${escapeForInput(q.option_d)}">
+            <input type="hidden" name="questions[${index}][option_e]" value="${escapeForInput(q.option_e)}">
+            <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
+            <input type="hidden" name="questions[${index}][explanation]" value="${escapeForInput(q.explanation || '')}">
+        `;
+
+                questionCard.find('.question-body').append(hiddenInputsHtml);
+                container.append(questionCard);
             });
         }
 
+        // Fungsi untuk escape HTML pada hidden inputs
+        function escapeForInput(text) {
+            if (!text) return '';
+            return text.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+        }
 
         // Fungsi untuk menampilkan/sembunyikan pembahasan
         function toggleExplanation(index) {
             const explanationEl = $(`#explanation-${index}`);
             explanationEl.toggle();
-        }
-        // Escape HTML untuk mencegah XSS
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
         }
 
         // Edit question
@@ -674,14 +798,16 @@
             editingIndex = index;
             const q = questions[index];
 
-            $('#question').val(q.question);
-            $('#option_a').val(q.option_a || '');
-            $('#option_b').val(q.option_b || '');
-            $('#option_c').val(q.option_c || '');
-            $('#option_d').val(q.option_d || '');
-            $('#option_e').val(q.option_e || '');
+            // Set data menggunakan CKEditor
+            setEditorData('question', q.question);
+            setEditorData('option_a', q.option_a);
+            setEditorData('option_b', q.option_b);
+            setEditorData('option_c', q.option_c);
+            setEditorData('option_d', q.option_d);
+            setEditorData('option_e', q.option_e);
+            setEditorData('explanation', q.explanation || '');
+
             $('#correct_answer').val(q.correct_answer);
-            $('#explanation').val(q.explanation || '');
 
             $('#soalModalLabel').text('Edit Soal');
             $('#saveQuestionBtnText').text('Update Soal');
@@ -691,6 +817,7 @@
 
             $('#soalModal').modal('show');
         }
+
         // Delete question
         function deleteQuestion(index) {
             Swal.fire({
@@ -759,6 +886,9 @@
             $('#title').on('input', function() {
                 hasUnsavedChanges = true;
             });
+            $('#durasi').on('input', function() {
+                hasUnsavedChanges = true;
+            });
 
             // Fungsi untuk menonaktifkan beforeunload
             function disableBeforeUnload() {
@@ -818,8 +948,6 @@
                 return true;
             });
         @endif
-
-
 
         // Include SweetAlert2 if not already included
         if (typeof Swal === 'undefined') {

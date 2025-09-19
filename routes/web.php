@@ -56,6 +56,7 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/', [LandingController::class, 'index'])->name('index');
         Route::post('/', [LandingController::class, 'store'])->name('store');
         Route::put('/{id}', [LandingController::class, 'update'])->name('update');
+        Route::post('/delete-how-to-join-step', [LandingController::class, 'deleteHowToJoinStep'])->name('delete.how_to_join_step');
     });
 
     Route::prefix('admin')->name('admin.')->group(function () {
@@ -111,6 +112,12 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/{id}/quiz', [LatihanController::class, 'quiz'])->name('quiz');
         Route::put('/{id}', [LatihanController::class, 'update'])->name('update');
         Route::delete('/{id}', [LatihanController::class, 'destroy'])->name('destroy');
+        Route::get('/{course}/tambah-soal', [LatihanController::class, 'tambahsoal'])->name('tambahsoal');
+        Route::post('/store-soal', [LatihanController::class, 'storeSoal'])->name('storeSoal');
+        Route::post('/ckeditor/upload', [LatihanController::class, 'uploadckeditor'])->name('ckeditor.upload');
+
+        Route::post('/save-draft', [LatihanController::class, 'saveDraft'])->name('savedraft');
+        Route::post('/load-draft', [LatihanController::class, 'loadDraft'])->name('loaddraft');
     });
 
     Route::prefix('tryout')->name('tryout.')->group(function () {
@@ -123,6 +130,9 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/{id}/quiz', [TryoutController::class, 'quiz'])->name('quiz');
         Route::put('/{id}', [TryoutController::class, 'update'])->name('update');
         Route::delete('/{id}', [TryoutController::class, 'destroy'])->name('destroy');
+        Route::post('/ckeditor/upload', [TryoutController::class, 'uploadckeditor'])->name('ckeditor.upload');
+        Route::post('/save-draft', [TryoutController::class, 'saveDraft'])->name('savedraft');
+        Route::post('/load-draft', [TryoutController::class, 'loadDraft'])->name('loaddraft');
     });
 
     Route::prefix('materi')->name('materi.')->group(function () {
@@ -137,6 +147,8 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::delete('/delete-video-chunk', [MateriController::class, 'deleteVideoChunk'])->name('delete-video-chunk');
         Route::post('/materi/upload-pdf-chunk', [MateriController::class, 'uploadPdfChunk'])->name('upload-pdf-chunk');
         Route::delete('/materi/delete-pdf-chunk', [MateriController::class, 'deletePdfChunk'])->name('delete-pdf-chunk');
+        Route::get('/get-modules', [MateriController::class, 'getModulesByCourse'])
+            ->name('get-modules');
     });
 
     Route::prefix('withdraw')->name('withdraw.')->group(function () {
@@ -176,14 +188,16 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/latihan/{quizId}', [KelasSayaController::class, 'latihan'])->name('latihan');
         Route::post('/latihan/{quizId}/submit', [KelasSayaController::class, 'submitLatihan'])->name('latihan.submit');
         Route::get('/latihan/{quizId}/hasil', [KelasSayaController::class, 'hasilLatihan'])->name('latihan.hasil');
+        Route::get('/latihan/{id}/hasilriwayat', [KelasSayaController::class, 'hasilriwayatlatihan'])->name('latihan.hasilriwayat');
 
         // Routes untuk tryout
         Route::get('/tryout/{quizId}', [KelasSayaController::class, 'tryout'])->name('tryout');
-        Route::post('/tryout/{quizId}/submit', [KelasSayaController::class, 'submitLatihan'])->name('tryout.submit');
-        Route::get('/tryout/{quizId}/hasil', [KelasSayaController::class, 'hasilLatihan'])->name('tryout.hasil');
+        Route::post('/tryout/{quizId}/submit', [KelasSayaController::class, 'submitTryout'])->name('tryout.submit');
+        Route::get('/tryout/{quizId}/hasil', [KelasSayaController::class, 'hasilTryout'])->name('tryout.hasil');
+        Route::get('/tryout/{id}/hasilriwayat', [KelasSayaController::class, 'hasilriwayattryout'])->name('tryout.hasilriwayat');
 
-        Route::get('/latihan/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('latihan.riwayat');
-        Route::get('/tryout/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('tryout.riwayat');
+        Route::get('/riwayat-nilai/{quizId}', [KelasSayaController::class, 'riwayat'])->name('riwayat_nilai');
+        // Route::get('/tryout/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('tryout.riwayat');
 
         Route::get('/certificate/download', [CertificateController::class, 'download'])
             ->name('certificate.download');

@@ -90,6 +90,37 @@
             </div>
 
 
+
+            @php
+                $firstModuleId = $modules->isNotEmpty() ? $modules->first()->id : null;
+            @endphp
+            <div x-data="{ activeModule: {{ $firstModuleId ?? 'null' }} }" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+
+                @forelse($modules as $module)
+                    <div @click="activeModule = {{ $module->id }}; filterContentByModule({{ $module->id }});"
+                        :class="activeModule === {{ $module->id }} ? 'bg-orange-100 border-orange-400' :
+                            'bg-white border-gray-200'"
+                        class="cursor-pointer rounded-lg shadow-md p-5 border transition">
+                        <div class="flex items-center mb-3">
+                            <div
+                                class="w-12 h-12 bg-orange-200 text-white rounded-full flex items-center justify-center mr-4">
+                                <i class="fa-solid fa-book"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-800">{{ $module->title }}</h3>
+                                <p class="text-gray-500 text-sm line-clamp-2">
+                                    {{ $module->description ?? 'Deskripsi singkat' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-3 text-center text-gray-400 py-12">
+                        <i class="fa-solid fa-folder-open text-4xl mb-4"></i>
+                        <p>Belum ada modul untuk kelas ini.</p>
+                    </div>
+                @endforelse
+            </div>
+
             <!-- Tab Navigation -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="border-b border-gray-200">
@@ -102,21 +133,22 @@
                                         d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Materi
+                                Materi Belajar
                             </div>
                         </button>
-
-                        <button onclick="switchTab('video', event)" id="video-tab"
-                            class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
-                            <div class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                                        clip-rule="evenodd"></path>
-                                </svg>
-                                Video
-                            </div>
-                        </button>
+                        @if ($videoContents->count() > 0)
+                            <button onclick="switchTab('video', event)" id="video-tab"
+                                class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
+                                <div class="flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                    Video Pembelajaran
+                                </div>
+                            </button>
+                        @endif
 
 
                         <button onclick="switchTab('latihan', event)"
@@ -127,7 +159,7 @@
                                         d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Latihan
+                                Latihan Soal
                             </div>
                         </button>
                         <button onclick="switchTab('soal', event)"
@@ -138,7 +170,7 @@
                                         d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                TryOut
+                                Try Out
                             </div>
                         </button>
                     </nav>
@@ -147,323 +179,319 @@
                 <div class="p-6">
                     <!-- Materi Tab -->
                     <div id="materi-content" class="tab-content">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-primary-200 mb-2">Materi Pembelajaran</h2>
-                            <p class="text-gray-600">Pelajari semua materi kelas secara bertahap</p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @if ($materis->isEmpty())
-                                <div class="col-span-3 text-center py-12 text-gray-300">
-                                    <svg class="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <p class="mt-6 text-lg font-medium">Belum ada materi untuk kelas ini.</p>
-                                </div>
-                            @else
-                                @foreach ($materis as $module)
-                                    <div
-                                        class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                        <div class="p-6">
-                                            <div class="flex items-center mb-4">
-                                                <div
-                                                    class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4 text-blue-600 text-lg">
-                                                    <i class="fa-solid fa-graduation-cap"></i>
-                                                </div>
-                                                <div class="flex-1">
-                                                    <h3
-                                                        class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                        {{ $module->title }}
-                                                    </h3>
-                                                    <p class="text-sm text-gray-500">
-                                                        {{ $module->description ?? 'Deskripsi materi singkat' }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center">
-                                                    <span
-                                                        class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">
-                                                        Materi
-                                                    </span>
-                                                </div>
-                                                <a href="{{ route('kelas.pdf_view', $module->id) }}" target="_blank"
-                                                    class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                    Mulai Belajar
-                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                    </svg>
-                                                </a>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-
-                            @endif
-                        </div>
-
-
-
+                        <!-- Konten awal akan diisi oleh JavaScript -->
                     </div>
 
+                    <!-- Video Tab -->
                     <div id="video-content" class="tab-content hidden">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-primary-200 mb-2">Video Pembelajaran</h2>
-                            <p class="text-gray-600">Tonton video untuk memahami materi lebih mudah</p>
-                        </div>
-
-                        @if ($videoContents->isEmpty())
-                            <div class="text-center py-12 text-gray-500">
-                                <svg class="w-20 h-20 mx-auto text-gray-300" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
-                                    </path>
-                                </svg>
-                                <p class="mt-6 text-lg font-medium">Belum ada materi video untuk modul ini.</p>
-                            </div>
-                        @else
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                @foreach ($videoContents as $content)
-                                    <div
-                                        class="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 hover:border-primary-100 hover:shadow-md transition-all duration-300">
-                                        <div class="p-6">
-                                            <div class="flex items-start justify-between mb-4">
-                                                <div class="flex-1">
-                                                    <h3 class="text-lg font-semibold text-primary-200 mb-2">
-                                                        {{ $content->title }}
-                                                    </h3>
-                                                    <div class="flex items-center text-sm text-gray-500 mb-3">
-                                                        <svg class="w-4 h-4 mr-1" fill="currentColor"
-                                                            viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd"
-                                                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                                                clip-rule="evenodd"></path>
-                                                        </svg>
-                                                        {{ \Carbon\Carbon::parse($content->created_at)->format('d M Y, H:i') }}
-                                                    </div>
-                                                </div>
-                                                <span
-                                                    class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
-                                                    Video
-                                                </span>
-                                            </div>
-
-                                            <!-- Video Player -->
-                                            @if ($content->video)
-                                                <div class="relative mb-4">
-                                                    <video class="w-full rounded-lg" controls controlsList="nodownload"
-                                                        oncontextmenu="return false;" poster="">
-                                                        <source src="{{ asset('storage/' . $content->video) }}"
-                                                            type="video/mp4">
-                                                        Browser Anda tidak mendukung pemutar video.
-                                                    </video>
-                                                </div>
-                                            @endif
-
-
-                                            <!-- Additional PDF if exists -->
-                                            @if ($content->file_pdf)
-                                                <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                                                    <div class="flex items-center">
-                                                        <svg class="w-6 h-6 text-red-500 mr-2" fill="currentColor"
-                                                            viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd"
-                                                                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-                                                                clip-rule="evenodd"></path>
-                                                        </svg>
-                                                        <span class="text-sm text-gray-600">Materi Pendukung</span>
-                                                    </div>
-                                                    <a href="{{ asset('storage/' . $content->file_pdf) }}"
-                                                        target="_blank"
-                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-3 py-1 rounded text-sm transition-colors">
-                                                        Buka PDF
-                                                    </a>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+                        <!-- Konten awal akan diisi oleh JavaScript -->
                     </div>
 
                     <!-- Latihan Tab -->
                     <div id="latihan-content" class="tab-content hidden">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-primary-200 mb-2">Latihan Soal</h2>
-                            <p class="text-gray-600">Uji pemahaman Anda dengan latihan-latihan berikut</p>
-
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            @if ($latihan->isEmpty())
-                                <div class="col-span-2 text-center py-8 text-gray-500">
-                                    <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <p class="mt-4">Belum ada latihan untuk kelas ini.</p>
-                                </div>
-                            @else
-                                @foreach ($latihan as $exercise)
-                                    <div
-                                        class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                        <div class="p-6">
-                                            <div class="flex items-center mb-4">
-                                                <div
-                                                    class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor"
-                                                        viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z"
-                                                            clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <div class="flex-1">
-                                                    <h3
-                                                        class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                        {{ $exercise->title }}
-                                                    </h3>
-                                                    <p class="text-sm text-gray-500">
-                                                        {{ $exercise->quiz_type }} • {{ $exercise->jumlah_soal }} soal
-                                                    </p>
-
-
-                                                </div>
-                                            </div>
-                                            <p class="text-gray-600 text-sm mb-4">
-                                                Kumpulan soal latihan untuk menguji pemahaman materi yang telah dipelajari.
-                                            </p>
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center">
-                                                    <span
-                                                        class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">
-                                                        Latihan
-                                                    </span>
-                                                </div>
-                                                <div class="flex items-center justify-end space-x-2">
-                                                    <a href="{{ route('kelas.latihan', $exercise->id) }}"
-                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                        Mulai
-                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                        </svg>
-                                                    </a>
-                                                    {{-- <a href="{{ route('kelas.latihan.riwayat', $course->id) }}"
-                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow">
-                                                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat Nilai
-                                                    </a> --}}
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
+                        <!-- Konten awal akan diisi oleh JavaScript -->
                     </div>
 
-                    <!-- Soal Tab -->
                     <!-- Soal Tab -->
                     <div id="soal-content" class="tab-content hidden">
-                        <div class="mb-6">
-                            <h2 class="text-xl font-semibold text-primary-200 mb-2">Tryout</h2>
-                            <p class="text-gray-600">Ikuti ujian untuk mendapatkan sertifikat</p>
-                        </div>
-
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            @if ($tryout->isEmpty())
-                                <div class="col-span-2 text-center py-8 text-gray-500">
-                                    <svg class="w-16 h-16 mx-auto text-gray-300" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                        </path>
-                                    </svg>
-                                    <p class="mt-4">Belum ada tryout untuk kelas ini.</p>
-                                </div>
-                            @else
-                                @foreach ($tryout as $exercise)
-                                    <!-- gunakan card yang sama seperti latihan -->
-                                    <div
-                                        class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                        <div class="p-6">
-                                            <div class="flex items-center mb-4">
-                                                <div
-                                                    class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                                    <svg class="w-6 h-6 text-blue-600" fill="currentColor"
-                                                        viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z"
-                                                            clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <div class="flex-1">
-                                                    <h3
-                                                        class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                        {{ $exercise->title }}
-                                                    </h3>
-                                                    <p class="text-sm text-gray-500">
-                                                        {{ $exercise->quiz_type }}
-                                                        •{{ $exercise->durasi ? $exercise->durasi . ' menit' : '20 menit' }}
-                                                        • {{ $exercise->jumlah_soal }} soal
-                                                    </p>
-
-                                                </div>
-                                            </div>
-                                            <p class="text-gray-600 text-sm mb-4">
-                                                Kumpulan soal tryout untuk menguji pemahaman materi yang telah dipelajari.
-                                            </p>
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center">
-                                                    <span
-                                                        class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">
-                                                        Tryout
-                                                    </span>
-                                                </div>
-                                                <div class="flex items-center justify-end space-x-2">
-                                                    <a href="{{ route('kelas.tryout', $exercise->id) }}"
-                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                        Mulai
-                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                        </svg>
-                                                    </a>
-                                                    {{-- <a href="{{ route('kelas.tryout.riwayat', $course->id) }}"
-                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center shadow">
-                                                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat Nilai
-                                                    </a> --}}
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endif
-                        </div>
+                        <!-- Konten awal akan diisi oleh JavaScript -->
                     </div>
-
                 </div>
             </div>
         </div>
     </section>
+
+
 @endsection
 
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
+        let allMateris = @json($materis);
+        let allVideoContents = @json($videoContents);
+        let allLatihan = @json($latihan);
+        let allTryout = @json($tryout);
+        let currentActiveTab = 'materi';
+
+        // Simpan ID modul pertama
+        const firstModuleId = @json($firstModuleId);
+
+        function filterContentByModule(moduleId) {
+            // Filter konten berdasarkan module_id
+            const filteredMateris = moduleId ?
+                allMateris.filter(materi => materi.module_id == moduleId) :
+                allMateris;
+
+            const filteredVideos = moduleId ?
+                allVideoContents.filter(video => video.module_id == moduleId) :
+                allVideoContents;
+
+            const filteredLatihan = moduleId ?
+                allLatihan.filter(latihan => latihan.module_id == moduleId) :
+                allLatihan;
+
+            const filteredTryout = moduleId ?
+                allTryout.filter(tryout => tryout.module_id == moduleId) :
+                allTryout;
+
+            // Update semua tab content
+            updateTabContent('materi', filteredMateris);
+            updateTabContent('video', filteredVideos);
+            updateTabContent('latihan', filteredLatihan);
+            updateTabContent('soal', filteredTryout);
+        }
+
+        function updateTabContent(tabName, data) {
+            const tabContent = document.getElementById(`${tabName}-content`);
+
+            if (data.length === 0) {
+                tabContent.innerHTML = `
+                <div class="text-center py-12 text-gray-500">
+                    <svg class="w-20 h-20 mx-auto text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="mt-6 text-lg font-medium">Belum ada ${tabName} untuk modul ini.</p>
+                </div>
+            `;
+                return;
+            }
+
+            let html = '';
+            switch (tabName) {
+                case 'materi':
+                    html = generateMateriHTML(data);
+                    break;
+                case 'video':
+                    html = generateVideoHTML(data);
+                    break;
+                case 'latihan':
+                    html = generateLatihanHTML(data);
+                    break;
+                case 'soal':
+                    html = generateTryoutHTML(data);
+                    break;
+            }
+
+            tabContent.innerHTML = html;
+        }
+
+        function generateMateriHTML(materis) {
+            return `
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary-200 mb-2">Materi Pembelajaran</h2>
+                <p class="text-gray-600">Pelajari semua materi kelas secara bertahap</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${materis.map(materi => `
+                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                    <div class="p-6">
+                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4 text-blue-600 text-lg">
+                                                                                                                                                                                                                                                                <i class="fa-solid fa-graduation-cap"></i>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                            <div class="flex-1">
+                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                    ${materi.title}
+                                                                                                                                                                                                                                                                </h3>
+                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                    ${materi.description || 'Deskripsi materi singkat'}
+                                                                                                                                                                                                                                                                </p>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                Materi
+                                                                                                                                                                                                                                                            </span>
+                                                                                                                                                                                                                                                            <a href="/kelas/isi-materi/${materi.id}" target="_blank"
+                                                                                                                                                                                                                                                                class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                                                                                                                                                                                                                                Mulai Belajar
+                                                                                                                                                                                                                                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                                                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                                                                                                                                                </svg>
+                                                                                                                                                                                                                                                            </a>
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                            `).join('')}
+            </div>
+        `;
+        }
+
+        function generateVideoHTML(videos) {
+            return `
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary-200 mb-2">Video Pembelajaran</h2>
+                <p class="text-gray-600">Tonton video untuk memahami materi lebih mudah</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                ${videos.map(video => `
+                                                                                                                                                                                                                                                <div class="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 hover:border-primary-100 hover:shadow-md transition-all duration-300">
+                                                                                                                                                                                                                                                    <div class="p-6">
+                                                                                                                                                                                                                                                        <div class="flex items-start justify-between mb-4">
+                                                                                                                                                                                                                                                            <div class="flex-1">
+                                                                                                                                                                                                                                                                <h3 class="text-lg font-semibold text-primary-200 mb-2">
+                                                                                                                                                                                                                                                                    ${video.title}
+                                                                                                                                                                                                                                                                </h3>
+                                                                                                                                                                                                                                                                <div class="flex items-center text-sm text-gray-500 mb-3">
+                                                                                                                                                                                                                                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                    </svg>
+                                                                                                                                                                                                                                                                    ${new Date(video.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
+                                                                                                                                                                                                                                                                Video
+                                                                                                                                                                                                                                                            </span>
+                                                                                                                                                                                                                                                        </div>
+
+                                                                                                                                                                                                                                                        ${video.video ? `
+                                <div class="relative mb-4">
+                                    <video class="w-full rounded-lg" controls controlsList="nodownload" oncontextmenu="return false;">
+                                        <source src="{{ asset('storage/') }}/${video.video}" type="video/mp4">
+                                        Browser Anda tidak mendukung pemutar video.
+                                    </video>
+                                </div>
+                            ` : ''}
+
+                                                                                                                                                                                                                                                        ${video.file_pdf ? `
+                                <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                                    <div class="flex items-center">
+                                        <svg class="w-6 h-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="text-sm text-gray-600">Materi Pendukung</span>
+                                    </div>
+                                    <a href="{{ asset('storage/') }}/${video.file_pdf}" target="_blank"
+                                        class="bg-primary-100 hover:bg-primary-200 text-white px-3 py-1 rounded text-sm transition-colors">
+                                        Buka PDF
+                                    </a>
+                                </div>
+                            ` : ''}
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                            `).join('')}
+            </div>
+        `;
+        }
+
+        function generateLatihanHTML(latihanData) {
+            return `
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary-200 mb-2">Latihan Soal</h2>
+                <p class="text-gray-600">Uji pemahaman Anda dengan latihan-latihan berikut</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${latihanData.map(exercise => `
+                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                    <div class="p-6">
+                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                                                                                                                                                                                                                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                </svg>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                            <div class="flex-1">
+                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                    ${exercise.title}
+                                                                                                                                                                                                                                                                </h3>
+                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                    ${exercise.quiz_type} • ${exercise.jumlah_soal} soal
+                                                                                                                                                                                                                                                                </p>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                        <p class="text-gray-600 text-sm mb-4">
+                                                                                                                                                                                                                                                            Kumpulan soal latihan untuk menguji pemahaman materi yang telah dipelajari.
+                                                                                                                                                                                                                                                        </p>
+                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                Latihan
+                                                                                                                                                                                                                                                            </span>
+                                                                                                                                                                                                                                                            <div class="flex space-x-2">
+                                                                                                                                                                                                                                                            <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
+                               class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
+                            </a>
+
+
+                                                                                                                                                                                                                                                            <a href="javascript:void(0)"
+                                                                                                                                    class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                                                                                                                                    data-url="/kelas/latihan/${btoa(exercise.id)}"
+                                                                                                                                    data-title="${exercise.title}"
+                                                                                                                                    data-jumlah="${exercise.jumlah_soal}">
+                                                                                                                                    Mulai
+                                                                                                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                    </svg>
+                                                                                                                                </a>
+                                                                                                                                </div>
+
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                            `).join('')}
+            </div>
+        `;
+        }
+
+        function generateTryoutHTML(tryoutData) {
+            return `
+            <div class="mb-6">
+                <h2 class="text-xl font-semibold text-primary-200 mb-2">Tryout</h2>
+                <p class="text-gray-600">Ikuti ujian untuk mendapatkan sertifikat</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${tryoutData.map(exercise => `
+                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                    <div class="p-6">
+                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                                                                                                                                                                                                                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                </svg>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                            <div class="flex-1">
+                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                    ${exercise.title}
+                                                                                                                                                                                                                                                                </h3>
+                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                    ${exercise.quiz_type} • ${exercise.durasi ? exercise.durasi + ' menit' : '20 menit'} • ${exercise.jumlah_soal} soal
+                                                                                                                                                                                                                                                                </p>
+                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                        <p class="text-gray-600 text-sm mb-4">
+                                                                                                                                                                                                                                                            Kumpulan soal tryout untuk menguji pemahaman materi yang telah dipelajari.
+                                                                                                                                                                                                                                                        </p>
+                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                Tryout
+                                                                                                                                                                                                                                                            </span>
+                                                                                                                                                                                                                                                            <div class="flex space-x-2">
+                                                                                                                                                                                                                                                            <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
+                               class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
+                            </a>
+                                                                                                                                                                                                                                                            <a href="javascript:void(0)"
+                                                                                                                                class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                                                                                                                                data-url="/kelas/tryout/${btoa(exercise.id)}"
+                                                                                                                                data-title="${exercise.title}"
+                                                                                                                                data-jumlah="${exercise.jumlah_soal}">
+                                                                                                                                Mulai
+                                                                                                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                </svg>
+                                                                                                                            </a>
+                                                                                                                            </div>
+
+                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                            `).join('')}
+            </div>
+        `;
+        }
+
+        // Modifikasi fungsi switchTab
         function switchTab(tabName, event) {
             // Sembunyikan semua tab content
             document.querySelectorAll('.tab-content').forEach(content => {
@@ -472,9 +500,8 @@
 
             // Reset semua tab button
             document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active', 'border-primary-100',
-                    'text-primary-100'); // hapus semua kelas aktif
-                button.classList.add('border-transparent', 'text-gray-500'); // set default
+                button.classList.remove('active', 'border-primary-100', 'text-primary-100');
+                button.classList.add('border-transparent', 'text-gray-500');
             });
 
             // Tampilkan tab content yang dipilih
@@ -483,8 +510,33 @@
             // Tambahkan kelas aktif ke tab yang diklik
             event.currentTarget.classList.add('active', 'border-primary-100', 'text-primary-100');
             event.currentTarget.classList.remove('border-transparent', 'text-gray-500');
+
+            currentActiveTab = tabName;
         }
 
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Aktifkan module pertama jika ada
+            if (firstModuleId) {
+                // Filter konten berdasarkan module pertama
+                filterContentByModule(firstModuleId);
+
+                // Set module pertama sebagai aktif di Alpine.js
+                const alpineComponent = document.querySelector('[x-data]');
+                alpineComponent.__x.$data.activeModule = firstModuleId;
+            } else {
+                // Jika tidak ada module, tampilkan semua konten
+                filterContentByModule(null);
+            }
+
+            // Aktifkan tab materi secara default
+            document.querySelector('[onclick="switchTab(\'materi\', event)"]').classList.add('active',
+                'border-primary-100', 'text-primary-100');
+            document.querySelector('[onclick="switchTab(\'materi\', event)"]').classList.remove(
+                'border-transparent', 'text-gray-500');
+        });
+
+        // Event listener untuk video
         document.addEventListener('play', function(e) {
             var videos = document.querySelectorAll('video');
             for (var i = 0, len = videos.length; i < len; i++) {
@@ -494,19 +546,50 @@
             }
         }, true);
 
-
+        // Dropdown functionality
         const dropdownButton = document.getElementById('dropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
 
-        dropdownButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            dropdownMenu.classList.toggle('hidden');
-        });
+        if (dropdownButton && dropdownMenu) {
+            dropdownButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                dropdownMenu.classList.toggle('hidden');
+            });
 
-        // Klik di luar dropdown untuk menutup
-        window.addEventListener('click', function(e) {
-            if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                dropdownMenu.classList.add('hidden');
+            window.addEventListener('click', function(e) {
+                if (!dropdownButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.btn-mulai')) {
+                e.preventDefault();
+
+                const btn = e.target.closest('.btn-mulai');
+                const url = btn.getAttribute('data-url');
+                const title = btn.getAttribute('data-title');
+                const jumlah = btn.getAttribute('data-jumlah');
+
+                Swal.fire({
+                    title: `Mulai kerjakan ${title}`,
+                    html: `
+                <p class="text-gray-700">Kamu akan mulai mengerjakan soal <b>${title}</b>.</p>
+                <p class="mt-2">Jumlah pertanyaan: <b>${jumlah}</b></p>
+            `,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'Lanjutkan Latihan',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#2563eb',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
             }
         });
     </script>
@@ -514,6 +597,26 @@
 
 @push('style')
     <style>
+        /* Styling untuk modal */
+        #confirmationModal {
+            transition: opacity 0.3s ease;
+        }
+
+        #confirmationModal:not(.hidden) {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
         /* Video responsive */
         video {
             max-height: 400px;

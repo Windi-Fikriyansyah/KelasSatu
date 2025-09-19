@@ -108,10 +108,10 @@
                     <form id="questionForm">
                         <input type="hidden" id="editIndex" value="">
 
-                        <!-- Pertanyaan -->
+                        <!-- Pertanyaan (pakai CKEditor) -->
                         <div class="mb-3">
                             <label for="question" class="form-label">Pertanyaan *</label>
-                            <textarea name="question" id="question" class="form-control" rows="4" required></textarea>
+                            <textarea name="question" id="question" class="form-control ckeditor" rows="4" required></textarea>
                             <div class="invalid-feedback">Pertanyaan harus diisi</div>
                         </div>
 
@@ -147,7 +147,6 @@
                             </div>
                         </div>
 
-                        <!-- Correct Answer -->
                         <div class="mb-3">
                             <label for="correct_answer" class="form-label">Jawaban Benar *</label>
                             <select name="correct_answer" id="correct_answer" class="form-select" required>
@@ -158,12 +157,14 @@
                                 <option value="D">D</option>
                                 <option value="E">E</option>
                             </select>
-                            <div class="invalid-feedback">Jawaban benar harus dipilih</div>
+                            <div class="invalid-feedback" id="correct_answer_feedback">
+                                Jawaban benar harus dipilih dan pilihan tersebut harus sudah diisi.
+                            </div>
                         </div>
-                        <!-- Di dalam modal soal (setelah correct_answer) -->
+                        <!-- Pembahasan (pakai CKEditor) -->
                         <div class="mb-3">
                             <label for="explanation" class="form-label">Pembahasan</label>
-                            <textarea name="explanation" id="explanation" class="form-control" rows="4"
+                            <textarea name="explanation" id="explanation" class="form-control ckeditor" rows="4"
                                 placeholder="Pembahasan jawaban (opsional)"></textarea>
                         </div>
                     </form>
@@ -185,7 +186,6 @@
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap5-theme@1.3.2/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
     <style>
-        /* Tambahkan style untuk pembahasan */
         .explanation-content {
             background-color: #f8f9fa;
             border-left: 4px solid #0dcaf0;
@@ -245,17 +245,254 @@
         .invalid-feedback {
             display: block;
         }
+
+        .ck-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .ck-content table th,
+        .ck-content table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .ck-content table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .ck-content img {
+            max-width: 200px !important;
+            /* ukuran maksimal */
+            height: auto !important;
+            /* biar proporsional */
+            display: inline-block !important;
+            /* biar tidak full block */
+            float: left !important;
+            /* taruh ke kiri */
+            margin: 5px 10px 5px 0 !important;
+        }
     </style>
 @endpush
 
 @push('js')
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
+        let editorInstances = {};
+        let editingIndex = -1; // default: tidak sedang edit soal
         let questions = [];
-        let editingIndex = -1;
-        let autosaveTimer;
 
+        function initCKEditor(id) {
+            ClassicEditor.create(document.querySelector('#' + id), {
+                ckfinder: {
+                    uploadUrl: "{{ route('tryout.ckeditor.upload') }}?_token={{ csrf_token() }}"
+                },
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'link', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'insertTable', 'imageUpload', '|',
+                        'undo', 'redo'
+                    ]
+                },
+                table: {
+                    contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                }
+            }).then(editor => {
+                // Simpan instance editor untuk digunakan nanti
+                editorInstances[id] = editor;
+
+                // Tambahkan event listener untuk auto-remove validation error
+                editor.model.document.on('change:data', () => {
+                    $('#' + id).removeClass('is-invalid border-warning');
+
+                    // Jika field yang diubah sesuai dengan jawaban benar yang dipilih, hilangkan error
+                    if (id.startsWith('option_')) {
+                        const fieldLetter = id.split('_')[1].toUpperCase();
+                        const correctAnswer = $('#correct_answer').val();
+
+                        if (fieldLetter === correctAnswer && getEditorData(id).trim()) {
+                            $('#correct_answer').removeClass('is-invalid');
+                        }
+                    }
+                });
+            }).catch(error => console.error(error));
+        }
+
+        // Fungsi helper untuk mendapatkan data dari CKEditor
+        function getEditorData(editorId) {
+            if (editorInstances[editorId]) {
+                return editorInstances[editorId].getData();
+            }
+            return '';
+        }
+
+        // Fungsi helper untuk set data ke CKEditor
+        function setEditorData(editorId, data) {
+            if (editorInstances[editorId]) {
+                editorInstances[editorId].setData(data || '');
+            }
+        }
+
+        // Update fungsi validateForm untuk menggunakan CKEditor
+        function validateForm() {
+            let isValid = true;
+            $('.is-invalid').removeClass('is-invalid');
+
+            // Validasi pertanyaan (menggunakan CKEditor)
+            const questionData = getEditorData('question');
+            if (!questionData.trim()) {
+                $('#question').addClass('is-invalid');
+                isValid = false;
+            }
+
+            // Validasi pilihan A dan B (wajib) - menggunakan CKEditor
+            const optionAData = getEditorData('option_a');
+            if (!optionAData.trim()) {
+                $('#option_a').addClass('is-invalid');
+                isValid = false;
+            }
+
+            const optionBData = getEditorData('option_b');
+            if (!optionBData.trim()) {
+                $('#option_b').addClass('is-invalid');
+                isValid = false;
+            }
+
+            // Validasi jawaban benar
+            const correctAnswer = $('#correct_answer').val();
+            if (!correctAnswer) {
+                $('#correct_answer').addClass('is-invalid');
+                isValid = false;
+            } else {
+                // Validasi bahwa pilihan untuk jawaban benar sudah diisi
+                const optionData = getEditorData('option_' + correctAnswer.toLowerCase());
+                if (!optionData.trim()) {
+                    $('#correct_answer').addClass('is-invalid');
+                    $('#correct_answer').siblings('.invalid-feedback').text(
+                        `Anda memilih ${correctAnswer} sebagai jawaban benar, tetapi pilihan ${correctAnswer} masih kosong.`
+                    );
+                    isValid = false;
+
+                    // Highlight field yang perlu diisi
+                    $('#option_' + correctAnswer.toLowerCase()).addClass('is-invalid');
+                }
+            }
+
+            return isValid;
+        }
+
+        // Update fungsi Save question untuk menggunakan CKEditor
+        $('#saveQuestionBtn').click(function() {
+            if (validateForm()) {
+                const questionData = {
+                    question: getEditorData('question'),
+                    option_a: getEditorData('option_a'),
+                    option_b: getEditorData('option_b'),
+                    option_c: getEditorData('option_c'),
+                    option_d: getEditorData('option_d'),
+                    option_e: getEditorData('option_e'),
+                    correct_answer: $('#correct_answer').val(),
+                    explanation: getEditorData('explanation')
+                };
+
+                // Jika dalam mode edit, pertahankan ID soal
+                if (editingIndex >= 0 && questions[editingIndex].id) {
+                    questionData.id = questions[editingIndex].id;
+                }
+
+                if (editingIndex >= 0) {
+                    // Edit existing question
+                    questions[editingIndex] = questionData;
+                    showNotification('Soal berhasil diupdate', 'success');
+                } else {
+                    // Add new question
+                    questions.push(questionData);
+                    showNotification('Soal berhasil ditambahkan', 'success');
+                }
+
+                renderQuestions();
+                saveDraftToDatabase(); // Auto save setelah perubahan
+                $('#soalModal').modal('hide');
+                resetForm();
+            }
+        });
+
+        // Update fungsi resetForm untuk CKEditor
+        function resetForm() {
+            $('#questionForm')[0].reset();
+            $('#editIndex').val('');
+            $('#soalModalLabel').text('Tambah Soal');
+            $('#saveQuestionBtnText').text('Simpan Soal');
+            editingIndex = -1;
+
+            // Reset semua CKEditor
+            Object.keys(editorInstances).forEach(editorId => {
+                setEditorData(editorId, '');
+            });
+
+            // Remove validation classes
+            $('.is-invalid').removeClass('is-invalid');
+        }
+
+        // Update fungsi editQuestion untuk CKEditor
+        function editQuestion(index) {
+            editingIndex = index;
+            const q = questions[index];
+
+            // Set data menggunakan CKEditor
+            setEditorData('question', q.question);
+            setEditorData('option_a', q.option_a);
+            setEditorData('option_b', q.option_b);
+            setEditorData('option_c', q.option_c);
+            setEditorData('option_d', q.option_d);
+            setEditorData('option_e', q.option_e);
+            setEditorData('explanation', q.explanation || '');
+
+            $('#correct_answer').val(q.correct_answer);
+
+            $('#soalModalLabel').text('Edit Soal');
+            $('#saveQuestionBtnText').text('Update Soal');
+
+            // Remove validation classes
+            $('.is-invalid').removeClass('is-invalid');
+
+            $('#soalModal').modal('show');
+        }
+
+        // Update event handler untuk correct_answer dropdown
+        $('#correct_answer').change(function() {
+            $(this).removeClass('is-invalid');
+
+            const selectedOption = $(this).val();
+            if (selectedOption) {
+                const optionData = getEditorData('option_' + selectedOption.toLowerCase());
+                if (!optionData.trim()) {
+                    // Beri highlight atau warning bahwa field harus diisi
+                    $('#option_' + selectedOption.toLowerCase()).addClass('border-warning');
+
+                    // Focus ke CKEditor yang diperlukan
+                    if (editorInstances['option_' + selectedOption.toLowerCase()]) {
+                        editorInstances['option_' + selectedOption.toLowerCase()].focus();
+                    }
+                }
+            }
+        });
+
+        // Init semua editor saat dokumen ready
         $(document).ready(function() {
+            // Init CKEditor untuk semua field yang diperlukan
+            const editorIds = ['question', 'explanation', 'option_a', 'option_b', 'option_c', 'option_d',
+                'option_e'
+            ];
+
+            editorIds.forEach(id => {
+                initCKEditor(id);
+            });
             // Load existing questions jika dalam mode edit
             @if (isset($soal) && $soal->questions)
                 questions = {!! json_encode(
@@ -282,7 +519,6 @@
             @if (!isset($soal))
                 autosaveTimer = setInterval(saveDraftToDatabase, 30000);
                 $('#title').on('input change', debounce(saveDraftToDatabase, 3000));
-                $('#durasi').on('input change', debounce(saveDraftToDatabase, 3000));
             @endif
 
             // Initialize Select2
@@ -324,13 +560,10 @@
                         // Load form data
                         if (response.data.title) {
                             $('#title').val(response.data.title);
-                        }
-                        if (response.data.durasi) {
                             $('#durasi').val(response.data.durasi);
                         }
 
-
-                        // Load questions
+                        // Load questions dari questions_data
                         if (response.data.questions && response.data.questions.length > 0) {
                             questions = response.data.questions;
                             renderQuestions();
@@ -348,10 +581,11 @@
         }
 
         // Fungsi untuk save draft ke database (hanya untuk mode tambah)
+        // Fungsi untuk save draft ke database (hanya untuk mode tambah)
         function saveDraftToDatabase() {
             @if (!isset($soal))
                 if (!$('#title').val().trim() && questions.length === 0) {
-                    return; // Tidak ada data untuk disimpan
+                    return;
                 }
 
                 $.ajax({
@@ -362,10 +596,8 @@
                         quiz_type: 'tryout',
                         title: $('#title').val(),
                         durasi: $('#durasi').val(),
-                        questions: questions,
-                        form_data: {
-                            // Data form tambahan jika diperlukan
-                        }
+                        questions: questions, // Data akan disimpan di questions_data
+                        form_data: {}
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -373,6 +605,8 @@
                     success: function(response) {
                         if (response.success) {
                             showNotification('Draft tersimpan otomatis', 'info', 2000);
+                        } else {
+                            console.error('Draft save failed:', response.message);
                         }
                     },
                     error: function(xhr) {
@@ -459,106 +693,27 @@
             }
         });
 
-        // Reset form
-        function resetForm() {
-            $('#questionForm')[0].reset();
-            $('#editIndex').val('');
-            $('#soalModalLabel').text('Tambah Soal');
-            $('#saveQuestionBtnText').text('Simpan Soal');
-            editingIndex = -1;
 
-            // Remove validation classes
-            $('.is-invalid').removeClass('is-invalid');
-        }
 
-        // Save question
-        $('#saveQuestionBtn').click(function() {
-            if (validateForm()) {
-                const questionData = {
-                    question: $('#question').val().trim(),
-                    option_a: $('#option_a').val().trim(),
-                    option_b: $('#option_b').val().trim(),
-                    option_c: $('#option_c').val().trim(),
-                    option_d: $('#option_d').val().trim(),
-                    option_e: $('#option_e').val().trim(),
-                    correct_answer: $('#correct_answer').val(),
-                    explanation: $('#explanation').val().trim()
-                };
 
-                // Jika dalam mode edit, pertahankan ID soal
-                if (editingIndex >= 0 && questions[editingIndex].id) {
-                    questionData.id = questions[editingIndex].id;
-                }
+        // Hilangkan warning ketika user mulai mengisi field
+        $('#option_a, #option_b, #option_c, #option_d, #option_e').on('input', function() {
+            $(this).removeClass('is-invalid border-warning');
 
-                if (editingIndex >= 0) {
-                    // Edit existing question
-                    questions[editingIndex] = questionData;
-                    showNotification('Soal berhasil diupdate', 'success');
-                } else {
-                    // Add new question
-                    questions.push(questionData);
-                    showNotification('Soal berhasil ditambahkan', 'success');
-                }
+            // Jika field yang diisi sesuai dengan jawaban benar yang dipilih, hilangkan error
+            const fieldLetter = $(this).attr('id').split('_')[1].toUpperCase();
+            const correctAnswer = $('#correct_answer').val();
 
-                renderQuestions();
-                saveDraftToDatabase(); // Auto save setelah perubahan
-                $('#soalModal').modal('hide');
-                resetForm();
+            if (fieldLetter === correctAnswer) {
+                $('#correct_answer').removeClass('is-invalid');
             }
         });
 
-        // Validate form
-        function validateForm() {
-            const required = [{
-                    id: 'question',
-                    message: 'Pertanyaan harus diisi'
-                },
-                {
-                    id: 'option_a',
-                    message: 'Pilihan A harus diisi'
-                },
-                {
-                    id: 'option_b',
-                    message: 'Pilihan B harus diisi'
-                },
-                {
-                    id: 'correct_answer',
-                    message: 'Jawaban benar harus dipilih'
-                }
-            ];
-
-            let isValid = true;
-
-            // Reset previous validation
-            $('.is-invalid').removeClass('is-invalid');
-
-            required.forEach(field => {
-                const element = $('#' + field.id);
-                const value = element.val().trim();
-
-                if (!value) {
-                    element.addClass('is-invalid');
-                    element.siblings('.invalid-feedback').text(field.message);
-                    isValid = false;
-                }
-            });
-
-            // Validate correct answer matches available options
-            const correctAnswer = $('#correct_answer').val();
-            if (correctAnswer) {
-                const optionValue = $('#option_' + correctAnswer.toLowerCase()).val().trim();
-                if (!optionValue) {
-                    $('#correct_answer').addClass('is-invalid');
-                    $('#correct_answer').siblings('.invalid-feedback').text(
-                        'Jawaban benar harus sesuai dengan pilihan yang tersedia');
-                    isValid = false;
-                }
-            }
-
-            return isValid;
-        }
-
+        $('#correct_answer').change(function() {
+            $(this).removeClass('is-invalid');
+        });
         // Render questions
+        // Fungsi untuk render questions - PERBAIKAN BAGIAN INI
         function renderQuestions() {
             const container = $('#questionsContainer');
             container.empty();
@@ -571,38 +726,8 @@
             $('#noQuestionsMsg').hide();
 
             questions.forEach((q, index) => {
-                const options = [];
-                if (q.option_a) options.push({
-                    key: 'A',
-                    value: q.option_a,
-                    isCorrect: q.correct_answer === 'A'
-                });
-                if (q.option_b) options.push({
-                    key: 'B',
-                    value: q.option_b,
-                    isCorrect: q.correct_answer === 'B'
-                });
-                if (q.option_c) options.push({
-                    key: 'C',
-                    value: q.option_c,
-                    isCorrect: q.correct_answer === 'C'
-                });
-                if (q.option_d) options.push({
-                    key: 'D',
-                    value: q.option_d,
-                    isCorrect: q.correct_answer === 'D'
-                });
-                if (q.option_e) options.push({
-                    key: 'E',
-                    value: q.option_e,
-                    isCorrect: q.correct_answer === 'E'
-                });
-
-                const optionsHtml = options.map(opt =>
-                    `<div class="option-item ${opt.isCorrect ? 'correct-answer' : ''}">${opt.key}. ${opt.value}</div>`
-                ).join('');
-
-                const questionHtml = `
+                // Buat container untuk setiap soal
+                const questionCard = $(`
             <div class="question-card" data-index="${index}">
                 <div class="question-header">
                     <div class="d-flex justify-content-between align-items-center">
@@ -615,20 +740,20 @@
                                 <i class="bi bi-trash"></i> Hapus
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-info me-1" onclick="toggleExplanation(${index})">
-    <i class="bi bi-chat-text"></i> Pembahasan
-</button>
+                                <i class="bi bi-chat-text"></i> Pembahasan
+                            </button>
                         </div>
                     </div>
                 </div>
                 <div class="question-body">
                     <div class="mb-3">
                         <strong>Pertanyaan:</strong>
-                        <div class="mt-2">${q.question}</div>
+                        <div class="mt-2 question-content-display"></div>
                     </div>
                     <div class="row">
                         <div class="col-md-8">
                             <strong>Pilihan Jawaban:</strong>
-                            <div class="mt-2">${optionsHtml}</div>
+                            <div class="mt-2" id="options-display-${index}"></div>
                         </div>
                         <div class="col-md-4">
                             <strong>Jawaban Benar:</strong>
@@ -636,27 +761,91 @@
                                 <span class="badge bg-success">${q.correct_answer}</span>
                             </div>
                         </div>
-                        <div class="mt-3" id="explanation-${index}" style="${q.explanation ? '' : 'display: none;'}">
-    <strong>Pembahasan:</strong>
-    <div class="mt-2">${q.explanation || ''}</div>
-</div>
                     </div>
-
-                    <!-- Hidden inputs untuk submit -->
-                    ${q.id ? `<input type="hidden" name="questions[${index}][id]" value="${q.id}">` : ''}
-                    <input type="hidden" name="questions[${index}][question]" value="${escapeHtml(q.question)}">
-                    <input type="hidden" name="questions[${index}][option_a]" value="${escapeHtml(q.option_a)}">
-                    <input type="hidden" name="questions[${index}][option_b]" value="${escapeHtml(q.option_b)}">
-                    <input type="hidden" name="questions[${index}][option_c]" value="${escapeHtml(q.option_c)}">
-                    <input type="hidden" name="questions[${index}][option_d]" value="${escapeHtml(q.option_d)}">
-                    <input type="hidden" name="questions[${index}][option_e]" value="${escapeHtml(q.option_e)}">
-                    <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
-                    <input type="hidden" name="questions[${index}][explanation]" value="${escapeHtml(q.explanation || '')}">
+                    <div class="mt-3" id="explanation-${index}" style="${q.explanation ? '' : 'display: none;'}">
+                        <strong>Pembahasan:</strong>
+                        <div class="mt-2 explanation-content-display"></div>
+                    </div>
                 </div>
             </div>
+        `);
+
+                // Set konten pertanyaan menggunakan .html() untuk render HTML dengan benar
+                questionCard.find('.question-content-display')
+                    .addClass('ck-content')
+                    .html(q.question || '');
+                // Render pilihan jawaban
+                const optionsContainer = questionCard.find(`#options-display-${index}`);
+                const options = [{
+                        key: 'A',
+                        value: q.option_a
+                    },
+                    {
+                        key: 'B',
+                        value: q.option_b
+                    },
+                    {
+                        key: 'C',
+                        value: q.option_c
+                    },
+                    {
+                        key: 'D',
+                        value: q.option_d
+                    },
+                    {
+                        key: 'E',
+                        value: q.option_e
+                    }
+                ];
+
+                options.forEach(opt => {
+                    if (opt.value && opt.value.trim()) {
+                        const isCorrect = q.correct_answer === opt.key;
+                        const optionElement = $(`
+                    <div class="option-item ${isCorrect ? 'correct-answer' : ''}">
+                        <strong>${opt.key}.</strong>
+                        <span class="option-content-display"></span>
+                    </div>
+                `);
+
+                        // Set konten pilihan menggunakan .html()
+                        optionElement.find('.option-content-display')
+                            .addClass('ck-content')
+                            .html(opt.value);
+                        optionsContainer.append(optionElement);
+                    }
+                });
+
+                // Set pembahasan jika ada
+                if (q.explanation) {
+                    questionCard.find('.explanation-content-display')
+                        .addClass('ck-content')
+                        .html(q.explanation);
+                }
+
+
+                // Tambahkan hidden inputs untuk form submission
+                const hiddenInputsHtml = `
+            ${q.id ? `<input type="hidden" name="questions[${index}][id]" value="${q.id}">` : ''}
+            <input type="hidden" name="questions[${index}][question]" value="${escapeForInput(q.question)}">
+            <input type="hidden" name="questions[${index}][option_a]" value="${escapeForInput(q.option_a)}">
+            <input type="hidden" name="questions[${index}][option_b]" value="${escapeForInput(q.option_b)}">
+            <input type="hidden" name="questions[${index}][option_c]" value="${escapeForInput(q.option_c)}">
+            <input type="hidden" name="questions[${index}][option_d]" value="${escapeForInput(q.option_d)}">
+            <input type="hidden" name="questions[${index}][option_e]" value="${escapeForInput(q.option_e)}">
+            <input type="hidden" name="questions[${index}][correct_answer]" value="${q.correct_answer}">
+            <input type="hidden" name="questions[${index}][explanation]" value="${escapeForInput(q.explanation || '')}">
         `;
-                container.append(questionHtml);
+
+                questionCard.find('.question-body').append(hiddenInputsHtml);
+                container.append(questionCard);
             });
+        }
+
+        // Fungsi untuk escape HTML pada hidden inputs
+        function escapeForInput(text) {
+            if (!text) return '';
+            return text.replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
         }
 
         // Fungsi untuk menampilkan/sembunyikan pembahasan
@@ -664,36 +853,9 @@
             const explanationEl = $(`#explanation-${index}`);
             explanationEl.toggle();
         }
-        // Escape HTML untuk mencegah XSS
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
 
-        // Edit question
-        function editQuestion(index) {
-            editingIndex = index;
-            const q = questions[index];
 
-            $('#question').val(q.question);
-            $('#option_a').val(q.option_a);
-            $('#option_b').val(q.option_b);
-            $('#option_c').val(q.option_c);
-            $('#option_d').val(q.option_d);
-            $('#option_e').val(q.option_e);
-            $('#correct_answer').val(q.correct_answer);
-            $('#explanation').val(q.explanation || '');
 
-            $('#soalModalLabel').text('Edit Soal');
-            $('#saveQuestionBtnText').text('Update Soal');
-
-            // Remove validation classes
-            $('.is-invalid').removeClass('is-invalid');
-
-            $('#soalModal').modal('show');
-        }
 
         // Delete question
         function deleteQuestion(index) {
@@ -720,7 +882,7 @@
         $('#mainForm').submit(function(e) {
             if (questions.length === 0) {
                 e.preventDefault();
-                Swal.fire('Error!', 'Minimal harus ada 1 soal!', 'error');
+                Swal.fire('Mohon Maaf!', 'Minimal harus ada 1 soal!', 'error');
                 return false;
             }
 
@@ -763,6 +925,9 @@
             $('#title').on('input', function() {
                 hasUnsavedChanges = true;
             });
+            $('#durasi').on('input', function() {
+                hasUnsavedChanges = true;
+            });
 
             // Fungsi untuk menonaktifkan beforeunload
             function disableBeforeUnload() {
@@ -789,7 +954,7 @@
 
                 if (questions.length === 0) {
                     e.preventDefault();
-                    Swal.fire('Error!', 'Minimal harus ada 1 soal!', 'error');
+                    Swal.fire('Mohon Maaf!', 'Minimal harus ada 1 soal!', 'error');
                     return false;
                 }
 

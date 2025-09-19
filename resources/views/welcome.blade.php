@@ -314,52 +314,37 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <!-- Illustration Image -->
             <div class="flex justify-center">
-                <img src="{{ asset('image/join1.jpg') }}" alt="How to Join Illustration"
+                <img src="{{ asset('storage/' . $landingPage->how_to_join_image ?? 'image/logo.png') }}"
+                    alt="How to Join Illustration"
                     class="w-full max-w-sm md:max-w-md lg:max-w-lg h-auto rounded-xl shadow-md">
             </div>
 
             <!-- How to Join Steps -->
             <div>
-                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-6">How to Join?</h2>
-                <p class="text-lg text-gray-600 mb-8">Ikuti langkah mudah berikut untuk mulai belajar di <span
-                        class="font-semibold text-primary-200">KelasSatu</span>:</p>
+                <h2 class="text-3xl md:text-4xl font-bold text-primary-200 mb-6">
+                    {{ $landingPage->how_to_join_title ?? 'How to Join?' }}
+                </h2>
+                <p class="text-lg text-gray-600 mb-8">
+                    {{ $landingPage->how_to_join_description ?? 'Ikuti langkah mudah berikut untuk mulai belajar di KelasSatu:' }}
+                </p>
+
                 <ol class="space-y-6">
-                    <li class="flex items-start">
-                        <span
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
-                            1
-                        </span>
-                        <p class="text-gray-700 pt-2"><strong>Buat Akun:</strong> Daftar gratis dengan email atau akun
-                            Google.</p>
-                    </li>
-                    <li class="flex items-start">
-                        <span
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
-                            2
-                        </span>
-                        <p class="text-gray-700 pt-2"><strong>Pilih Kursus:</strong> Jelajahi kursus sesuai kebutuhan dan
-                            minat Anda.</p>
-                    </li>
-                    <li class="flex items-start">
-                        <span
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
-                            3
-                        </span>
-                        <p class="text-gray-700 pt-2"><strong>Lakukan Pembayaran:</strong> Amankan kursus pilihan dengan
-                            metode pembayaran mudah.</p>
-                    </li>
-                    <li class="flex items-start">
-                        <span
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
-                            4
-                        </span>
-                        <p class="text-gray-700 pt-2"><strong>Mulai Belajar:</strong> Akses materi kapan saja dan nikmati
-                            pengalaman belajar interaktif.</p>
-                    </li>
+                    @foreach ($how_to_join as $index => $step)
+                        <li class="flex items-start">
+                            <span
+                                class="flex items-center justify-center w-10 h-10 rounded-full bg-primary-200 text-white font-bold text-lg mr-4 flex-shrink-0">
+                                {{ $index + 1 }}
+                            </span>
+                            <p class="text-gray-700 pt-2">
+                                <strong>{{ $step->title }}:</strong> {{ $step->description }}
+                            </p>
+                        </li>
+                    @endforeach
                 </ol>
             </div>
         </div>
     </section>
+
 
     <!-- Testimonial Section -->
     <!-- Testimonial Section -->
@@ -540,12 +525,21 @@
 
         /* Image Slider Styles */
         .image-slider .slide {
-            display: none;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            transition: opacity 0.7s ease-in-out;
+            z-index: 0;
         }
 
         .image-slider .slide.active {
-            display: block;
+            opacity: 1;
+            position: relative;
+            z-index: 1;
         }
+
 
         .slider-dot.active {
             background-color: white;
@@ -630,30 +624,42 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
     <script>
         let slideIndex = 0;
-        showSlides();
+        const slides = document.querySelectorAll(".image-slider .slide");
+        const dots = document.querySelectorAll(".slider-dot");
+        let slideInterval;
 
-        function showSlides() {
-            let slides = document.querySelectorAll(".image-slider .slide");
-            let dots = document.querySelectorAll(".slider-dot");
+        function showSlide(index) {
             slides.forEach((s, i) => {
-                s.style.display = "none";
-                dots[i].classList.remove("active", "bg-white");
+                s.classList.remove("active");
+                dots[i].classList.remove("active");
                 dots[i].classList.add("bg-white/50");
             });
-            slideIndex++;
-            if (slideIndex > slides.length) {
-                slideIndex = 1
-            }
-            slides[slideIndex - 1].style.display = "block";
-            dots[slideIndex - 1].classList.add("active", "bg-white");
-            dots[slideIndex - 1].classList.remove("bg-white/50");
-            setTimeout(showSlides, 5000); // ganti slide tiap 5 detik
+            slides[index].classList.add("active");
+            dots[index].classList.add("active", "bg-white");
+            dots[index].classList.remove("bg-white/50");
+            slideIndex = index;
         }
 
-        function currentSlide(n) {
-            slideIndex = n - 1; // reset ke index tertentu
-            showSlides();
+        function nextSlide() {
+            slideIndex = (slideIndex + 1) % slides.length;
+            showSlide(slideIndex);
         }
+
+        // Start automatic sliding
+        function startSlideShow() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Stop and restart slideshow when dot clicked
+        function currentSlide(n) {
+            clearInterval(slideInterval);
+            showSlide(n - 1);
+            startSlideShow();
+        }
+
+        // Initialize
+        showSlide(slideIndex);
+        startSlideShow();
     </script>
 
     <script>

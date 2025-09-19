@@ -86,8 +86,16 @@
                                         data-bs-target="#testimonial" type="button" role="tab">Testimoni</button>
                                 </li>
                                 <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="how-to-join-tab" data-bs-toggle="tab"
+                                        data-bs-target="#how-to-join" type="button" role="tab">How to Join</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="faq-tab" data-bs-toggle="tab" data-bs-target="#faq"
                                         type="button" role="tab">FAQ</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="footer-tab" data-bs-toggle="tab"
+                                        data-bs-target="#footer" type="button" role="tab">Footer</button>
                                 </li>
                             </ul>
 
@@ -542,6 +550,138 @@
                                     </div>
                                 </div>
 
+
+                                <div class="tab-pane fade" id="how-to-join" role="tabpanel">
+                                    <div class="mt-4">
+                                        <h6 class="mb-3 text-primary">How to Join Section</h6>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Judul</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="how_to_join_title"
+                                                    class="form-control @error('how_to_join_title') is-invalid @enderror"
+                                                    value="{{ old('how_to_join_title', $landing->how_to_join_title ?? 'How to Join?') }}" />
+                                                @error('how_to_join_title')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Deskripsi</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="how_to_join_description" rows="3"
+                                                    class="form-control @error('how_to_join_description') is-invalid @enderror">{{ old('how_to_join_description', $landing->how_to_join_description ?? 'Ikuti langkah mudah berikut untuk mulai belajar di KelasSatu:') }}</textarea>
+                                                @error('how_to_join_description')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Gambar</label>
+                                            <div class="col-sm-10">
+                                                <input type="file" name="how_to_join_image"
+                                                    class="form-control image-upload @error('how_to_join_image') is-invalid @enderror"
+                                                    accept="image/*" data-preview="how_to_join_image_preview" />
+                                                <div class="image-preview mt-2" id="how_to_join_image_preview">
+                                                    @if (isset($landing) && $landing->how_to_join_image)
+                                                        <img src="{{ asset('storage/' . $landing->how_to_join_image) }}"
+                                                            class="img-thumbnail" style="max-height: 150px;">
+                                                        <small class="text-muted d-block">Current:
+                                                            {{ basename($landing->how_to_join_image) }}</small>
+                                                    @endif
+                                                </div>
+                                                @error('how_to_join_image')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <!-- Dynamic How to Join Steps -->
+                                        <h6 class="mb-3 text-primary mt-4">Langkah-langkah</h6>
+
+                                        <div id="how-to-join-container">
+                                            @php
+                                                $how_to_join_steps =
+                                                    isset($landing) && isset($landing->how_to_join_steps)
+                                                        ? $landing->how_to_join_steps
+                                                        : collect([
+                                                            (object) [
+                                                                'title' => 'Buat Akun',
+                                                                'description' =>
+                                                                    'Daftar gratis dengan email atau akun Google.',
+                                                            ],
+                                                            (object) [
+                                                                'title' => 'Pilih Kursus',
+                                                                'description' =>
+                                                                    'Jelajahi kursus sesuai kebutuhan dan minat Anda.',
+                                                            ],
+                                                            (object) [
+                                                                'title' => 'Lakukan Pembayaran',
+                                                                'description' =>
+                                                                    'Amankan kursus pilihan dengan metode pembayaran mudah.',
+                                                            ],
+                                                            (object) [
+                                                                'title' => 'Mulai Belajar',
+                                                                'description' =>
+                                                                    'Akses materi kapan saja dan nikmati pengalaman belajar interaktif.',
+                                                            ],
+                                                        ]);
+                                            @endphp
+
+                                            {{-- Ganti bagian tombol hapus dalam how-to-join container dengan kode berikut: --}}
+
+                                            @foreach ($how_to_join_steps as $index => $step)
+                                                <div class="how-to-join-item card mb-3"
+                                                    data-step-id="{{ $step->id ?? '' }}"
+                                                    data-is-saved="{{ isset($step->id) ? 'true' : 'false' }}">
+                                                    <div
+                                                        class="card-header d-flex justify-content-between align-items-center">
+                                                        <h6 class="mb-0 text-secondary">Langkah {{ $index + 1 }}</h6>
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-danger remove-how-to-join-step"
+                                                            @if (count($how_to_join_steps) <= 1) disabled @endif>
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        {{-- Hidden input untuk ID database --}}
+                                                        @if (isset($step->id))
+                                                            <input type="hidden"
+                                                                name="how_to_join_steps[{{ $index }}][id]"
+                                                                value="{{ $step->id }}" class="step-id-input">
+                                                        @endif
+                                                        <input type="hidden"
+                                                            name="how_to_join_steps[{{ $index }}][landing_id]"
+                                                            value="{{ $landing->id ?? '' }}" class="landing-id-input">
+
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Judul Langkah</label>
+                                                            <input type="text"
+                                                                name="how_to_join_steps[{{ $index }}][title]"
+                                                                class="form-control"
+                                                                value="{{ old('how_to_join_steps.' . $index . '.title', $step->title) }}" />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Deskripsi</label>
+                                                            <textarea name="how_to_join_steps[{{ $index }}][description]" rows="3" class="form-control">{{ old('how_to_join_steps.' . $index . '.description', $step->description) }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <button type="button" id="add-how-to-join-step" class="btn btn-success">
+                                                    <i class="fas fa-plus"></i> Tambah Langkah
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- FAQ Section Tab -->
                                 <div class="tab-pane fade" id="faq" role="tabpanel">
                                     <div class="mt-4">
@@ -636,7 +776,107 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="tab-pane fade" id="footer" role="tabpanel">
+                                    <div class="mt-4">
+                                        <h6 class="mb-3 text-primary">Footer Section</h6>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Judul Perusahaan</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_title"
+                                                    class="form-control @error('footer_title') is-invalid @enderror"
+                                                    value="{{ old('footer_title', $landing->footer_title ?? 'KelasSatu') }}" />
+                                                @error('footer_title')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Deskripsi Perusahaan</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="footer_description" rows="3"
+                                                    class="form-control @error('footer_description') is-invalid @enderror">{{ old('footer_description', $landing->footer_description ?? 'Platform e-learning terdepan untuk masa depan yang lebih cerah.') }}</textarea>
+                                                @error('footer_description')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Alamat</label>
+                                            <div class="col-sm-10">
+                                                <textarea name="footer_address" rows="2" class="form-control @error('footer_address') is-invalid @enderror">{{ old('footer_address', $landing->footer_address ?? 'Siantan Hulu, Kec. Pontianak Utara, Kota Pontianak, Kalimantan Barat 78242') }}</textarea>
+                                                @error('footer_address')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Link WhatsApp</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_whatsapp"
+                                                    class="form-control @error('footer_whatsapp') is-invalid @enderror"
+                                                    value="{{ old('footer_whatsapp', $landing->footer_whatsapp ?? '6281311117096') }}" />
+                                                @error('footer_whatsapp')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Link Instagram</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_instagram"
+                                                    class="form-control @error('footer_instagram') is-invalid @enderror"
+                                                    value="{{ old('footer_instagram', $landing->footer_instagram ?? 'kelassatu_official') }}" />
+                                                @error('footer_instagram')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Link TikTok</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_tiktok"
+                                                    class="form-control @error('footer_tiktok') is-invalid @enderror"
+                                                    value="{{ old('footer_tiktok', $landing->footer_tiktok ?? 'kelassatu.com') }}" />
+                                                @error('footer_tiktok')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Link Facebook</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_facebook"
+                                                    class="form-control @error('footer_facebook') is-invalid @enderror"
+                                                    value="{{ old('footer_facebook', $landing->footer_facebook ?? 'KelasSatu') }}" />
+                                                @error('footer_facebook')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Teks Copyright</label>
+                                            <div class="col-sm-10">
+                                                <input type="text" name="footer_copyright"
+                                                    class="form-control @error('footer_copyright') is-invalid @enderror"
+                                                    value="{{ old('footer_copyright', $landing->footer_copyright ?? '© 2025 PT KELAS SATU INDONESIA. Seluruh hak cipta dilindungi.') }}" />
+                                                @error('footer_copyright')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+
 
                             <!-- Submit Buttons -->
                             <div class="row justify-content-end mt-4">
@@ -861,6 +1101,106 @@
                 }
             });
 
+
+            let howToJoinCount =
+                {{ isset($landing) && isset($landing->how_to_join_steps) ? count($landing->how_to_join_steps) : 5 }};
+
+            // Add new how to join step
+            $('#add-how-to-join-step').click(function() {
+                const newIndex = howToJoinCount;
+                const newStep = `
+        <div class="how-to-join-item card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 text-secondary">Langkah ${newIndex + 1}</h6>
+                <button type="button" class="btn btn-sm btn-danger remove-how-to-join-step">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Judul Langkah</label>
+                    <input type="text" name="how_to_join_steps[${newIndex}][title]"
+                        class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea name="how_to_join_steps[${newIndex}][description]" rows="3"
+                        class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+    `;
+
+                $('#how-to-join-container').append(newStep);
+                howToJoinCount++;
+
+                // Update remove button status
+                updateHowToJoinRemoveButtons();
+            });
+
+            // Remove how to join step
+            $(document).on('click', '.remove-how-to-join-step', function() {
+                const $item = $(this).closest('.how-to-join-item');
+                const stepId = $item.data('step-id');
+                const isSaved = $item.data('is-saved') === true || $item.data('is-saved') === 'true';
+                const landingId = $item.find('.landing-id-input').val();
+                const totalSteps = $('.how-to-join-item').length;
+
+                if (totalSteps <= 1) {
+                    alert('Minimal harus ada 1 langkah');
+                    return;
+                }
+
+                if (isSaved && stepId) {
+                    // Konfirmasi penghapusan
+                    if (!confirm(
+                            'Apakah Anda yakin ingin menghapus langkah ini? Data akan dihapus dari database.'
+                        )) {
+                        return;
+                    }
+
+                    // AJAX request untuk hapus dari database
+                    $.post('{{ route('landing.delete.how_to_join_step') }}', {
+                            _token: '{{ csrf_token() }}',
+                            step_id: stepId,
+                            landing_id: landingId
+                        })
+                        .done(function(response) {
+                            if (response.success) {
+                                $item.remove();
+                                howToJoinCount--;
+                                renumberHowToJoinSteps();
+                                updateHowToJoinRemoveButtons();
+
+                                // Show success message
+                                showToast('success', response.message);
+                            } else {
+                                alert(response.message);
+                            }
+                        })
+                        .fail(function() {
+                            alert('Terjadi kesalahan saat menghapus data');
+                        });
+                } else {
+                    // Hapus langsung jika belum tersimpan
+                    $item.remove();
+                    howToJoinCount--;
+                    renumberHowToJoinSteps();
+                    updateHowToJoinRemoveButtons();
+                }
+            });
+
+            // Function to update remove button status for How to Join
+            function updateHowToJoinRemoveButtons() {
+                const totalSteps = $('.how-to-join-item').length;
+                $('.remove-how-to-join-step').each(function(index) {
+                    if (totalSteps <= 1) {
+                        $(this).prop('disabled', true);
+                    } else {
+                        $(this).prop('disabled', false);
+                    }
+                });
+            }
             // Remove testimonial
             $(document).on('click', '.remove-testimonial', function() {
                 if (testimonialCount > 2) {

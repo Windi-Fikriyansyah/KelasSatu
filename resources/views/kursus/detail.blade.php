@@ -106,6 +106,41 @@
                                 class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-200"
                                 placeholder="Masukkan kode referral">
                         </div>
+
+                        @if ($course->mapel === 'pilihan')
+                            <div class="mb-6">
+                                <h3 class="text-lg font-semibold text-primary-200 mb-2">Pilih Modul (max
+                                    {{ $course->limit }})</h3>
+
+                                <!-- Dropdown -->
+                                <div class="relative">
+                                    <button type="button" id="moduleDropdownBtn"
+                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 text-left focus:outline-none focus:ring-2 focus:ring-primary-200">
+                                        Pilih Modul
+                                        <span class="float-right">▼</span>
+                                    </button>
+                                    <div id="moduleDropdownMenu"
+                                        class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
+                                        @foreach ($modules as $module)
+                                            <label
+                                                class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                                <input type="checkbox" name="modules[]" value="{{ $module->id }}"
+                                                    class="module-checkbox">
+                                                <span>{{ $module->title }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <!-- Input hidden untuk menyimpan modul yang dipilih -->
+                                <input type="hidden" name="selected_modules" id="selected_modules">
+                            </div>
+                        @elseif($course->mapel === 'wajib')
+                            <input type="hidden" name="modules[]" value="all">
+                            <div class="mb-6 p-4 bg-green-50 rounded-lg">
+                                <p class="text-sm text-green-700">Semua modul sudah otomatis termasuk dalam kursus ini.</p>
+                            </div>
+                        @endif
                         <!-- Pricing Section -->
                         <div class="border-t border-gray-200 pt-4 mb-6">
                             <div class="space-y-3">
@@ -188,6 +223,10 @@
             </div>
         </div>
     </section>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
 @endsection
 
 @push('style')
@@ -199,23 +238,130 @@
         .hover\:scale-105:hover {
             transform: scale(1.05);
         }
+
+        @keyframes slide-in {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slide-in 0.3s ease forwards;
+        }
     </style>
 @endpush
 @push('js')
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const payBtn = document.getElementById("pay-now-btn");
-            payBtn.addEventListener("click", function(e) {
-                e.preventDefault();
-                let referralCode = document.getElementById("referral_code").value;
-                let baseUrl = payBtn.getAttribute("href");
+        function showToast(message, type = 'error') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
 
-                if (referralCode) {
-                    window.location.href = baseUrl + "?referral_code=" + encodeURIComponent(referralCode);
-                } else {
-                    window.location.href = baseUrl;
+            const toast = document.createElement('div');
+            toast.className = `min-w-[250px] max-w-sm px-4 py-3 rounded-lg shadow-lg text-white font-medium flex items-center justify-between
+        ${type === 'error' ? 'bg-red-500' : 'bg-green-500'} animate-slide-in`;
+            toast.innerHTML = `
+        <span>${message}</span>
+        <button class="ml-4 font-bold" onclick="this.parentElement.remove()">✕</button>
+    `;
+
+            container.appendChild(toast);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdownBtn = document.getElementById("moduleDropdownBtn");
+            const dropdownMenu = document.getElementById("moduleDropdownMenu");
+            const checkboxes = document.querySelectorAll(".module-checkbox");
+            const maxLimit = {{ $course->limit ?? 0 }};
+            const payBtn = document.getElementById("pay-now-btn");
+
+            // Toggle dropdown
+            if (dropdownBtn && dropdownMenu) {
+                dropdownBtn.addEventListener("click", () => {
+                    dropdownMenu.classList.toggle("hidden");
+                });
+            }
+
+            // Limit checkbox selection
+            function updateCheckboxes() {
+                const checkedCount = document.querySelectorAll(".module-checkbox:checked").length;
+                checkboxes.forEach(cb => {
+                    if (!cb.checked) cb.disabled = checkedCount >= maxLimit;
+                });
+
+                // Update button text
+                if (dropdownBtn) {
+                    if (checkedCount > 0) {
+                        dropdownBtn.innerHTML = `${checkedCount} modul dipilih <span class="float-right">▼</span>`;
+                    } else {
+                        dropdownBtn.innerHTML = `Pilih Modul <span class="float-right">▼</span>`;
+                    }
+                }
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener("change", updateCheckboxes));
+
+            // Close dropdown if clicked outside
+            document.addEventListener("click", function(e) {
+                if (dropdownBtn && dropdownMenu && !dropdownBtn.contains(e.target) && !dropdownMenu
+                    .contains(e.target)) {
+                    dropdownMenu.classList.add("hidden");
                 }
             });
+
+            // Handle payment button click
+            if (payBtn) {
+                payBtn.addEventListener("click", function(e) {
+                    e.preventDefault();
+
+                    // Cek apakah ini course dengan mapel "pilihan" dan belum ada modul yang dipilih
+                    const courseMapel = "{{ $course->mapel }}";
+                    if (courseMapel === "pilihan") {
+                        const selectedModules = [];
+                        document.querySelectorAll(".module-checkbox:checked").forEach(checkbox => {
+                            selectedModules.push(checkbox.value);
+                        });
+
+                        if (selectedModules.length === 0) {
+                            showToast("Silakan pilih minimal 1 modul terlebih dahulu!", "error");
+                            return;
+                        }
+
+
+                        // Set nilai input hidden
+                        document.getElementById("selected_modules").value = JSON.stringify(selectedModules);
+                    }
+
+                    let referralCode = document.getElementById("referral_code").value;
+                    let baseUrl = payBtn.getAttribute("href");
+                    let urlParams = new URLSearchParams();
+
+                    if (referralCode) {
+                        urlParams.append('referral_code', referralCode);
+                    }
+
+                    // Tambahkan selected_modules ke URL
+                    if (courseMapel === "pilihan") {
+                        const selectedModulesValue = document.getElementById("selected_modules").value;
+                        if (selectedModulesValue) {
+                            urlParams.append('selected_modules', selectedModulesValue);
+                        }
+                    }
+
+                    const finalUrl = urlParams.toString() ? baseUrl + "?" + urlParams.toString() : baseUrl;
+                    window.location.href = finalUrl;
+                });
+            }
         });
     </script>
 @endpush

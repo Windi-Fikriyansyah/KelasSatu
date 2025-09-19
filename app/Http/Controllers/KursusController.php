@@ -28,6 +28,7 @@ class KursusController extends Controller
                 ->select([
                     'courses.id',
                     'courses.title',
+                    'courses.mapel',
                     'courses.description',
                     'courses.thumbnail',
                     'courses.price',
@@ -108,6 +109,8 @@ class KursusController extends Controller
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'required|numeric|min:0',
             'is_free' => 'required|boolean',
+            'mapel' => 'required',
+            'limit' => 'nullable',
             'status' => 'required|in:active,inactive',
             'access_type' => 'required|in:lifetime,subscription',
             'subscription_duration' => 'nullable|integer|min:1',
@@ -129,6 +132,8 @@ class KursusController extends Controller
             DB::table('courses')->insert([
                 'title' => $request->title,
                 'urutan' => $request->urutan,
+                'mapel' => $request->mapel,
+                'limit' => $request->limit,
                 'description' => $request->description,
                 'id_kategori' => $request->id_kategori,
                 'thumbnail' => $thumbnailPath,
@@ -175,6 +180,8 @@ class KursusController extends Controller
             'urutan' => 'required|integer|unique:courses,urutan,' . $id,
             'id_kategori' => 'required|string',
             'description' => 'required|string',
+            'mapel' => 'required',
+            'limit' => 'nullable',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'price' => 'required|numeric|min:0',
             'is_free' => 'required|boolean',
@@ -198,6 +205,8 @@ class KursusController extends Controller
             $dataUpdate = [
                 'title' => $request->title,
                 'urutan' => $request->urutan,
+                'mapel' => $request->mapel,
+                'limit' => $request->limit,
                 'id_kategori' => $request->id_kategori,
                 'description' => $request->description,
                 'price' => $price,
@@ -261,8 +270,13 @@ class KursusController extends Controller
             ->orderBy('order', 'asc')
             ->get();
 
+        $how_to_join = DB::table('landing_page_how_to_join_steps')
+            ->where('landing_page_id', $landingPage->id ?? 1)
+            ->orderBy('order', 'asc')
+            ->get();
+
         // Kirim data ke view
-        return view('welcome', compact('courses', 'landingPage', 'featurespage', 'testimonials', 'faqs'));
+        return view('welcome', compact('courses', 'landingPage', 'featurespage', 'testimonials', 'faqs', 'how_to_join'));
     }
 
     public function course()
@@ -292,7 +306,11 @@ class KursusController extends Controller
             abort(404);
         }
 
-        return view('kursus.detail', compact('course'));
+        $modules = DB::table('course_modules')
+            ->where('course_id', $course->id)
+            ->get();
+
+        return view('kursus.detail', compact('course', 'modules'));
     }
 
     public function checkout($id)

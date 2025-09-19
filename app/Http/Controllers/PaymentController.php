@@ -30,6 +30,36 @@ class PaymentController extends Controller
             $course   = DB::table('courses')->where('id', $courseId)->first();
             $user     = Auth::user();
             $referralCode = request()->query('referral_code');
+            $selectedModules = [];
+            if (request()->has('selected_modules')) {
+                $selectedModulesJson = request()->query('selected_modules');
+                $selectedModules = json_decode($selectedModulesJson, true) ?? [];
+            }
+
+            // Simpan ke session untuk digunakan nanti
+            if (!empty($selectedModules)) {
+                // Hapus data lama jika ada
+                DB::table('pending_modules')
+                    ->where('user_id', $user->id)
+                    ->where('course_id', $course->id)
+                    ->delete();
+
+
+                DB::table('pending_modules')->insert([
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'modules' => json_encode($selectedModules),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                Log::info('Pending modules saved to database', [
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'modules' => $selectedModules
+                ]);
+            }
+
 
             $hasAccess = DB::table('enrollments')
                 ->where('user_id', $user->id)
@@ -81,6 +111,7 @@ class PaymentController extends Controller
                 'channels' => $channels,
                 'encryptedCourseId' => $encryptedCourseId,
                 'referralCode' => $referralCode,
+                'selectedModules' => json_encode($selectedModules),
             ]);
         } catch (\Exception $e) {
             Log::error('Tripay Payment error', [
@@ -99,6 +130,21 @@ class PaymentController extends Controller
             $courseId = Crypt::decryptString($encryptedCourseId);
             $course   = DB::table('courses')->where('id', $courseId)->first();
             $user     = Auth::user();
+            $selectedModules = [];
+            if ($request->has('selected_modules') && !empty($request->input('selected_modules'))) {
+                $selectedModulesJson = $request->input('selected_modules');
+                $selectedModules = json_decode($selectedModulesJson, true) ?? [];
+            }
+
+            // Simpan atau update session dengan modul yang dipilih
+            if (!empty($selectedModules)) {
+                session(['selected_modules_' . $courseId => $selectedModules]);
+                Log::info('ProcessPayment - Selected modules saved to session', [
+                    'course_id' => $courseId,
+                    'modules' => $selectedModules,
+                    'user_id' => $user->id
+                ]);
+            }
 
             if (!$course) {
                 return redirect()->back()->with('error', 'Kursus tidak ditemukan.');
@@ -321,6 +367,12 @@ class PaymentController extends Controller
     private function grantFreeAccess($userId, $courseId, $encryptedCourseId)
     {
         try {
+            $course = DB::table('courses')->where('id', $courseId)->first();
+            if (!$course) {
+                return redirect()->route('course.index')
+                    ->with('error', 'Kursus tidak ditemukan.');
+            }
+
             DB::table('enrollments')->insert([
                 'user_id' => $userId,
                 'course_id' => $courseId,
@@ -329,15 +381,15 @@ class PaymentController extends Controller
 
             DB::table('transactions')->insert([
                 'external_id' => 'free-' . $courseId . '-' . $userId . '-' . time(),
-                'invoice_id' => 'FREE-' . time(),
-                'user_id' => $userId,
-                'course_id' => $courseId,
-                'amount' => 0,
-                'status' => 'PAID',
+                'invoice_id'  => 'FREE-' . time(),
+                'user_id'     => $userId,
+                'course_id'   => $courseId,
+                'amount'      => 0,
+                'status'      => 'PAID',
                 'payment_method' => 'FREE',
-                'paid_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'paid_at'     => now(),
+                'created_at'  => now(),
+                'updated_at'  => now(),
             ]);
 
             return redirect()->route('course.show', $encryptedCourseId)
@@ -353,6 +405,7 @@ class PaymentController extends Controller
                 ->with('error', 'Terjadi kesalahan saat memberikan akses. Silakan coba lagi.');
         }
     }
+
 
 
 
@@ -381,6 +434,44 @@ class PaymentController extends Controller
                     'enrolled_at' => now(),
                 ]);
             }
+
+            $pending = DB::table('pending_modules')
+                ->where('user_id', $userId)
+                ->where('course_id', $courseId)
+                ->first();
+
+            if ($pending) {
+                $selectedModules = json_decode($pending->modules, true);
+
+                foreach ($selectedModules as $moduleId) {
+                    try {
+                        DB::table('module_pilihan')->insert([
+                            'user_id' => $userId,
+                            'course_id' => $courseId,
+                            'module_id' => $moduleId,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+
+                        Log::info('Module_pilihan inserted for paid course', [
+                            'user_id' => $userId,
+                            'course_id' => $courseId,
+                            'module_id' => $moduleId
+                        ]);
+                    } catch (\Exception $e) {
+                        Log::error('Failed to insert module_pilihan for paid course', [
+                            'user_id' => $userId,
+                            'course_id' => $courseId,
+                            'module_id' => $moduleId,
+                            'error' => $e->getMessage()
+                        ]);
+                    }
+                }
+
+                // Hapus pending_modules setelah digunakan
+                DB::table('pending_modules')->where('id', $pending->id)->delete();
+            }
+
 
             $transaction = DB::table('transactions')
                 ->where('user_id', $userId)
@@ -422,6 +513,7 @@ class PaymentController extends Controller
             ]);
         }
     }
+
 
 
     public function success($encryptedCourseId)

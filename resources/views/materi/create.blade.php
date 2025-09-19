@@ -37,6 +37,30 @@
                                 </div>
                             </div>
 
+                            <!-- Module Selection -->
+                            <!-- Module Selection -->
+                            <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="module_id">Module</label>
+                                <div class="col-sm-10">
+                                    <select id="module_id" name="module_id"
+                                        class="form-control select2 @error('module_id') is-invalid @enderror" required
+                                        {{ isset($materi) ? '' : 'disabled' }}>
+                                        <option value="">-- Pilih Course terlebih dahulu --</option>
+                                        @if (isset($modules) && $modules->count() > 0)
+                                            @foreach ($modules as $module)
+                                                <option value="{{ $module->id }}"
+                                                    {{ old('module_id', $materi->module_id ?? '') == $module->id ? 'selected' : '' }}>
+                                                    {{ $module->title }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    @error('module_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Type Selection -->
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="type">Tipe Materi</label>
@@ -225,6 +249,12 @@
 
         .progress-bar {
             transition: width 0.3s ease;
+        }
+
+        select:disabled {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
     </style>
 @endpush
@@ -625,6 +655,58 @@
                     $('.alert').fadeOut();
                 }, 10000);
             @endif
+
+            $('#course_id').change(function() {
+                const courseId = $(this).val();
+                const moduleSelect = $('#module_id');
+
+                if (courseId) {
+                    // Enable select module
+                    moduleSelect.prop('disabled', false);
+                    moduleSelect.empty().append('<option value="">-- Pilih Module --</option>');
+
+                    // Ambil modules berdasarkan course yang dipilih
+                    $.ajax({
+                        url: '{{ route('materi.get-modules') }}',
+                        type: 'GET',
+                        data: {
+                            course_id: courseId
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $.each(response.modules, function(index, module) {
+                                    moduleSelect.append(
+                                        $('<option>', {
+                                            value: module.id,
+                                            text: module.title
+                                        })
+                                    );
+                                });
+
+                                // Trigger change untuk update UI jika perlu
+                                moduleSelect.trigger('change');
+                            } else {
+                                showAlert('error', 'Gagal memuat modules: ' + response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            showAlert('error', 'Terjadi kesalahan saat memuat modules');
+                            console.error('Error loading modules:', xhr.responseText);
+                        }
+                    });
+                } else {
+                    // Disable select module dan kosongkan
+                    moduleSelect.prop('disabled', true);
+                    moduleSelect.empty().append(
+                        '<option value="">-- Pilih Course terlebih dahulu --</option>');
+                }
+            });
+
+            // Inisialisasi status disabled pada load
+            const initialCourseId = $('#course_id').val();
+            if (!initialCourseId) {
+                $('#module_id').prop('disabled', true);
+            }
         });
 
         // Cleanup on page unload

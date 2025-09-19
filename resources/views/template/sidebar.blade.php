@@ -69,6 +69,13 @@
     </li>
 
     <li class="menu-item">
+        <a href="{{ route('module.index') }}" class="menu-link">
+            <i class="menu-icon tf-icons bx bx-book"></i>
+            <div data-i18n="Account Settings">Data Module</div>
+        </a>
+    </li>
+
+    <li class="menu-item">
         <a href="{{ route('materi.index') }}" class="menu-link">
             <i class="menu-icon tf-icons bx bx-book-open"></i>
             <div data-i18n="Account Settings">Data Materi</div>

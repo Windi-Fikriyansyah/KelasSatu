@@ -42,7 +42,7 @@
                         <p class="text-2xl sm:text-3xl font-bold text-green-600">
                             Rp {{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}
                         </p>
-                        <p class="text-sm text-gray-600 mt-1">Minimal penarikan Rp 50.000</p>
+                        <p class="text-sm text-gray-600 mt-1">Minimal penarikan Rp 250.000</p>
                     </div>
                 </div>
             </div>
@@ -114,7 +114,7 @@
                                     </div>
                                     <input type="text" name="amount_display" id="amount_display"
                                         value="{{ old('amount') ? number_format(old('amount'), 0, ',', '.') : '' }}"
-                                        placeholder="50.000"
+                                        placeholder="250.000"
                                         class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg
                        focus:ring-2 focus:ring-blue-500 focus:border-transparent
                        transition-all duration-200 bg-gray-50 focus:bg-white">
@@ -123,7 +123,7 @@
                                     <input type="hidden" name="amount" id="amount" value="{{ old('amount') }}">
                                 </div>
                                 <p class="text-xs text-gray-600 mt-1">
-                                    Minimal Rp 50.000 - Maksimal Rp
+                                    Minimal Rp 250.000 - Maksimal Rp
                                     {{ number_format(Auth::user()->balance ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
@@ -134,7 +134,7 @@
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     @php
                                         $balance = Auth::user()->balance ?? 0;
-                                        $quickAmounts = [50000, 100000, 250000, 500000];
+                                        $quickAmounts = [250000, 500000];
                                     @endphp
                                     @foreach ($quickAmounts as $quickAmount)
                                         @if ($balance >= $quickAmount)
@@ -354,9 +354,9 @@
             const amount = parseInt(amountHidden.value);
             const balance = {{ Auth::user()->balance ?? 0 }};
 
-            if (!amount || amount < 50000) {
+            if (!amount || amount < 250000) {
                 e.preventDefault();
-                toastr.error("Minimal penarikan Rp 50.000");
+                toastr.error("Minimal penarikan Rp 250.000");
                 return false;
             }
 

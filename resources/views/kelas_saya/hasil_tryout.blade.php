@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Hasil Latihan - ' . $quiz->title)
+@section('title', 'Hasil Try Out - ' . $quiz->title)
 
 @section('content')
     <section class="py-8 bg-gradient-to-b from-primary-50 to-white min-h-screen">
@@ -17,7 +17,7 @@
                             <p class="text-gray-600">{{ $quiz->title }}</p>
 
                             <!-- Label quiz_type -->
-                            @if ($quiz->quiz_type === 'latihan')
+                            @if ($quiz->quiz_type === 'tryout')
                                 <span
                                     class="inline-block px-3 py-1 text-sm rounded-full bg-blue-100 text-blue-700 font-medium">
                                     {{ ucfirst($quiz->quiz_type) }}
@@ -27,10 +27,23 @@
                             <!-- Nilai dari 100 -->
                             @php
                                 $nilai = round(($score / count($questions)) * 100);
+                                function formatDuration($seconds)
+                                {
+                                    $h = floor($seconds / 3600);
+                                    $m = floor(($seconds % 3600) / 60);
+                                    $s = $seconds % 60;
+
+                                    return sprintf('%02d:%02d:%02d', $h, $m, $s);
+                                }
                             @endphp
                             <span
                                 class="inline-block px-3 py-1 text-sm rounded-full bg-green-100 text-green-700 font-medium ml-2">
                                 Nilai: {{ $nilai }}
+                            </span>
+
+                            <span
+                                class="inline-block px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-700 font-medium ml-2">
+                                Waktu Pengerjaan : {{ formatDuration($duration) }}
                             </span>
 
 
@@ -121,7 +134,7 @@
                                                     @else
                                                         <p class="mt-1">Salah ❌</p>
                                                         <p class="mt-1">Jawaban kamu kurang tepat</p>
-                                                        <p class="mt-1">Latihan terus supaya makin mahir, ya!</p>
+                                                        <p class="mt-1">tryout terus supaya makin mahir, ya!</p>
                                                     @endif
                                                 </div>
                                             @else
@@ -265,6 +278,7 @@
     <script>
         let currentQuestion = 1;
         const totalQuestions = {{ count($questions) }};
+
 
         function showQuestion(num) {
             document.querySelectorAll('.question-card').forEach(card => card.classList.add('hidden'));

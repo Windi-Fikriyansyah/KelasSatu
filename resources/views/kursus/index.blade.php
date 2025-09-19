@@ -43,6 +43,7 @@
                                 <th width="5%">No</th>
                                 <th>Thumbnail</th>
                                 <th>Judul</th>
+                                <th>Mapel</th>
                                 <th>Kategori</th>
                                 <th>Harga</th>
                                 <th>Tipe Akses</th>
@@ -137,6 +138,10 @@
                     {
                         data: 'title',
                         name: 'title'
+                    },
+                    {
+                        data: 'mapel',
+                        name: 'mapel'
                     },
                     {
                         data: 'nama_kategori',

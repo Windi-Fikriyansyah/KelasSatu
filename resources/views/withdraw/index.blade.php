@@ -40,10 +40,11 @@
                             <tr>
                                 <th width="5%">No</th>
                                 <th>User</th>
+                                <th>Nama Rek</th>
                                 <th>Bank</th>
+                                <th>No Rek</th>
                                 <th>Amount</th>
                                 <th>Status</th>
-                                <th>Notes</th>
                                 <th>Tanggal</th>
                                 <th width="20%">Aksi</th>
                             </tr>
@@ -123,8 +124,16 @@
                         name: 'user_name'
                     },
                     {
+                        data: 'nama_pemilik',
+                        name: 'b.nama_pemilik'
+                    },
+                    {
                         data: 'bank_name',
                         name: 'bank_name'
+                    },
+                    {
+                        data: 'no_rekening',
+                        name: 'b.no_rekening'
                     },
                     {
                         data: 'amount',
@@ -133,10 +142,6 @@
                     {
                         data: 'status',
                         name: 'status'
-                    },
-                    {
-                        data: 'notes',
-                        name: 'notes'
                     },
                     {
                         data: 'created_at',

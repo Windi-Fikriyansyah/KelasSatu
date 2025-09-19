@@ -25,22 +25,21 @@ class LatihanController extends Controller
     public function load(Request $request)
     {
         try {
-            $kursus = DB::table('courses')
-                ->leftJoin('kategori', 'courses.id_kategori', '=', 'kategori.id')
+            $kursus = DB::table('course_modules')
+                ->leftJoin('courses', 'course_modules.course_id', '=', 'courses.id')
                 ->select([
-                    'courses.id',
-                    'courses.title',
-                    'courses.description',
+                    'course_modules.id',
+                    'course_modules.course_id',
+                    'course_modules.title',
                     'courses.thumbnail',
-                    'courses.access_type',
-                    'courses.is_free',
+                    'courses.title as title_course',
                     'courses.status',
-                    'kategori.nama_kategori',
-                    'courses.created_at',
-                    'courses.updated_at'
+                    'course_modules.order',
+                    'course_modules.created_at',
+                    'course_modules.updated_at'
                 ])
                 ->where('courses.status', 'active')
-                ->orderBy('courses.created_at', 'desc');
+                ->orderBy('course_modules.created_at', 'desc');
 
             return DataTables::of($kursus)
                 ->addIndexColumn()
@@ -75,7 +74,7 @@ class LatihanController extends Controller
         }
 
         // Mengambil data course berdasarkan ID
-        $course = DB::table('courses')->where('id', $decryptedId)->first();
+        $course = DB::table('course_modules')->where('id', $decryptedId)->first();
 
         if (!$course) {
             return redirect()->route('latihan.index')->with('error', 'Materi tidak ditemukan');
@@ -83,7 +82,7 @@ class LatihanController extends Controller
 
         // Mengambil soal yang terkait dengan course ini
         $soal = DB::table('quiz')
-            ->where('course_id', $decryptedId)
+            ->where('module_id', $decryptedId)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -105,7 +104,7 @@ class LatihanController extends Controller
                     'quiz.updated_at'
                 ])
                 ->where('quiz_type', 'latihan')
-                ->where('quiz.course_id', $decryptedId)
+                ->where('quiz.module_id', $decryptedId)
                 ->orderBy('quiz.created_at', 'desc');
 
             return DataTables::of($soal)
@@ -136,11 +135,32 @@ class LatihanController extends Controller
     }
 
 
+
+    public function uploadckeditor(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
+
+            $request->file('upload')->move(public_path('uploads/images'), $fileName);
+
+            $url = asset('uploads/images/' . $fileName);
+
+            return response()->json([
+                'fileName' => $fileName,
+                'uploaded' => 1,
+                'url' => $url
+            ]);
+        }
+    }
+
     public function createSoal($courseId)
     {
         try {
             $decryptedId = Crypt::decrypt($courseId);
-            $course = DB::table('courses')->where('id', $decryptedId)->first();
+            $course = DB::table('course_modules')->where('id', $decryptedId)->first();
 
             if (!$course) {
                 return redirect()->route('latihan.index')->with('error', 'Materi tidak ditemukan');
@@ -165,7 +185,7 @@ class LatihanController extends Controller
             }
 
             // Mengambil course
-            $course = DB::table('courses')->where('id', $soal->course_id)->first();
+            $course = DB::table('course_modules')->where('id', $soal->module_id)->first();
 
             if (!$course) {
                 return redirect()->route('latihan.index')->with('error', 'Materi tidak ditemukan');
@@ -182,7 +202,7 @@ class LatihanController extends Controller
                     'option_d',
                     'option_e',
                     'correct_answer',
-                    'pembahasan' // Gunakan nama field asli dari database
+                    'pembahasan'
                 ]);
 
             // Transform data untuk konsistensi dengan frontend
@@ -190,7 +210,8 @@ class LatihanController extends Controller
                 $question->explanation = $question->pembahasan; // Map pembahasan ke explanation
                 return $question;
             });
-            // Menambahkan questions ke objek soal
+
+            // Menambahkan questions ke objek soal - TIDAK PERLU DI-ESCAPE
             $soal->questions = $questions;
 
             return view('latihan.edit', compact('course', 'soal'));
@@ -199,11 +220,14 @@ class LatihanController extends Controller
         }
     }
 
+
+
     public function store(Request $request)
     {
+
         // Validasi
         $validator = Validator::make($request->all(), [
-            'course_id' => 'required|exists:courses,id',
+            'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
@@ -224,12 +248,15 @@ class LatihanController extends Controller
         DB::beginTransaction();
 
         try {
-            $courseId = $request->course_id;
+            $courseId = DB::table('course_modules')
+                ->where('id', $request->course_id)
+                ->value('course_id');
             $quizType = $request->quiz_type;
 
             // Simpan data Quiz
             $quizId = DB::table('quiz')->insertGetId([
-                'course_id' => $request->course_id,
+                'module_id' => $request->course_id,
+                'course_id' => $courseId,
                 'title' => $request->title,
                 'quiz_type' => $request->quiz_type,
                 'created_at' => now(),
@@ -255,7 +282,7 @@ class LatihanController extends Controller
 
             DB::table('quiz_drafts')
                 ->where('user_id', Auth::id())
-                ->where('course_id', $courseId)
+                ->where('module_id', $request->course_id)
                 ->where('quiz_type', $quizType)
                 ->delete();
             // TAMBAHKAN INI - Commit transaksi
@@ -279,7 +306,7 @@ class LatihanController extends Controller
 
         // Validasi utama
         $validator = Validator::make($request->all(), [
-            'course_id' => 'required|exists:courses,id',
+            'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
             'questions' => 'required|array|min:1',
             'questions.*.question' => 'required|string',
@@ -299,9 +326,13 @@ class LatihanController extends Controller
 
         DB::beginTransaction();
         try {
+            $courseId = DB::table('course_modules')
+                ->where('id', $request->course_id)
+                ->value('course_id');
             // Update data quiz
             DB::table('quiz')->where('id', $request->quiz_id)->update([
-                'course_id' => $request->course_id,
+                'module_id' => $request->course_id,
+                'course_id' => $courseId,
                 'title' => $request->title,
                 'quiz_type' => $request->quiz_type,
                 'updated_at' => now(),
@@ -361,12 +392,11 @@ class LatihanController extends Controller
                 }
             }
 
-            $courseId = $request->course_id;
             $quizType = $request->quiz_type;
 
             DB::table('quiz_drafts')
                 ->where('user_id', Auth::id())
-                ->where('course_id', $courseId)
+                ->where('module_id', $request->course_id)
                 ->where('quiz_type', $quizType)
                 ->delete();
 
@@ -392,7 +422,7 @@ class LatihanController extends Controller
 
             $data = [
                 'title' => $request->input('title'),
-                'questions_data' => json_encode($request->input('questions', [])),
+                'questions_data' => json_encode($request->input('questions', [])), // Sesuai nama kolom
                 'form_data' => json_encode($request->input('form_data', [])),
                 'last_saved_at' => $now,
                 'updated_at' => $now,
@@ -401,7 +431,7 @@ class LatihanController extends Controller
             // Cek apakah draft sudah ada
             $draft = DB::table('quiz_drafts')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('module_id', $courseId)
                 ->where('quiz_type', $quizType)
                 ->first();
 
@@ -415,7 +445,7 @@ class LatihanController extends Controller
             } else {
                 // Insert draft baru
                 $data['user_id'] = $userId;
-                $data['course_id'] = $courseId;
+                $data['module_id'] = $courseId;
                 $data['quiz_type'] = $quizType;
                 $data['created_at'] = $now;
 
@@ -429,6 +459,7 @@ class LatihanController extends Controller
                 'saved_at' => $now->format('d M Y H:i')
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error saving draft: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan draft: ' . $e->getMessage()
@@ -445,7 +476,7 @@ class LatihanController extends Controller
 
             $draft = DB::table('quiz_drafts')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('module_id', $courseId)
                 ->where('quiz_type', $quizType)
                 ->first();
 
@@ -460,19 +491,19 @@ class LatihanController extends Controller
                 'success' => true,
                 'data' => [
                     'title' => $draft->title,
-                    'questions' => json_decode($draft->questions_data) ?? [],
+                    'questions' => json_decode($draft->questions_data) ?? [], // Sesuai nama kolom
                     'form_data' => json_decode($draft->form_data) ?? [],
                     'saved_at' => Carbon::parse($draft->last_saved_at)->format('d M Y H:i')
                 ]
             ]);
         } catch (\Exception $e) {
+            \Log::error('Error loading draft: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memuat draft: ' . $e->getMessage()
             ], 500);
         }
     }
-
     public function deleteDraft(Request $request)
     {
         try {
@@ -482,7 +513,7 @@ class LatihanController extends Controller
 
             DB::table('quiz_drafts')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('module_id', $courseId)
                 ->where('quiz_type', $quizType)
                 ->delete();
 
@@ -507,7 +538,7 @@ class LatihanController extends Controller
 
             $draft = DB::table('quiz_drafts')
                 ->where('user_id', $userId)
-                ->where('course_id', $courseId)
+                ->where('module_id', $courseId)
                 ->where('quiz_type', $quizType)
                 ->first();
 

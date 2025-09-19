@@ -66,25 +66,40 @@
                                         </div>
                                         <div class="flex-1">
                                             <div class="text-lg font-medium text-gray-900 mb-4">
-                                                {!! nl2br(e($question->question)) !!}
+                                                {!! $question->question !!}
                                             </div>
 
                                             <div class="space-y-3">
                                                 @foreach ($question->formatted_options as $optionKey => $option)
                                                     @if ($option)
                                                         <label
-                                                            class="flex items-start p-4 border border-gray-200 rounded-lg hover:border-primary-100 hover:bg-primary-50/30 cursor-pointer transition-all duration-200 option-label">
+                                                            class="option-label flex items-center p-4 border border-gray-200 rounded-lg hover:border-primary-100 hover:bg-primary-50/30 cursor-pointer transition-all duration-200"
+                                                            data-question="{{ $question->question_id }}"
+                                                            data-value="{{ $optionKey }}">
+
+                                                            {{-- Radio disembunyikan --}}
                                                             <input type="radio"
                                                                 name="answers[{{ $question->question_id }}]"
-                                                                value="{{ $optionKey }}"
-                                                                class="mt-1 mr-4 text-primary-100 focus:ring-primary-100 focus:ring-2">
-                                                            <span class="text-gray-700 leading-relaxed">
-                                                                <strong>{{ $optionKey }}.</strong> {{ $option }}
+                                                                value="{{ $optionKey }}" class="hidden">
+
+                                                            {{-- Huruf pilihan --}}
+                                                            {{-- Huruf pilihan dalam lingkaran --}}
+                                                            <span
+                                                                class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3">
+                                                                {{ $optionKey }}
+                                                            </span>
+
+
+                                                            {{-- Isi jawaban --}}
+                                                            <span class="text-gray-700 leading-relaxed flex-1">
+                                                                {!! $option !!}
                                                             </span>
                                                         </label>
                                                     @endif
                                                 @endforeach
                                             </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -148,6 +163,70 @@
         </div>
     </div>
 @endsection
+@push('style')
+    <style>
+        .option-label .circle-label {
+            background-color: #f3f4f6;
+            /* abu terang */
+            color: #374151;
+            /* abu tua */
+            border: 2px solid #d1d5db;
+            /* abu border */
+            transition: all 0.3s ease;
+        }
+
+        /* Kotak jawaban saat dipilih */
+        .option-label.selected {
+            border-color: #2563eb;
+            /* biru */
+            background-color: #eff6ff;
+            /* biru sangat muda */
+        }
+
+        /* Lingkaran huruf saat dipilih */
+        .option-label.selected .circle-label {
+            background-color: #2563eb;
+            /* biru solid */
+            color: white;
+            /* teks putih */
+            border-color: #2563eb;
+            box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+        }
+
+        .question-card .text-lg {
+            font-size: 0.95rem;
+            /* lebih kecil dari default text-lg */
+        }
+
+        /* Ukuran font jawaban */
+        .question-card .option-label span {
+            font-size: 0.9rem;
+            /* perkecil teks jawaban */
+        }
+
+        /* Tabel tetap rapi */
+        .question-card table {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            /* kecilkan font dalam tabel juga */
+        }
+
+        .question-card table th,
+        .question-card table td {
+            border: 1px solid #d1d5db;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .question-card figure.table {
+            display: block;
+            overflow-x: auto;
+        }
+    </style>
+@endpush
+
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -179,8 +258,18 @@
                     const val = answers[qid];
                     const radio = document.querySelector(`input[name="answers[${qid}]"][value="${val}"]`);
                     const textarea = document.querySelector(`textarea[name="answers[${qid}]"]`);
-                    if (radio) radio.checked = true;
-                    if (textarea) textarea.value = val;
+
+                    if (radio) {
+                        radio.checked = true;
+
+                        // Tambahkan class selected ke label jawaban
+                        const label = radio.closest('.option-label');
+                        if (label) label.classList.add('selected');
+                    }
+
+                    if (textarea) {
+                        textarea.value = val;
+                    }
                 });
             }
         }
@@ -251,8 +340,32 @@
             document.getElementById('submit-modal').classList.add('hidden');
         }
 
+        let startTime;
+
+        // Cek apakah sudah ada startTime di localStorage
+        if (localStorage.getItem('quiz_start_time_{{ $quiz->id }}')) {
+            startTime = parseInt(localStorage.getItem('quiz_start_time_{{ $quiz->id }}'), 10);
+        } else {
+            startTime = Date.now();
+            localStorage.setItem('quiz_start_time_{{ $quiz->id }}', startTime);
+        }
+
+        // Hitung durasi
+        function getDurationInSeconds() {
+            const now = Date.now();
+            return Math.floor((now - startTime) / 1000);
+        }
+
+
         function submitQuiz() {
-            localStorage.removeItem(storageKey); // hapus jawaban setelah submit
+            const durationInput = document.createElement('input');
+            durationInput.type = 'hidden';
+            durationInput.name = 'duration';
+            durationInput.value = getDurationInSeconds();
+            document.getElementById('quiz-form').appendChild(durationInput);
+
+            localStorage.removeItem(storageKey);
+            localStorage.removeItem('quiz_start_time_{{ $quiz->id }}'); // hapus jawaban setelah submit
             document.getElementById('quiz-form').submit();
         }
 
@@ -326,6 +439,25 @@
             } else if (e.key === 'ArrowLeft') {
                 if (currentQuestion > 1) previousQuestion();
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.option-label').forEach(label => {
+                label.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+
+                    // reset pilihan lain dalam soal yang sama
+                    document.querySelectorAll(`.option-label[data-question="${questionId}"]`)
+                        .forEach(el => el.classList.remove('selected'));
+
+                    // tandai label yang dipilih
+                    this.classList.add('selected');
+                    this.querySelector('input[type="radio"]').checked = true;
+
+                    saveAnswers();
+                    updateQuestionNav();
+                });
+            });
         });
     </script>
 @endpush

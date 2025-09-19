@@ -57,37 +57,52 @@
                 <div class="lg:col-span-3">
                     <form id="quiz-form" method="POST" action="{{ route('kelas.tryout.submit', $quiz->id) }}">
                         @csrf
+                        <input type="hidden" name="duration" id="duration">
                         @foreach ($questions as $index => $question)
-                            <div class="question-card bg-white rounded-xl shadow-lg overflow-hidden mb-4 sm:mb-6 {{ $index > 0 ? 'hidden' : '' }}"
+                            <div class="question-card bg-white rounded-xl shadow-lg overflow-hidden mb-6 {{ $index > 0 ? 'hidden' : '' }}"
                                 data-question="{{ $index + 1 }}">
-                                <div class="p-4 sm:p-6">
-                                    <div class="flex items-start mb-4 sm:mb-6">
+                                <div class="p-6">
+                                    <div class="flex items-start mb-6">
                                         <div
-                                            class="bg-primary-100 text-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center font-semibold mr-3 sm:mr-4 flex-shrink-0">
+                                            class="bg-primary-100 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-4 flex-shrink-0">
                                             {{ $index + 1 }}
                                         </div>
                                         <div class="flex-1">
-                                            <div class="text-base sm:text-lg font-medium text-gray-900 mb-3 sm:mb-4">
-                                                {!! nl2br(e($question->question)) !!}
+                                            <div class="text-lg font-medium text-gray-900 mb-4">
+                                                {!! $question->question !!}
                                             </div>
-                                            <div class="space-y-2 sm:space-y-3">
+
+                                            <div class="space-y-3">
                                                 @foreach ($question->formatted_options as $optionKey => $option)
                                                     @if ($option)
                                                         <label
-                                                            class="flex items-start p-3 sm:p-4 border border-gray-200 rounded-lg hover:border-primary-100 hover:bg-primary-50/30 cursor-pointer transition-all duration-200 option-label">
+                                                            class="option-label flex items-center p-4 border border-gray-200 rounded-lg hover:border-primary-100 hover:bg-primary-50/30 cursor-pointer transition-all duration-200"
+                                                            data-question="{{ $question->question_id }}"
+                                                            data-value="{{ $optionKey }}">
+
+                                                            {{-- Radio disembunyikan --}}
                                                             <input type="radio"
                                                                 name="answers[{{ $question->question_id }}]"
-                                                                value="{{ $optionKey }}"
-                                                                class="mt-1 mr-3 sm:mr-4 text-primary-100 focus:ring-primary-100 focus:ring-2"
-                                                                onchange="updateQuestionNav()">
+                                                                value="{{ $optionKey }}" class="hidden">
+
+                                                            {{-- Huruf pilihan --}}
+                                                            {{-- Huruf pilihan dalam lingkaran --}}
                                                             <span
-                                                                class="text-gray-700 text-sm sm:text-base leading-relaxed">
-                                                                <strong>{{ $optionKey }}.</strong> {{ $option }}
+                                                                class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3">
+                                                                {{ $optionKey }}
+                                                            </span>
+
+
+                                                            {{-- Isi jawaban --}}
+                                                            <span class="text-gray-700 leading-relaxed flex-1">
+                                                                {!! $option !!}
                                                             </span>
                                                         </label>
                                                     @endif
                                                 @endforeach
                                             </div>
+
+
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +142,69 @@
         </div>
     </section>
 @endsection
+@push('style')
+    <style>
+        .option-label .circle-label {
+            background-color: #f3f4f6;
+            /* abu terang */
+            color: #374151;
+            /* abu tua */
+            border: 2px solid #d1d5db;
+            /* abu border */
+            transition: all 0.3s ease;
+        }
 
+        /* Kotak jawaban saat dipilih */
+        .option-label.selected {
+            border-color: #2563eb;
+            /* biru */
+            background-color: #eff6ff;
+            /* biru sangat muda */
+        }
+
+        /* Lingkaran huruf saat dipilih */
+        .option-label.selected .circle-label {
+            background-color: #2563eb;
+            /* biru solid */
+            color: white;
+            /* teks putih */
+            border-color: #2563eb;
+            box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+        }
+
+        .question-card .text-lg {
+            font-size: 0.95rem;
+            /* lebih kecil dari default text-lg */
+        }
+
+        /* Ukuran font jawaban */
+        .question-card .option-label span {
+            font-size: 0.9rem;
+            /* perkecil teks jawaban */
+        }
+
+        /* Tabel tetap rapi */
+        .question-card table {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            /* kecilkan font dalam tabel juga */
+        }
+
+        .question-card table th,
+        .question-card table td {
+            border: 1px solid #d1d5db;
+            padding: 6px;
+            text-align: center;
+        }
+
+        .question-card figure.table {
+            display: block;
+            overflow-x: auto;
+        }
+    </style>
+@endpush
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -162,9 +239,16 @@
 
         // KEY untuk localStorage
         const quizKey = "quiz-{{ $quiz->id }}-endtime";
+        const startKey = "quiz-{{ $quiz->id }}-starttime";
         const answersKey = "quiz-{{ $quiz->id }}-answers";
+        let startTime = localStorage.getItem(startKey);
+        if (!startTime) {
+            startTime = Date.now();
+            localStorage.setItem(startKey, startTime);
+        } else {
+            startTime = parseInt(startTime);
+        }
 
-        // === TIMER ===
         @if ($quiz->durasi)
             let endTime = localStorage.getItem(quizKey);
             if (!endTime) {
@@ -233,7 +317,13 @@
                     let radios = document.querySelectorAll(`input[name="${key}"]`);
                     if (radios.length > 0) {
                         radios.forEach(r => {
-                            if (r.value === value) r.checked = true;
+                            const label = r.closest('.option-label');
+                            if (r.value === value) {
+                                r.checked = true;
+                                if (label) label.classList.add('selected'); // tambahkan highlight
+                            } else {
+                                if (label) label.classList.remove('selected');
+                            }
                         });
                     } else {
                         let textarea = document.querySelector(`textarea[name="${key}"]`);
@@ -243,6 +333,7 @@
             }
             updateQuestionNav();
         }
+
 
         function updateQuestionNav() {
             document.querySelectorAll(".question-nav").forEach((btn, index) => {
@@ -317,7 +408,15 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (timer) clearInterval(timer);
+
+                    // Hitung durasi
+                    let now = Date.now();
+                    let durationUsed = Math.floor((now - startTime) / 1000);
+
+                    document.getElementById("duration").value = durationUsed;
+
                     localStorage.removeItem(quizKey);
+                    localStorage.removeItem(startKey);
                     localStorage.removeItem(answersKey);
                     document.getElementById("quiz-form").submit();
                 }
@@ -351,6 +450,25 @@
         window.addEventListener("popstate", function(e) {
             e.preventDefault();
             confirmExit();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.option-label').forEach(label => {
+                label.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+
+                    // reset pilihan lain dalam soal yang sama
+                    document.querySelectorAll(`.option-label[data-question="${questionId}"]`)
+                        .forEach(el => el.classList.remove('selected'));
+
+                    // tandai label yang dipilih
+                    this.classList.add('selected');
+                    this.querySelector('input[type="radio"]').checked = true;
+
+                    saveAnswers();
+                    updateQuestionNav();
+                });
+            });
         });
 
         // Reload → tidak ada SweetAlert

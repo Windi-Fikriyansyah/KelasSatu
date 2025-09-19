@@ -138,7 +138,7 @@ class AccountController extends Controller
 
         $request->validate([
             'bank_id' => 'required|exists:bank,id',
-            'amount'  => 'required|integer|min:50000',
+            'amount'  => 'required|integer|min:250000',
         ]);
 
         // Ambil saldo user

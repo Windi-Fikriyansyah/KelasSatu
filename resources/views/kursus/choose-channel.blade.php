@@ -13,6 +13,7 @@
                             @csrf
                             <input type="hidden" name="channel" value="{{ $channel['code'] }}">
                             <input type="hidden" name="referral_code" value="{{ $referralCode }}">
+                            <input type="hidden" name="selected_modules" value="{{ $selectedModules ?? '[]' }}">
                             <div
                                 class="p-4 border rounded-xl flex items-center justify-between bg-white shadow-sm hover:shadow-md transition">
                                 <div class="flex items-center gap-3">
@@ -31,6 +32,13 @@
                     @endif
                 @endforeach
             </div>
+            @if (config('app.debug'))
+                <div class="mt-8 p-4 bg-gray-100 rounded-lg">
+                    <h4 class="font-bold">Debug Info:</h4>
+                    <p>Selected Modules: {{ $selectedModules ?? 'null' }}</p>
+                    <p>Referral Code: {{ $referralCode ?? 'null' }}</p>
+                </div>
+            @endif
         </div>
     </section>
 @endsection

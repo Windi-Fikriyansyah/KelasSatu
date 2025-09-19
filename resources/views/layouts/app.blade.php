@@ -325,9 +325,16 @@
             <div class="grid md:grid-cols-4 gap-8">
 
                 <div>
-                    <h3 class="text-2xl font-bold text-primary-500 mb-4">KelasSatu</h3>
-                    <p class="text-primary-500 mb-4">Platform e-learning terdepan untuk masa depan yang lebih cerah.
+                    <h3 class="text-2xl font-bold text-primary-500 mb-4">
+                        {{ $landingFooter->footer_title ?? 'KelasSatu' }}
+                    </h3>
+                    <p class="text-primary-500 mb-4">
+                        {{ $landingFooter->footer_description ?? 'Platform e-learning terdepan untuk masa depan yang lebih cerah.' }}
                     </p>
+                    {{-- @if ($landingFooter->footer_address)
+                        <p class="text-primary-500"><i class="fas fa-map-marker-alt mr-2"></i>
+                            {{ $landingFooter->footer_address }}</p>
+                    @endif --}}
                 </div>
 
                 <div>
@@ -354,30 +361,41 @@
                         <li><a href="#" class="hover:text-white transition-colors">Hubungi Kami</a></li>
                     </ul>
                     <div class="flex space-x-4 mt-4">
-                        <a href="https://wa.me/6281311117096" target="_blank"
-                            class="hover:text-white transition-colors">
-                            <i class="fab fa-whatsapp text-2xl"></i>
-                        </a>
-                        <a href="https://www.instagram.com/kelassatu_official?igsh=bnpyNWgydjR4NXVs" target="_blank"
-                            class="hover:text-white transition-colors">
-                            <i class="fab fa-instagram text-2xl"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@kelassatu.com?_t=ZS-8zeZ3XZ9Ulk&_r=1" target="_blank"
-                            class="hover:text-white transition-colors">
-                            <i class="fab fa-tiktok text-2xl"></i>
-                        </a>
-                        <a href="https://www.facebook.com/share/17A6JjVm8m/" target="_blank"
-                            class="hover:text-white transition-colors">
-                            <i class="fab fa-facebook text-2xl"></i>
-                        </a>
+                        @if ($landingFooter->footer_whatsapp)
+                            <a href="{{ $landingFooter->footer_whatsapp }}" target="_blank"
+                                class="hover:text-white transition-colors">
+                                <i class="fab fa-whatsapp text-2xl"></i>
+                            </a>
+                        @endif
+
+                        @if ($landingFooter->footer_instagram)
+                            <a href="{{ $landingFooter->footer_instagram }}" target="_blank"
+                                class="hover:text-white transition-colors">
+                                <i class="fab fa-instagram text-2xl"></i>
+                            </a>
+                        @endif
+
+                        @if ($landingFooter->footer_tiktok)
+                            <a href="{{ $landingFooter->footer_tiktok }}" target="_blank"
+                                class="hover:text-white transition-colors">
+                                <i class="fab fa-tiktok text-2xl"></i>
+                            </a>
+                        @endif
+
+                        @if ($landingFooter->footer_facebook)
+                            <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
+                                class="hover:text-white transition-colors">
+                                <i class="fab fa-facebook text-2xl"></i>
+                            </a>
+                        @endif
                     </div>
                 </div>
 
             </div>
-
             <!-- Copyright -->
             <div class="border-t border-blue-800 mt-8 pt-8 text-center text-primary-500">
-                <p>&copy; 2025 PT KELAS SATU INDONESIA. Seluruh hak cipta dilindungi.</p>
+                <p>{{ $landingFooter->footer_copyright ?? '&copy; 2025 PT KELAS SATU INDONESIA. Seluruh hak cipta dilindungi.' }}
+                </p>
             </div>
         </div>
     </footer>
