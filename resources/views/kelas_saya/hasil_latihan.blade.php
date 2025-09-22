@@ -111,21 +111,74 @@
                                             <!-- Jawaban User -->
                                             @if ($userAnswer)
                                                 <div
-                                                    class="p-4 mb-4 rounded-lg text-sm text-white
-        {{ $isCorrect ? 'bg-green-500' : 'bg-red-500' }}">
+                                                    class="p-4 mb-4 rounded-lg text-[19px]
+        {{ $isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-500 text-red-50' }}
+        font-[_Inter_Fallback_f4ae04]">
                                                     <p><strong>Jawaban kamu adalah {{ $userAnswer }}</strong></p>
 
                                                     @if ($isCorrect)
-                                                        <p class="mt-1">Benar 🎉</p>
-                                                        <p class="mt-1">Mantap! Pertahankan terus ya 💪</p>
+                                                        <div id="alert-salah"
+                                                            class="flex items-stretch p-4 mb-3 text-green-500 rounded-lg bg-white dark:bg-gray-800 dark:text-red-400"
+                                                            role="alert">
+
+                                                            <div
+                                                                class="flex items-center justify-center p-3 bg-green-100 text-green-600 rounded-xl border border-green-300 shadow-md">
+                                                                <svg class="w-6 h-6" aria-hidden="true"
+                                                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd"
+                                                                        d="M16.707 5.293a1 1 0 0 0-1.414 0L9 11.586 6.707 9.293a1 1 0 0 0-1.414 1.414l3 3a1 1 0 0 0 1.414 0l7-7a1 1 0 0 0 0-1.414z"
+                                                                        clip-rule="evenodd" />
+                                                                </svg>
+                                                            </div>
+
+
+                                                            <span class="sr-only">Error</span>
+
+                                                            <!-- Teks lebih besar -->
+                                                            <div class="ms-3 flex flex-col justify-center leading-snug">
+                                                                <div class="text-xl font-medium">Yes, Jawaban kamu benar!
+                                                                </div>
+                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
+                                                                    agar makin
+                                                                    paham. Oke!</div>
+                                                            </div>
+
+                                                        </div>
                                                     @else
-                                                        <p class="mt-1">Salah ❌</p>
-                                                        <p class="mt-1">Jawaban kamu kurang tepat</p>
-                                                        <p class="mt-1">Latihan terus supaya makin mahir, ya!</p>
+                                                        <!-- Card untuk jawaban salah -->
+                                                        <div id="alert-salah"
+                                                            class="flex items-stretch p-4 mb-3 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                                                            role="alert">
+
+                                                            <!-- Icon ❌ dalam kotak -->
+                                                            <div
+                                                                class="flex items-center justify-center p-2 bg-red-100 text-red-700 rounded-md border border-red-300">
+                                                                <svg class="w-5 h-5" aria-hidden="true"
+                                                                    xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path
+                                                                        d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0ZM13.414 6.586a1 1 0 0 1 0 1.414L11.414 10l2 2a1 1 0 0 1-1.414 1.414L10 11.414l-2 2a1 1 0 0 1-1.414-1.414l2-2-2-2a1 1 0 0 1 1.414-1.414l2 2 2-2a1 1 0 0 1 1.414 0Z" />
+                                                                </svg>
+                                                            </div>
+
+                                                            <span class="sr-only">Error</span>
+
+                                                            <!-- Teks lebih besar -->
+                                                            <div class="ms-3 flex flex-col justify-center leading-snug">
+                                                                <div class="text-xl font-medium">Jawaban kamu kurang tepat.
+                                                                </div>
+                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
+                                                                    agar makin paham. Ok!</div>
+                                                            </div>
+
+                                                        </div>
                                                     @endif
+
                                                 </div>
                                             @else
-                                                <div class="p-4 mb-4 rounded-lg text-sm text-gray-700 bg-gray-200">
+                                                <div
+                                                    class="p-4 mb-4 rounded-lg text-[17px] text-gray-700 bg-gray-200 font-[_Inter_Fallback_f4ae04]">
                                                     <p><strong>Kamu tidak menjawab soal ini.</strong></p>
                                                 </div>
                                             @endif

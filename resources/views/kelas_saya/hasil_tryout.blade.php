@@ -150,10 +150,12 @@
                                                             <span class="sr-only">Error</span>
 
                                                             <!-- Teks lebih besar -->
-                                                            <div
-                                                                class="ms-3 text-xl font-medium flex flex-col justify-center leading-snug">
-                                                                <div>Yes, Jawaban kamu benar</div>
-                                                                <div>Latihan lagi ya, agar makin paham.</div>
+                                                            <div class="ms-3 flex flex-col justify-center leading-snug">
+                                                                <div class="text-xl font-medium">Yes, Jawaban kamu benar!
+                                                                </div>
+                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
+                                                                    agar makin
+                                                                    paham. Oke!</div>
                                                             </div>
 
                                                         </div>
@@ -177,10 +179,11 @@
                                                             <span class="sr-only">Error</span>
 
                                                             <!-- Teks lebih besar -->
-                                                            <div
-                                                                class="ms-3 text-xl font-medium flex flex-col justify-center leading-snug">
-                                                                <div>Jawaban kamu kurang tepat.</div>
-                                                                <div>Latihan lagi ya, agar makin paham. Ok!</div>
+                                                            <div class="ms-3 flex flex-col justify-center leading-snug">
+                                                                <div class="text-xl font-medium">Jawaban kamu kurang tepat.
+                                                                </div>
+                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
+                                                                    agar makin paham. Ok!</div>
                                                             </div>
 
                                                         </div>
