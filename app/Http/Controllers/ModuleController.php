@@ -33,7 +33,8 @@ class ModuleController extends Controller
                     'cm.created_at',
                     'cm.updated_at'
                 ])
-                ->orderBy('cm.created_at', 'desc');
+                ->orderByRaw("CASE WHEN c.mapel = 'wajib' THEN 1 ELSE 2 END")
+                ->orderBy('cm.order', 'asc');
 
             return DataTables::of($kursus)
                 ->addIndexColumn()

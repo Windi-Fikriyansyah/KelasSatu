@@ -12,6 +12,14 @@
                         <!-- Course Content -->
                         <div class="p-6">
                             <div class="mb-4">
+                                @if ($course->perbaikan == 1)
+                                    <div class="mb-3">
+                                        <span
+                                            class="inline-block bg-red-100 text-red-700 text-sm font-semibold px-3 py-1 rounded-lg">
+                                            ⚠️ Mohon Maaf, Kelas Masih Dalam Proses Penyempurnaan
+                                        </span>
+                                    </div>
+                                @endif
                                 <h1 class="text-3xl font-bold text-primary-200 mb-2">{{ $course->title }}</h1>
                                 <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
                                     <span class="flex items-center">
@@ -187,10 +195,18 @@
                                     Dapatkan Gratis Sekarang
                                 </a>
                             @else
-                                <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}" id="pay-now-btn"
-                                    class="w-full btn-primary px-6 py-4 rounded-xl text-white font-semibold text-center block transition-all duration-300 transform hover:scale-105">
-                                    Bayar Sekarang
-                                </a>
+                                @if ($course->perbaikan == 1)
+                                    <button disabled
+                                        class="w-full px-6 py-4 rounded-xl text-white font-semibold text-center block bg-gray-400 cursor-not-allowed">
+                                        Bayar Sekarang (Sedang Proses Penyempurnaan)
+                                    </button>
+                                @else
+                                    <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}"
+                                        id="pay-now-btn"
+                                        class="w-full btn-primary px-6 py-4 rounded-xl text-white font-semibold text-center block transition-all duration-300 transform hover:scale-105">
+                                        Bayar Sekarang
+                                    </a>
+                                @endif
                             @endif
 
 
