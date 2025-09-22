@@ -268,7 +268,7 @@
 @endpush
 
 @push('js')
-    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         let editorInstances = {};
@@ -276,18 +276,50 @@
         let questions = [];
 
         function initCKEditor(id) {
-            ClassicEditor.create(document.querySelector('#' + id), {
+            CKEDITOR.ClassicEditor.create(document.querySelector('#' + id), {
                 ckfinder: {
                     uploadUrl: "{{ route('latihan.ckeditor.upload') }}?_token={{ csrf_token() }}"
                 },
+                removePlugins: [
+                    // Collaboration
+                    'RealTimeCollaborativeComments',
+                    'RealTimeCollaborativeTrackChanges',
+                    'RealTimeCollaborativeRevisionHistory',
+                    'PresenceList',
+                    'Comments',
+                    'TrackChanges',
+                    'TrackChangesData',
+                    'RevisionHistory',
+
+                    // Premium (butuh license, jadi matikan)
+                    'Pagination',
+                    'WProofreader',
+                    'MathType',
+                    'DocumentOutline',
+                    'TableOfContents',
+                    'AiAssistant',
+                    'FormatPainter',
+                    'Template',
+                    'SlashCommand',
+                    'PasteFromOfficeEnhanced',
+                    'CaseChange',
+                    'AIAssistant', // <- buang AI
+                    'MultiLevelList'
+                ],
                 toolbar: {
                     items: [
                         'heading', '|',
                         'bold', 'italic', 'link', '|',
                         'bulletedList', 'numberedList', '|',
+                        'alignment', '|',
                         'insertTable', 'imageUpload', '|',
                         'undo', 'redo'
                     ]
+                },
+                alignment: {
+                    options: ['left', 'center', 'right',
+                        'justify'
+                    ] // opsional, bisa pilih alignment yang ditampilkan
                 },
                 table: {
                     contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
