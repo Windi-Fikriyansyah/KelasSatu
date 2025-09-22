@@ -68,7 +68,7 @@
                                             {{ $index + 1 }}
                                         </div>
                                         <div class="flex-1">
-                                            <div class="text-lg font-medium text-gray-900 mb-4">
+                                            <div class="text-lg font-normal text-gray-900 mb-4">
                                                 {!! $question->question !!}
                                             </div>
 

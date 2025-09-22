@@ -149,8 +149,8 @@
                                     <select id="is_free" name="is_free"
                                         class="form-control @error('is_free') is-invalid @enderror" required>
                                         <option value="">-- Pilih --</option>
-                                        <option value="1"
-                                            {{ old('is_free', $course->is_free ?? '') == 1 ? 'selected' : '' }}>Ya</option>
+                                        {{-- <option value="1"
+                                            {{ old('is_free', $course->is_free ?? '') == 1 ? 'selected' : '' }}>Ya</option> --}}
                                         <option value="0"
                                             {{ old('is_free', $course->is_free ?? '') == 0 ? 'selected' : '' }}>Tidak
                                         </option>
@@ -192,10 +192,10 @@
                                             {{ old('access_type', $course->access_type ?? '') == 'lifetime' ? 'selected' : '' }}>
                                             Selamanya
                                         </option>
-                                        <option value="subscription"
+                                        {{-- <option value="subscription"
                                             {{ old('access_type', $course->access_type ?? '') == 'subscription' ? 'selected' : '' }}>
                                             Langganan
-                                        </option>
+                                        </option> --}}
                                     </select>
                                     @error('access_type')
                                         <div class="invalid-feedback">{{ $message }}</div>

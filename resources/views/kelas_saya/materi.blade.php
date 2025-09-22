@@ -122,60 +122,60 @@
             </div>
 
             <!-- Tab Navigation -->
+            <!-- Ganti bagian Tab Navigation yang ada dengan kode ini -->
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div class="border-b border-gray-200">
-                    <nav class="flex -mb-px">
+                    <nav class="flex -mb-px overflow-x-auto scrollbar-hide md:justify-center">
                         <button onclick="switchTab('materi', event)"
-                            class="tab-button active w-1/3 py-4 px-6 text-center border-b-2 border-primary-100 text-primary-100 font-medium transition-colors duration-200">
+                            class="tab-button active flex-shrink-0 w-1/2 min-w-[120px] md:w-1/3 py-4 px-3 sm:px-6 text-center border-b-2 border-primary-100 text-primary-100 font-medium transition-colors duration-200">
                             <div class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Materi Belajar
+                                <span class="text-xs sm:text-sm">Materi</span>
                             </div>
                         </button>
                         @if ($videoContents->count() > 0)
                             <button onclick="switchTab('video', event)" id="video-tab"
-                                class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
+                                class="tab-button flex-shrink-0 w-1/2 min-w-[120px] md:w-1/3 py-4 px-3 sm:px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
                                 <div class="flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
                                             clip-rule="evenodd"></path>
                                     </svg>
-                                    Video Pembelajaran
+                                    <span class="text-xs sm:text-sm">Video</span>
                                 </div>
                             </button>
                         @endif
 
-
                         <button onclick="switchTab('latihan', event)"
-                            class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
+                            class="tab-button flex-shrink-0 w-1/2 min-w-[120px] md:w-1/3 py-4 px-3 sm:px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
                             <div class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Latihan Soal
+                                <span class="text-xs sm:text-sm">Latihan</span>
                             </div>
                         </button>
                         <button onclick="switchTab('soal', event)"
-                            class="tab-button w-1/3 py-4 px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
+                            class="tab-button flex-shrink-0 w-1/2 min-w-[120px] md:w-1/3 py-4 px-3 sm:px-6 text-center border-b-2 border-transparent text-gray-500 font-medium transition-colors duration-200">
                             <div class="flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd"
                                         d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
                                         clip-rule="evenodd"></path>
                                 </svg>
-                                Try Out
+                                <span class="text-xs sm:text-sm">Try Out</span>
                             </div>
                         </button>
                     </nav>
                 </div>
-                <!-- Tab Content -->
+                <!-- Tab Content tetap sama seperti kode asli -->
                 <div class="p-6">
                     <!-- Materi Tab -->
                     <div id="materi-content" class="tab-content">
@@ -284,36 +284,36 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${materis.map(materi => `
-                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                                                                                                                                                                                                                                    <div class="p-6">
-                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
-                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4 text-blue-600 text-lg">
-                                                                                                                                                                                                                                                                <i class="fa-solid fa-graduation-cap"></i>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div class="flex-1">
-                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                                                                                                                                                                                                                                    ${materi.title}
-                                                                                                                                                                                                                                                                </h3>
-                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
-                                                                                                                                                                                                                                                                    ${materi.description || 'Deskripsi materi singkat'}
-                                                                                                                                                                                                                                                                </p>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
-                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                                                                                                                                                                                                                                                                Materi
-                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                            <a href="/kelas/isi-materi/${materi.id}" target="_blank"
-                                                                                                                                                                                                                                                                class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                                                                                                                                                                                                                                                Mulai Belajar
-                                                                                                                                                                                                                                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                                                                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                                                                                                                                                                                                                                </svg>
-                                                                                                                                                                                                                                                            </a>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            `).join('')}
+                                                                                                                                                                                                                                                                                                        <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                                                                            <div class="p-6">
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                                                                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4 text-blue-600 text-lg">
+                                                                                                                                                                                                                                                                                                                        <i class="fa-solid fa-graduation-cap"></i>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                                                                                                                                        <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                                                                            ${materi.title}
+                                                                                                                                                                                                                                                                                                                        </h3>
+                                                                                                                                                                                                                                                                                                                        <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                                                                            ${materi.description || 'Deskripsi materi singkat'}
+                                                                                                                                                                                                                                                                                                                        </p>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                                                                                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                                                                        Materi
+                                                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                                                    <a href="/kelas/isi-materi/${materi.id}" target="_blank"
+                                                                                                                                                                                                                                                                                                                        class="bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                                                                                                                                                                                                                                                                                        Mulai Belajar
+                                                                                                                                                                                                                                                                                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                                                                                                                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                                                                                                                                                                                                        </svg>
+                                                                                                                                                                                                                                                                                                                    </a>
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                    `).join('')}
             </div>
         `;
         }
@@ -326,26 +326,26 @@
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 ${videos.map(video => `
-                                                                                                                                                                                                                                                <div class="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 hover:border-primary-100 hover:shadow-md transition-all duration-300">
-                                                                                                                                                                                                                                                    <div class="p-6">
-                                                                                                                                                                                                                                                        <div class="flex items-start justify-between mb-4">
-                                                                                                                                                                                                                                                            <div class="flex-1">
-                                                                                                                                                                                                                                                                <h3 class="text-lg font-semibold text-primary-200 mb-2">
-                                                                                                                                                                                                                                                                    ${video.title}
-                                                                                                                                                                                                                                                                </h3>
-                                                                                                                                                                                                                                                                <div class="flex items-center text-sm text-gray-500 mb-3">
-                                                                                                                                                                                                                                                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                                                                                                                                                                                                                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
-                                                                                                                                                                                                                                                                    </svg>
-                                                                                                                                                                                                                                                                    ${new Date(video.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
-                                                                                                                                                                                                                                                                Video
-                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                        <div class="bg-gradient-to-br from-purple-50 to-white rounded-lg border border-purple-200 hover:border-primary-100 hover:shadow-md transition-all duration-300">
+                                                                                                                                                                                                                                                                                                            <div class="p-6">
+                                                                                                                                                                                                                                                                                                                <div class="flex items-start justify-between mb-4">
+                                                                                                                                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                                                                                                                                        <h3 class="text-lg font-semibold text-primary-200 mb-2">
+                                                                                                                                                                                                                                                                                                                            ${video.title}
+                                                                                                                                                                                                                                                                                                                        </h3>
+                                                                                                                                                                                                                                                                                                                        <div class="flex items-center text-sm text-gray-500 mb-3">
+                                                                                                                                                                                                                                                                                                                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                                                                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                                                                            </svg>
+                                                                                                                                                                                                                                                                                                                            ${new Date(video.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                    <span class="bg-purple-100 text-purple-800 text-xs font-medium px-3 py-1 rounded-full">
+                                                                                                                                                                                                                                                                                                                        Video
+                                                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                                                </div>
 
-                                                                                                                                                                                                                                                        ${video.video ? `
+                                                                                                                                                                                                                                                                                                                ${video.video ? `
                                 <div class="relative mb-4">
                                     <video class="w-full rounded-lg" controls controlsList="nodownload" oncontextmenu="return false;">
                                         <source src="{{ asset('storage/') }}/${video.video}" type="video/mp4">
@@ -354,7 +354,7 @@
                                 </div>
                             ` : ''}
 
-                                                                                                                                                                                                                                                        ${video.file_pdf ? `
+                                                                                                                                                                                                                                                                                                                ${video.file_pdf ? `
                                 <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
                                     <div class="flex items-center">
                                         <svg class="w-6 h-6 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -368,9 +368,9 @@
                                     </a>
                                 </div>
                             ` : ''}
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            `).join('')}
+                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                    `).join('')}
             </div>
         `;
         }
@@ -383,53 +383,53 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${latihanData.map(exercise => `
-                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                                                                                                                                                                                                                                    <div class="p-6">
-                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
-                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                                                                                                                                                                                                                                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                                                                                                                                                                                                                                                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
-                                                                                                                                                                                                                                                                </svg>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div class="flex-1">
-                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                                                                                                                                                                                                                                    ${exercise.title}
-                                                                                                                                                                                                                                                                </h3>
-                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
-                                                                                                                                                                                                                                                                    ${exercise.quiz_type} • ${exercise.jumlah_soal} soal
-                                                                                                                                                                                                                                                                </p>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <p class="text-gray-600 text-sm mb-4">
-                                                                                                                                                                                                                                                            Kumpulan soal latihan untuk menguji pemahaman materi yang telah dipelajari.
-                                                                                                                                                                                                                                                        </p>
-                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
-                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                                                                                                                                                                                                                                                                Latihan
-                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                            <div class="flex space-x-2">
-                                                                                                                                                                                                                                                            <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
-                               class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
-                            </a>
+                                                                                                                                                                                                                                                                                                        <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                                                                            <div class="p-6">
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                                                                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                                                                                                                                                                                                                                                                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                                                                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                                                                        </svg>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                                                                                                                                        <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                                                                            ${exercise.title}
+                                                                                                                                                                                                                                                                                                                        </h3>
+                                                                                                                                                                                                                                                                                                                        <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                                                                            ${exercise.quiz_type} • ${exercise.jumlah_soal} soal
+                                                                                                                                                                                                                                                                                                                        </p>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                <p class="text-gray-600 text-sm mb-4">
+                                                                                                                                                                                                                                                                                                                    Kumpulan soal latihan untuk menguji pemahaman materi yang telah dipelajari.
+                                                                                                                                                                                                                                                                                                                </p>
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                                                                                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                                                                        Latihan
+                                                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                                                    <div class="flex space-x-2 mobile-button-wrapper">
+                                                                                                                                                                                                                                                                                                                    <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
+                                                                                       class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                                                        <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
+                                                                                    </a>
 
 
-                                                                                                                                                                                                                                                            <a href="javascript:void(0)"
-                                                                                                                                    class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
-                                                                                                                                    data-url="/kelas/latihan/${btoa(exercise.id)}"
-                                                                                                                                    data-title="${exercise.title}"
-                                                                                                                                    data-jumlah="${exercise.jumlah_soal}">
-                                                                                                                                    Mulai
-                                                                                                                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                                                                                                    </svg>
-                                                                                                                                </a>
-                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                                                                                            class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                                                                                                                                                                                            data-url="/kelas/latihan/${btoa(exercise.id)}"
+                                                                                                                                                                                            data-title="${exercise.title}"
+                                                                                                                                                                                            data-jumlah="${exercise.jumlah_soal}">
+                                                                                                                                                                                            Mulai
+                                                                                                                                                                                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                                                                            </svg>
+                                                                                                                                                                                        </a>
+                                                                                                                                                                                        </div>
 
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            `).join('')}
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                    `).join('')}
             </div>
         `;
         }
@@ -442,51 +442,51 @@
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${tryoutData.map(exercise => `
-                                                                                                                                                                                                                                                <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
-                                                                                                                                                                                                                                                    <div class="p-6">
-                                                                                                                                                                                                                                                        <div class="flex items-center mb-4">
-                                                                                                                                                                                                                                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                                                                                                                                                                                                                                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                                                                                                                                                                                                                                                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
-                                                                                                                                                                                                                                                                </svg>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                            <div class="flex-1">
-                                                                                                                                                                                                                                                                <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
-                                                                                                                                                                                                                                                                    ${exercise.title}
-                                                                                                                                                                                                                                                                </h3>
-                                                                                                                                                                                                                                                                <p class="text-sm text-gray-500">
-                                                                                                                                                                                                                                                                    ${exercise.quiz_type} • ${exercise.durasi ? exercise.durasi + ' menit' : '20 menit'} • ${exercise.jumlah_soal} soal
-                                                                                                                                                                                                                                                                </p>
-                                                                                                                                                                                                                                                            </div>
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                        <p class="text-gray-600 text-sm mb-4">
-                                                                                                                                                                                                                                                            Kumpulan soal tryout untuk menguji pemahaman materi yang telah dipelajari.
-                                                                                                                                                                                                                                                        </p>
-                                                                                                                                                                                                                                                        <div class="flex items-center justify-between">
-                                                                                                                                                                                                                                                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                                                                                                                                                                                                                                                                Tryout
-                                                                                                                                                                                                                                                            </span>
-                                                                                                                                                                                                                                                            <div class="flex space-x-2">
-                                                                                                                                                                                                                                                            <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
-                               class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
-                                <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
-                            </a>
-                                                                                                                                                                                                                                                            <a href="javascript:void(0)"
-                                                                                                                                class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
-                                                                                                                                data-url="/kelas/tryout/${btoa(exercise.id)}"
-                                                                                                                                data-title="${exercise.title}"
-                                                                                                                                data-jumlah="${exercise.jumlah_soal}">
-                                                                                                                                Mulai
-                                                                                                                                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                                                                                                                </svg>
-                                                                                                                            </a>
-                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                        <div class="content-card bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-200 hover:border-primary-100 hover:shadow-md transition-all duration-300 group">
+                                                                                                                                                                                                                                                                                                            <div class="p-6">
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center mb-4">
+                                                                                                                                                                                                                                                                                                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                                                                                                                                                                                                                                                                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                                                                                                                                                                                                                                                                                            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm1 2a1 1 0 000 2h6a1 1 0 100-2H7zm6 7a1 1 0 01-1 1H8a1 1 0 01-1-1V9a1 1 0 011-1h4a1 1 0 011 1v2z" clip-rule="evenodd"></path>
+                                                                                                                                                                                                                                                                                                                        </svg>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                    <div class="flex-1">
+                                                                                                                                                                                                                                                                                                                        <h3 class="font-semibold text-primary-200 group-hover:text-primary-100 transition-colors">
+                                                                                                                                                                                                                                                                                                                            ${exercise.title}
+                                                                                                                                                                                                                                                                                                                        </h3>
+                                                                                                                                                                                                                                                                                                                        <p class="text-sm text-gray-500">
+                                                                                                                                                                                                                                                                                                                            ${exercise.quiz_type} • ${exercise.durasi ? exercise.durasi + ' menit' : '20 menit'} • ${exercise.jumlah_soal} soal
+                                                                                                                                                                                                                                                                                                                        </p>
+                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                                <p class="text-gray-600 text-sm mb-4">
+                                                                                                                                                                                                                                                                                                                    Kumpulan soal tryout untuk menguji pemahaman materi yang telah dipelajari.
+                                                                                                                                                                                                                                                                                                                </p>
+                                                                                                                                                                                                                                                                                                                <div class="flex items-center justify-between">
+                                                                                                                                                                                                                                                                                                                    <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
+                                                                                                                                                                                                                                                                                                                        Tryout
+                                                                                                                                                                                                                                                                                                                    </span>
+                                                                                                                                                                                                                                                                                                                    <div class="flex space-x-2 mobile-button-wrapper">
+                                                                                                                                                                                                                                                                                                                    <a href="/kelas/riwayat-nilai/${btoa(exercise.id)}"
+                                                                                       class="border border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center">
+                                                                                        <i class="fa-solid fa-history mr-1"></i> Riwayat Nilai
+                                                                                    </a>
+                                                                                                                                                                                                                                                                                                                    <a href="javascript:void(0)"
+                                                                                                                                                                                        class="btn-mulai bg-primary-100 hover:bg-primary-200 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+                                                                                                                                                                                        data-url="/kelas/tryout/${btoa(exercise.id)}"
+                                                                                                                                                                                        data-title="${exercise.title}"
+                                                                                                                                                                                        data-jumlah="${exercise.jumlah_soal}">
+                                                                                                                                                                                        Mulai
+                                                                                                                                                                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                                                                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                                                                                                                                                                        </svg>
+                                                                                                                                                                                    </a>
+                                                                                                                                                                                    </div>
 
-                                                                                                                                                                                                                                                        </div>
-                                                                                                                                                                                                                                                    </div>
-                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                            `).join('')}
+                                                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                        </div>
+                                                                                                                                                                                                                                                                                                    `).join('')}
             </div>
         `;
         }
@@ -597,6 +597,102 @@
 
 @push('style')
     <style>
+        .scrollbar-hide {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* Internet Explorer 10+ */
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+            /* WebKit */
+        }
+
+        /* Responsif untuk mobile - 2 kolom per baris dengan horizontal scroll */
+        @media (max-width: 768px) {
+
+            /* Pastikan nav container dapat scroll horizontal */
+            nav.flex {
+                scroll-snap-type: x mandatory;
+                padding-bottom: 2px;
+                justify-content: flex-start !important;
+                /* Override md:justify-center di mobile */
+            }
+
+            .tab-button {
+                white-space: nowrap;
+                scroll-snap-align: start;
+                border-right: 1px solid #e5e7eb;
+            }
+
+            /* Hilangkan border kanan untuk tab terakhir */
+            .tab-button:last-child {
+                border-right: none;
+            }
+
+            /* Icon dan text spacing di mobile */
+            .tab-button .flex {
+                flex-direction: row;
+                gap: 4px;
+            }
+
+            /* Visual indicator untuk scrollable content */
+            nav.flex::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 20px;
+                height: 100%;
+                background: linear-gradient(to left, white, transparent);
+                pointer-events: none;
+                z-index: 1;
+            }
+        }
+
+        /* Desktop tetap seperti semula (md ke atas) */
+        @media (min-width: 768px) {
+            .tab-button {
+                border-right: none;
+                /* Tidak ada border di desktop */
+            }
+
+            nav.flex {
+                overflow-x: visible;
+                /* Tidak perlu scroll di desktop */
+            }
+
+            /* Hide gradient indicator di desktop */
+            nav.flex::after {
+                display: none;
+            }
+        }
+
+        /* Smooth scrolling untuk nav tabs */
+        nav.flex {
+            scroll-behavior: smooth;
+        }
+
+        /* Hover effect tetap ada */
+        .tab-button:hover {
+            background-color: rgba(235, 99, 29, 0.05);
+        }
+
+        /* Active state styling */
+        .tab-button.active {
+            border-bottom: 2px solid #eb631d;
+            color: #eb631d;
+            font-weight: 600;
+            background-color: rgba(235, 99, 29, 0.05);
+        }
+
+        /* Transisi yang smooth */
+        .tab-button {
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
         /* Styling untuk modal */
         #confirmationModal {
             transition: opacity 0.3s ease;
@@ -842,6 +938,53 @@
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+
+            /* Container tombol di kartu latihan dan tryout */
+            .content-card .flex.items-center.justify-between {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            /* Container untuk kedua tombol */
+            .content-card .flex.space-x-2 {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            /* Tombol individual */
+            .content-card a {
+                justify-content: center;
+                text-align: center;
+                width: 100%;
+            }
+
+            /* Badge kategori */
+            .content-card .text-xs.bg-yellow-100 {
+                align-self: center;
+                margin-bottom: 8px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .content-card .flex.items-center.justify-between {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .content-card .flex.space-x-2 {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .content-card a {
+                width: auto;
+            }
         }
     </style>
 @endpush
