@@ -4,7 +4,11 @@
     <div class="min-h-screen bg-gray-100 py-4 px-2 sm:px-4 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <!-- Header -->
-            <div class="bg-white rounded-lg shadow-sm mb-4 p-4">
+
+            <div class="bg-white rounded-lg shadow-sm mb-4 p-4 flex items-center">
+                <a href="javascript:history.back()" class="mr-4 text-gray-600 hover:text-primary-100 transition-colors">
+                    <i class="fa-solid fa-arrow-left text-xl"></i>
+                </a>
                 <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">{{ $module->title }}</h1>
             </div>
 
