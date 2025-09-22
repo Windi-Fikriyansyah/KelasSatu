@@ -68,7 +68,7 @@
                                             {{ $index + 1 }}
                                         </div>
                                         <div class="flex-1">
-                                            <div class="text-lg font-normal text-gray-900 mb-4">
+                                            <div class="prose max-w-none text-gray-900 mb-4">
                                                 {!! $question->question !!}
                                             </div>
 
@@ -144,6 +144,30 @@
 @endsection
 @push('style')
     <style>
+        .prose h1,
+        .prose h2,
+        .prose h3,
+        .prose h4,
+        .prose h5,
+        .prose h6 {
+            all: revert;
+            /* reset ke default browser / bawaan inline style */
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .prose h1 {
+            font-size: 2rem;
+        }
+
+        .prose h2 {
+            font-size: 1.5rem;
+        }
+
+        .prose h3 {
+            font-size: 1.25rem;
+        }
+
         .option-label .circle-label {
             background-color: #f3f4f6;
             /* abu terang */
