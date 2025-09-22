@@ -303,11 +303,31 @@
                     items: [
                         'heading', '|',
                         'bold', 'italic', 'link', '|',
+                        'fontFamily', 'fontSize', '|',
                         'alignment', '|',
                         'bulletedList', 'numberedList', '|',
                         'insertTable', 'imageUpload', '|',
                         'undo', 'redo'
                     ]
+                },
+                fontFamily: {
+                    options: [
+                        'default',
+                        'Inter_Fallback_f4ae04, sans-serif',
+                        'Arial, Helvetica, sans-serif',
+                        'Courier New, Courier, monospace',
+                        'Georgia, serif',
+                        'Lucida Sans Unicode, Lucida Grande, sans-serif',
+                        'Tahoma, Geneva, sans-serif',
+                        'Times New Roman, Times, serif',
+                        'Trebuchet MS, Helvetica, sans-serif',
+                        'Verdana, Geneva, sans-serif'
+                    ],
+                    supportAllValues: true
+                },
+                fontSize: {
+                    options: [9, 11, 13, 'default', 17, 19, 21],
+                    supportAllValues: true
                 },
                 alignment: {
                     options: ['left', 'center', 'right',

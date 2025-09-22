@@ -68,9 +68,10 @@
                                             {{ $index + 1 }}
                                         </div>
                                         <div class="flex-1">
-                                            <div class="prose max-w-none text-gray-900 mb-4">
+                                            <div class="ckeditor-output">
                                                 {!! $question->question !!}
                                             </div>
+
 
                                             <div class="space-y-3">
                                                 @foreach ($question->formatted_options as $optionKey => $option)
@@ -144,6 +145,11 @@
 @endsection
 @push('style')
     <style>
+        .ckeditor-output * {
+            all: revert;
+            /* atau bisa all: unset; tergantung kebutuhan */
+        }
+
         .prose h1,
         .prose h2,
         .prose h3,
