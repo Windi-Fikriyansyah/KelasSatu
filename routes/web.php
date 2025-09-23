@@ -199,7 +199,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/riwayat-nilai/{quizId}', [KelasSayaController::class, 'riwayat'])->name('riwayat_nilai');
         // Route::get('/tryout/riwayat/{quizId}', [KelasSayaController::class, 'riwayat'])->name('tryout.riwayat');
 
-        Route::get('/certificate/download', [CertificateController::class, 'download'])
+        Route::get('/certificate/download/{course}/{format}', [CertificateController::class, 'download'])
             ->name('certificate.download');
 
         Route::get('/certificate/preview', [CertificateController::class, 'preview'])

@@ -9,6 +9,8 @@ use Intervention\Image\Drivers\Gd\Driver;
 // Atau jika menggunakan Imagick:
 // use Intervention\Image\Drivers\Imagick\Driver;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class CertificateController extends Controller
 {
@@ -31,9 +33,22 @@ class CertificateController extends Controller
         return $romans[$month] ?? '';
     }
 
-    private function generateCertificateNumber($userId)
+
+    private function generateCertificateNumber($userId, $courseId)
     {
-        $nomorUrut = str_pad($userId, 3, '0', STR_PAD_LEFT);
+        // Ambil semua user yang beli kursus ini, urut berdasarkan created_at
+        $purchases = DB::table('transactions')
+            ->where('course_id', $courseId)
+            ->where('status', 'PAID')
+            ->orderBy('created_at', 'asc')
+            ->pluck('user_id')
+            ->toArray();
+
+        // Cari posisi user dalam daftar
+        $nomorUrut = array_search($userId, $purchases) + 1;
+
+        // Format ke 3 digit (misal 001, 002, dst.)
+        $nomorUrut = str_pad($nomorUrut, 3, '0', STR_PAD_LEFT);
         $kode = 'TKA'; // kode tetap
         $bulanRomawi = $this->monthToRoman(date('n'));
         $tahun = date('Y');
@@ -41,10 +56,27 @@ class CertificateController extends Controller
         return "{$nomorUrut}/{$kode}/{$bulanRomawi}/{$tahun}";
     }
 
+    private function getPurchaseDate($userId, $courseId)
+    {
+        $transaction = DB::table('transactions')
+            ->where('user_id', $userId)
+            ->where('course_id', $courseId)
+            ->where('status', 'PAID')
+            ->orderBy('created_at', 'asc')
+            ->first();
+
+        if (!$transaction) {
+            return null;
+        }
+
+        // Format: 1 Oktober 2025
+        return Carbon::parse($transaction->created_at)->translatedFormat('j F Y');
+    }
+
     public function preview()
     {
         $user = Auth::user();
-        $templatePath = public_path('image/template.jpg');
+        $templatePath = public_path('image/template1.jpg');
 
         $manager = new ImageManager(new Driver());
         $image = $manager->read($templatePath);
@@ -72,9 +104,9 @@ class CertificateController extends Controller
             ->header('Content-Type', 'image/jpeg');
     }
 
-    private function downloadImage($user)
+    private function downloadImage($user, $courseId)
     {
-        $templatePath = public_path('image/template.jpg');
+        $templatePath = public_path('image/template1.jpg');
 
         if (!file_exists($templatePath)) {
             return response()->json(['error' => 'Template not found at: ' . $templatePath], 404);
@@ -85,29 +117,43 @@ class CertificateController extends Controller
             $image = $imageManager->read($templatePath);
 
             // Tambahkan nama user
-            $image->text($user->name, 800, 500, function ($font) {
+            $image->text($user->name, 1280, 820, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
                     $font->filename($fontPath);
                 }
-                $font->size(50);
+                $font->size(52);
                 $font->color('#000000');
                 $font->align('center');
                 $font->valign('middle');
             });
 
             // Tambahkan nomor sertifikat
-            $certificateNumber = $this->generateCertificateNumber($user->id);
-            $image->text($certificateNumber, 850, 335, function ($font) {
+            $certificateNumber = $this->generateCertificateNumber($user->id, $courseId);
+            $image->text($certificateNumber, 1350, 540, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
                     $font->filename($fontPath);
                 }
-                $font->size(30);
+                $font->size(40);
                 $font->color('#000000');
                 $font->align('center');
                 $font->valign('middle');
             });
+
+            $purchaseDate = $this->getPurchaseDate($user->id, $courseId);
+            if ($purchaseDate) {
+                $image->text($purchaseDate, 1675, 1225, function ($font) {
+                    $fontPath = public_path('fonts/arialbd.ttf');
+                    if (file_exists($fontPath)) {
+                        $font->filename($fontPath);
+                    }
+                    $font->size(50);
+                    $font->color('#000000');
+                    $font->align('center');
+                    $font->valign('middle');
+                });
+            }
 
             $filename = 'sertifikat_' . $user->id . '.jpg';
 
@@ -125,32 +171,35 @@ class CertificateController extends Controller
 
     public function download(Request $request)
     {
+
         $user = Auth::user();
+        $courseId = $request->get('course');
         $format = $request->get('format', 'pdf');
 
         if ($format === 'image') {
-            return $this->downloadImage($user);
+            return $this->downloadImage($user, $courseId);
         }
 
-        return $this->downloadPDF($user);
+        return $this->downloadPDF($user, $courseId);
     }
 
 
 
-    private function downloadPDF($user)
+    private function downloadPDF($user, $courseId)
     {
-        $templatePath = public_path('image/template.jpg');
+        $templatePath = public_path('image/template1.jpg');
 
         list($width, $height) = getimagesize($templatePath);
         $orientation = $width > $height ? 'landscape' : 'portrait';
 
         // Generate nomor sertifikat
-        $certificateNumber = $this->generateCertificateNumber($user->id);
-
+        $certificateNumber = $this->generateCertificateNumber($user->id, $courseId);
+        $purchaseDate = $this->getPurchaseDate($user->id, $courseId);
         $data = [
             'user' => $user,
             'template' => $templatePath,
             'certificateNumber' => $certificateNumber,
+            'purchaseDate' => $purchaseDate,
         ];
 
         $pdf = PDF::loadView('kelas_saya.pdf', $data);

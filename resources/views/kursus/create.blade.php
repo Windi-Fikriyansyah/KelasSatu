@@ -62,10 +62,10 @@
                                         <option value="pilihan"
                                             {{ old('mapel', $course->mapel ?? '') == 'pilihan' ? 'selected' : '' }}>Pilihan
                                         </option>
-                                        <option value="tidak ada"
+                                        {{-- <option value="tidak ada"
                                             {{ old('mapel', $course->mapel ?? '') == 'tidak ada' ? 'selected' : '' }}>Tidak
                                             Ada
-                                        </option>
+                                        </option> --}}
                                     </select>
                                     @error('mapel')
                                         <div class="invalid-feedback">{{ $message }}</div>

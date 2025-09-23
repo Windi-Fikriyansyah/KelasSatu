@@ -54,6 +54,18 @@
             color: #000000;
             text-align: center;
         }
+
+        .purchaseDate {
+            position: absolute;
+            top: 66.1%;
+            /* sedikit di bawah nama */
+            left: 61.3%;
+            transform: translateX(-50%);
+            font-size: 23px;
+            font-weight: bold;
+            color: #000000;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -62,6 +74,7 @@
         <div class="certificate-background"></div>
         <div class="certificate-name">{{ $user->name }}</div>
         <div class="certificate-number">{{ $certificateNumber }}</div>
+        <div class="purchaseDate">{{ $purchaseDate }}</div>
     </div>
 </body>
 
