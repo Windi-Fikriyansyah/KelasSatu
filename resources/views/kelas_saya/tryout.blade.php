@@ -95,7 +95,8 @@
 
 
                                                             {{-- Isi jawaban --}}
-                                                            <span class="text-gray-700 leading-relaxed flex-1">
+                                                            <span
+                                                                class="ckeditor-output text-gray-700 leading-relaxed flex-1">
                                                                 {!! $option !!}
                                                             </span>
                                                         </label>
@@ -144,6 +145,7 @@
     </section>
 @endsection
 @push('style')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <style>
         .ckeditor-output * {
             all: revert;
@@ -207,11 +209,7 @@
             /* lebih kecil dari default text-lg */
         }
 
-        /* Ukuran font jawaban */
-        .question-card .option-label span {
-            font-size: 0.9rem;
-            /* perkecil teks jawaban */
-        }
+
 
         /* Tabel tetap rapi */
         .question-card table {
@@ -237,6 +235,50 @@
 @endpush
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script>
+        // === Function render LaTeX dengan KaTeX ===
+        function renderLatex(content) {
+            const inlineRegex = /\$([^$]+)\$/g;
+            const blockRegex = /\$\$([^$]+)\$\$/g;
+
+            let renderedContent = content;
+
+            renderedContent = renderedContent.replace(blockRegex, (match, latex) => {
+                try {
+                    return katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: true
+                    });
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            renderedContent = renderedContent.replace(inlineRegex, (match, latex) => {
+                try {
+                    return katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            return renderedContent;
+        }
+
+        function applyLatexRender() {
+            document.querySelectorAll('.ckeditor-output').forEach(el => {
+                el.innerHTML = renderLatex(el.innerHTML);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            applyLatexRender();
+        });
+    </script>
     <script>
         function confirmExit(url = null) {
             Swal.fire({

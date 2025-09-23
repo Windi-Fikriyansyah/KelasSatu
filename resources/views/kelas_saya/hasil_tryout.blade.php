@@ -200,7 +200,7 @@
 
                                             <!-- Jawaban Benar + Pembahasan -->
                                             <div
-                                                class="p-4 bg-gray-50 border rounded-lg text-[17px] text-gray-700 space-y-2 font-[_Inter_Fallback_f4ae04]">
+                                                class="p-4 bg-gray-50  border rounded-lg text-[17px] text-gray-700 space-y-2 font-[_Inter_Fallback_f4ae04]">
                                                 <div>
                                                     <strong>Jawaban Benar:</strong>
                                                     <span class="text-green-600 font-semibold">
@@ -249,6 +249,8 @@
 @endsection
 
 @push('style')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
     <style>
         .party-popper {
             position: absolute;
@@ -331,6 +333,55 @@
 @endpush
 
 @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script>
+        // === Function render LaTeX dengan KaTeX ===
+        function renderLatex(content) {
+            if (!content) return content;
+
+            // Block mode $$...$$
+            content = content.replace(/\$\$([\s\S]+?)\$\$/g, (match, latex) => {
+                try {
+                    return katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: true
+                    });
+                } catch {
+                    return match;
+                }
+            });
+
+            // Inline mode $...$
+            content = content.replace(/(?:^|[^$])\$([^$]+)\$(?!\$)/g, (match, latex) => {
+                const prefix = match[0][0] === '$' ? '' : match[0][0];
+                try {
+                    return prefix + katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch {
+                    return match;
+                }
+            });
+
+            return content;
+        }
+
+        function applyLatexRender() {
+            document.querySelectorAll(
+                '.question-card .text-lg, ' + // Soal
+                '.question-card .option-label, ' + // Opsi jawaban
+                '.question-card .text-gray-700, ' + // Opsi isi span
+                '.question-card .pembahasan' // Pembahasan
+            ).forEach(el => {
+                el.innerHTML = renderLatex(el.innerHTML);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            applyLatexRender();
+        });
+    </script>
     <script>
         let currentQuestion = 1;
         const totalQuestions = {{ count($questions) }};

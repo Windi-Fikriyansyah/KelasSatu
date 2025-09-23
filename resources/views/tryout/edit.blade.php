@@ -184,6 +184,8 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap5-theme@1.3.2/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
+    {{-- KaTeX CSS --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <style>
         .explanation-content {
             background-color: #f8f9fa;
@@ -284,12 +286,46 @@
 @push('js')
     <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script>
         let editorInstances = {};
         let editingIndex = -1;
         let questions = [];
         let autosaveTimer;
 
+        function renderLatex(content) {
+            // Regex untuk menemukan LaTeX inline $...$ dan block $$...$$
+            const inlineRegex = /\$([^$]+)\$/g;
+            const blockRegex = /\$\$([^$]+)\$\$/g;
+
+            let renderedContent = content;
+
+            // Render inline LaTeX
+            renderedContent = renderedContent.replace(inlineRegex, (match, latex) => {
+                try {
+                    return katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: false
+                    });
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            // Render block LaTeX
+            renderedContent = renderedContent.replace(blockRegex, (match, latex) => {
+                try {
+                    return katex.renderToString(latex, {
+                        throwOnError: false,
+                        displayMode: true
+                    });
+                } catch (e) {
+                    return match;
+                }
+            });
+
+            return renderedContent;
+        }
         // Fungsi untuk init CKEditor
         function initCKEditor(id) {
             CKEDITOR.ClassicEditor.create(document.querySelector('#' + id), {
@@ -768,7 +804,7 @@
         `);
 
                 // Set konten pertanyaan menggunakan .html() untuk render HTML dengan benar
-                questionCard.find('.question-content-display').html(q.question || '');
+                questionCard.find('.question-content-display').html(renderLatex(q.question || ''));
 
                 // Render pilihan jawaban
                 const optionsContainer = questionCard.find(`#options-display-${index}`);
@@ -805,14 +841,14 @@
                 `);
 
                         // Set konten pilihan menggunakan .html()
-                        optionElement.find('.option-content-display').html(opt.value);
+                        optionElement.find('.option-content-display').html(renderLatex(opt.value));
                         optionsContainer.append(optionElement);
                     }
                 });
 
                 // Set pembahasan jika ada
                 if (q.explanation) {
-                    questionCard.find('.explanation-content-display').html(q.explanation);
+                    questionCard.find('.explanation-content-display').html(renderLatex(q.explanation));
                 }
 
                 // Tambahkan hidden inputs untuk form submission
