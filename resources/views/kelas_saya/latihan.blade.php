@@ -25,12 +25,42 @@
                 <!-- Navigasi Soal (Kiri) -->
                 <div class="bg-white rounded-xl shadow-lg p-6 h-fit lg:sticky lg:top-24">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Navigasi Soal</h3>
+                    @if ($quiz->mapel === 'wajib' && !empty($questionRanges))
+                        <!-- Tabs untuk jenis soal -->
+                        <div class="mb-4">
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                @if (isset($questionRanges['multiple_choice']))
+                                    <button type="button"
+                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all active"
+                                        data-type="multiple_choice">
+                                        {{ $questionRanges['multiple_choice']['range'] }}
+                                    </button>
+                                @endif
+                                @if (isset($questionRanges['pgk_kategori']))
+                                    <button type="button"
+                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all"
+                                        data-type="pgk_kategori">
+                                        {{ $questionRanges['pgk_kategori']['range'] }}
+                                    </button>
+                                @endif
+                                @if (isset($questionRanges['pgk_mcma']))
+                                    <button type="button"
+                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all"
+                                        data-type="pgk_mcma">
+                                        {{ $questionRanges['pgk_mcma']['range'] }}
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
                     <div class="grid grid-cols-8 lg:grid-cols-3 gap-2">
-                        @foreach ($questions as $index => $question)
+                        @foreach ($questions as $question)
                             <button type="button"
-                                class="question-nav w-10 h-10 rounded-lg border border-gray-300 text-gray-600 hover:border-primary-100 hover:bg-primary-50 transition-all duration-200 {{ $index === 0 ? 'bg-primary-100 text-white border-primary-100' : '' }}"
-                                data-question="{{ $index + 1 }}" onclick="goToQuestion({{ $index + 1 }})">
-                                {{ $index + 1 }}
+                                class="question-nav w-10 h-10 rounded-lg border border-gray-300 text-gray-600 hover:border-primary-100 hover:bg-primary-50 transition-all duration-200 {{ $question->display_number === 1 ? 'bg-primary-100 text-white border-primary-100' : '' }}"
+                                data-question="{{ $question->display_number }}"
+                                data-question-type="{{ $question->question_type }}"
+                                onclick="goToQuestion({{ $question->display_number }})">
+                                {{ $question->display_number }}
                             </button>
                         @endforeach
                     </div>
@@ -54,7 +84,7 @@
                 <div class="lg:col-span-3">
                     <form id="quiz-form" method="POST" action="{{ route('kelas.latihan.submit', $quiz->id) }}">
                         @csrf
-
+                        <input type="hidden" name="duration" id="duration-input" value="0">
                         @foreach ($questions as $index => $question)
                             <div class="question-card bg-white rounded-xl shadow-lg overflow-hidden mb-6 {{ $index > 0 ? 'hidden' : '' }}"
                                 data-question="{{ $index + 1 }}">
@@ -62,46 +92,118 @@
                                     <div class="flex items-start mb-6">
                                         <div
                                             class="bg-primary-100 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold mr-4 flex-shrink-0">
-                                            {{ $index + 1 }}
+                                            {{ $question->display_number }}
                                         </div>
                                         <div class="flex-1">
                                             <div class="ckeditor-output">
                                                 {!! $question->question !!}
                                             </div>
 
-                                            <div class="space-y-3">
-                                                @foreach ($question->formatted_options as $optionKey => $option)
-                                                    @if ($option)
-                                                        <label
-                                                            class="option-label flex items-center p-4 border border-gray-200 rounded-lg hover:border-primary-100 hover:bg-primary-50/30 cursor-pointer transition-all duration-200"
-                                                            data-question="{{ $question->question_id }}"
-                                                            data-value="{{ $optionKey }}">
+                                            {{-- === Multiple Choice === --}}
+                                            @if ($question->question_type === 'multiple_choice')
+                                                <div class="space-y-3">
+                                                    @foreach ($question->formatted_options as $optionKey => $option)
+                                                        @if ($option)
+                                                            <label
+                                                                class="option-label flex items-center p-4 border rounded-lg cursor-pointer transition-all"
+                                                                data-question="{{ $question->question_id }}"
+                                                                data-value="{{ $optionKey }}">
+                                                                <input type="radio"
+                                                                    name="answers[{{ $question->question_id }}]"
+                                                                    value="{{ $optionKey }}" class="hidden">
+                                                                <span
+                                                                    class="circle-label w-8 h-8 flex items-center justify-center rounded-full font-semibold mr-3">
+                                                                    {{ $optionKey }}
+                                                                </span>
+                                                                <span
+                                                                    class="ckeditor-output flex-1">{!! $option !!}</span>
+                                                            </label>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
 
-                                                            {{-- Radio disembunyikan --}}
-                                                            <input type="radio"
-                                                                name="answers[{{ $question->question_id }}]"
-                                                                value="{{ $optionKey }}" class="hidden">
+                                            {{-- === PGK Kategori === --}}
+                                            {{-- === PGK Kategori === --}}
+                                            @if ($question->question_type === 'pgk_kategori')
+                                                <div class="overflow-x-auto mt-4">
+                                                    <table class="w-full border-collapse border border-gray-300">
+                                                        <thead>
+                                                            <tr class="bg-gray-50">
+                                                                <th
+                                                                    class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">
+                                                                    Pernyataan
+                                                                </th>
+                                                                @foreach ($question->custom_labels as $labelKey => $labelText)
+                                                                    <th
+                                                                        class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px]">
+                                                                        {{ $labelText }}
+                                                                    </th>
+                                                                @endforeach
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($question->statements as $sIndex => $statement)
+                                                                <tr class="hover:bg-gray-50">
+                                                                    <td class="border border-gray-300 px-4 py-3">
+                                                                        <div class="ckeditor-output">
+                                                                            {!! $statement !!}
+                                                                        </div>
+                                                                    </td>
+                                                                    @foreach ($question->custom_labels as $labelKey => $labelText)
+                                                                        <td
+                                                                            class="border border-gray-300 px-4 py-3 text-center">
+                                                                            <div class="flex justify-center">
+                                                                                <label
+                                                                                    class="pgk-radio-label cursor-pointer inline-block">
+                                                                                    <input type="radio"
+                                                                                        name="answers[{{ $question->question_id }}][{{ $sIndex }}]"
+                                                                                        value="{{ $labelKey }}"
+                                                                                        class="pgk-radio-input hidden">
+                                                                                    <div
+                                                                                        class="pgk-radio-circle w-6 h-6 rounded-full border-2 border-gray-300 bg-white flex items-center justify-center transition-all duration-200 hover:border-green-400">
+                                                                                        <span
+                                                                                            class="pgk-radio-check text-green-600 text-sm opacity-0 transition-opacity duration-200">
+                                                                                            ✓
+                                                                                        </span>
+                                                                                    </div>
 
-                                                            {{-- Huruf pilihan --}}
-                                                            {{-- Huruf pilihan dalam lingkaran --}}
-                                                            <span
-                                                                class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3">
-                                                                {{ $optionKey }}
-                                                            </span>
+                                                                                </label>
+                                                                            </div>
+                                                                        </td>
+                                                                    @endforeach
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            @endif
 
-
-                                                            {{-- Isi jawaban --}}
-                                                            <span
-                                                                class="ckeditor-output text-gray-700 leading-relaxed flex-1">
-                                                                {!! $option !!}
-                                                            </span>
-                                                        </label>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-
-
+                                            {{-- === PGK MCMA (Multiple Choice Multiple Answer) === --}}
+                                            @if ($question->question_type === 'pgk_mcma')
+                                                <div class="space-y-3">
+                                                    @foreach ($question->formatted_options as $optionKey => $option)
+                                                        @if ($option)
+                                                            <label
+                                                                class="option-label flex items-center p-4 border rounded-lg cursor-pointer transition-all"
+                                                                data-question="{{ $question->question_id }}"
+                                                                data-value="{{ $optionKey }}">
+                                                                <input type="checkbox"
+                                                                    name="answers[{{ $question->question_id }}][]"
+                                                                    value="{{ $optionKey }}" class="hidden">
+                                                                <span
+                                                                    class="circle-label w-8 h-8 flex items-center justify-center rounded-full font-semibold mr-3">
+                                                                    {{ $optionKey }}
+                                                                </span>
+                                                                <span
+                                                                    class="ckeditor-output flex-1">{!! $option !!}</span>
+                                                            </label>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -167,6 +269,80 @@
 @push('style')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <style>
+        .tab-button {
+            background-color: #f9fafb;
+            color: #6b7280;
+            border-color: #d1d5db;
+        }
+
+        .tab-button.active {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
+
+        .pgk-radio-input:checked+.pgk-radio-circle {
+            border-color: #16a34a;
+            /* hijau */
+            background-color: #dcfce7;
+            /* hijau muda */
+        }
+
+        .pgk-radio-input:checked+.pgk-radio-circle .pgk-radio-check {
+            opacity: 1;
+            /* tampilkan ceklis */
+        }
+
+        /* Hover state */
+        .pgk-radio-label:hover .pgk-radio-circle {
+            border-color: #22c55e;
+            /* hijau terang */
+            background-color: #f0fdf4;
+            /* hijau sangat muda */
+        }
+
+        /* Table styling untuk PGK Kategori */
+        .pgk-kategori-table {
+            font-size: 0.9rem;
+        }
+
+        .pgk-kategori-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+        }
+
+        .pgk-kategori-table td {
+            vertical-align: middle;
+        }
+
+        /* Responsif untuk mobile */
+        @media (max-width: 768px) {
+            .pgk-kategori-table {
+                font-size: 0.8rem;
+            }
+
+            .pgk-kategori-table th,
+            .pgk-kategori-table td {
+                padding: 8px 4px;
+            }
+
+            .pgk-radio-circle {
+                width: 20px;
+                height: 20px;
+            }
+
+            .pgk-radio-dot {
+                width: 10px;
+                height: 10px;
+            }
+        }
+
         .ckeditor-output * {
             all: revert;
             /* atau bisa all: unset; tergantung kebutuhan */
@@ -194,6 +370,29 @@
 
         .prose h3 {
             font-size: 1.25rem;
+        }
+
+        .option-label input[type="checkbox"]:checked~.circle-label {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+        }
+
+        .option-label input[type="checkbox"]:checked {
+            /* Untuk visual feedback */
+        }
+
+        .option-label.selected.checkbox-selected {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .option-label.checkbox-selected .circle-label {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
         }
 
         .option-label .circle-label {
@@ -251,6 +450,24 @@
             display: block;
             overflow-x: auto;
         }
+
+        .question-nav {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #d1d5db;
+            color: #6b7280;
+            background-color: white;
+            transition: all 0.2s ease;
+        }
+
+        .question-nav.bg-primary-100 {
+            border-color: #2563eb;
+        }
+
+        .question-nav.bg-green-500 {
+            border-color: #10b981;
+        }
     </style>
 @endpush
 
@@ -258,6 +475,48 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-activate first tab on page load
+            const firstTab = document.querySelector('.tab-button');
+            if (firstTab) {
+                firstTab.classList.add('active');
+
+                // Apply filter based on first tab
+                const selectedType = firstTab.dataset.type;
+                document.querySelectorAll('.question-nav').forEach(navBtn => {
+                    const questionType = navBtn.dataset.questionType;
+                    if (questionType === selectedType) {
+                        navBtn.style.display = 'inline-flex';
+                    } else {
+                        navBtn.style.display = 'none';
+                    }
+                });
+            }
+
+            // Tab button event listeners
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const selectedType = this.dataset.type;
+
+                    // Update active tab
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove(
+                        'active'));
+                    this.classList.add('active');
+
+                    // Filter navigation buttons
+                    document.querySelectorAll('.question-nav').forEach(navBtn => {
+                        const questionType = navBtn.dataset.questionType;
+                        if (questionType === selectedType) {
+                            navBtn.style.display = 'inline-flex';
+                        } else {
+                            navBtn.style.display = 'none';
+                        }
+                    });
+
+                    updateQuestionNav();
+                });
+            });
+        });
         // === Function render LaTeX dengan KaTeX ===
         function renderLatex(content) {
             const inlineRegex = /\$([^$]+)\$/g;
@@ -304,36 +563,207 @@
         let currentQuestion = 1;
         const totalQuestions = {{ count($questions) }};
         const storageKey = "quiz_answers_{{ $quiz->id }}";
+        let startTime;
+        let durationInterval;
 
-        // Simpan jawaban ke localStorage
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            // Cek apakah sudah ada startTime di localStorage
+            if (localStorage.getItem('quiz_start_time_{{ $quiz->id }}')) {
+                startTime = parseInt(localStorage.getItem('quiz_start_time_{{ $quiz->id }}'), 10);
+            } else {
+                startTime = Date.now();
+                localStorage.setItem('quiz_start_time_{{ $quiz->id }}', startTime);
+            }
+
+            // Update duration setiap detik
+            durationInterval = setInterval(updateDuration, 1000);
+        }
+
+        // Fungsi untuk update duration
+        function updateDuration() {
+            const now = Date.now();
+            const durationInSeconds = Math.floor((now - startTime) / 1000);
+            document.getElementById('duration-input').value = durationInSeconds;
+        }
+
+        // Fungsi untuk membersihkan timer
+        function cleanupTimer() {
+            if (durationInterval) {
+                clearInterval(durationInterval);
+            }
+            localStorage.removeItem('quiz_start_time_{{ $quiz->id }}');
+        }
+
+        function debugPGKStructure() {
+            console.log('=== DEBUG PGK KATEGORI ===');
+
+            // Cek semua input PGK
+            const pgkInputs = document.querySelectorAll('.pgk-radio-input');
+            console.log('Total PGK inputs found:', pgkInputs.length);
+
+            pgkInputs.forEach((input, index) => {
+                console.log(`PGK Input ${index}:`, {
+                    name: input.name,
+                    value: input.value,
+                    checked: input.checked,
+                    element: input
+                });
+            });
+
+            // Cek localStorage
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                console.log('Saved data in localStorage:', JSON.parse(saved));
+            }
+        }
+
         function saveAnswers() {
             let answers = {};
-            document.querySelectorAll('input[type="radio"]:checked, textarea').forEach(input => {
-                if (input.type === "radio") {
-                    const qid = input.name.match(/\d+/)[0];
-                    answers[qid] = input.value;
-                } else if (input.tagName.toLowerCase() === "textarea") {
-                    const qid = input.name.match(/\d+/)[0];
-                    answers[qid] = input.value.trim();
+
+            console.log('=== SAVING ANSWERS ===');
+
+            // Handle radio buttons (multiple choice dan pgk kategori)
+            document.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                console.log('Processing radio:', input.name, input.value);
+
+                // PERBAIKAN REGEX - Menangkap format answers[qid][subindex] dengan benar
+                const nameMatch = input.name.match(/^answers\[(\d+)\](?:\[([^\]]+)\])?$/);
+
+                if (nameMatch) {
+                    const qid = nameMatch[1];
+                    const subIndex = nameMatch[2]; // ini bisa berupa huruf atau angka
+
+                    console.log('Matched:', {
+                        qid,
+                        subIndex,
+                        value: input.value
+                    });
+
+                    if (subIndex !== undefined && subIndex !== null) {
+                        // PGK Kategori - jawaban berbentuk object
+                        if (!answers[qid]) answers[qid] = {};
+                        answers[qid][subIndex] = input.value;
+                        console.log('Saved PGK answer:', qid, subIndex, input.value);
+                    } else {
+                        // Multiple Choice - jawaban tunggal
+                        answers[qid] = input.value;
+                        console.log('Saved MC answer:', qid, input.value);
+                    }
+                } else {
+                    console.warn('Could not match input name:', input.name);
                 }
             });
+
+            // Handle checkboxes (pgk_mcma)
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                const nameMatch = input.name.match(/^answers\[(\d+)\]\[\]$/);
+                if (nameMatch) {
+                    const qid = nameMatch[1];
+                    if (!answers[qid]) answers[qid] = [];
+                    answers[qid].push(input.value);
+                    console.log('Saved checkbox answer:', qid, input.value);
+                }
+            });
+
+            // Handle textarea
+            document.querySelectorAll('textarea').forEach(input => {
+                const nameMatch = input.name.match(/^answers\[(\d+)\]$/);
+                if (nameMatch) {
+                    const qid = nameMatch[1];
+                    const value = input.value.trim();
+                    if (value) {
+                        answers[qid] = value;
+                        console.log('Saved textarea answer:', qid, value);
+                    }
+                }
+            });
+
+            console.log('Final answers to save:', answers);
             localStorage.setItem(storageKey, JSON.stringify(answers));
         }
 
-        // Load jawaban dari localStorage
+        // PERBAIKI FUNGSI loadAnswers - Untuk menangani loading PGK dengan benar
         function loadAnswers() {
             const saved = localStorage.getItem(storageKey);
-            if (saved) {
-                const answers = JSON.parse(saved);
-                Object.keys(answers).forEach(qid => {
-                    const val = answers[qid];
+            if (!saved) {
+                console.log('No saved data found');
+                return;
+            }
+
+            const answers = JSON.parse(saved);
+            console.log('=== LOADING ANSWERS ===');
+            console.log('Data to load:', answers);
+
+            Object.keys(answers).forEach(qid => {
+                const val = answers[qid];
+                console.log(`Loading question ${qid}:`, val);
+
+                if (typeof val === 'object' && !Array.isArray(val)) {
+                    // PGK Kategori - val adalah object dengan subIndex
+                    console.log(`Question ${qid} is PGK Kategori`);
+                    Object.keys(val).forEach(subIndex => {
+                        const inputName = `answers[${qid}][${subIndex}]`;
+                        const inputValue = val[subIndex];
+                        const selector = `input[name="${inputName}"][value="${inputValue}"]`;
+
+                        console.log('Looking for PGK input:', {
+                            inputName,
+                            inputValue,
+                            selector
+                        });
+
+                        const radio = document.querySelector(selector);
+                        if (radio) {
+                            console.log('Found PGK radio, setting checked');
+                            radio.checked = true;
+
+                            // Update visual feedback
+                            const label = radio.closest('.pgk-radio-label');
+                            if (label) {
+                                const circle = label.querySelector('.pgk-radio-circle');
+                                const check = label.querySelector('.pgk-radio-check');
+                                if (circle) {
+                                    circle.style.borderColor = '#16a34a';
+                                    circle.style.backgroundColor = '#dcfce7';
+                                }
+                                if (check) {
+                                    check.style.opacity = '1';
+                                }
+                            }
+                        } else {
+                            console.error('PGK radio not found:', selector);
+                            // Debug: tampilkan semua input untuk question ini
+                            const allInputsForQ = document.querySelectorAll(
+                                `input[name^="answers[${qid}]"]`);
+                            console.log(`All inputs for question ${qid}:`, allInputsForQ);
+                            allInputsForQ.forEach(inp => {
+                                console.log(' -', inp.name, inp.value, inp.checked);
+                            });
+                        }
+                    });
+                } else if (Array.isArray(val)) {
+                    // PGK MCMA - val adalah array
+                    console.log(`Question ${qid} is checkbox array`);
+                    val.forEach(checkVal => {
+                        const checkbox = document.querySelector(
+                            `input[name="answers[${qid}][]"][value="${checkVal}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            const label = checkbox.closest('.option-label');
+                            if (label) {
+                                label.classList.add('selected', 'checkbox-selected');
+                            }
+                        }
+                    });
+                } else {
+                    // Multiple Choice atau Essay - val adalah string
+                    console.log(`Question ${qid} is single value`);
                     const radio = document.querySelector(`input[name="answers[${qid}]"][value="${val}"]`);
                     const textarea = document.querySelector(`textarea[name="answers[${qid}]"]`);
 
                     if (radio) {
                         radio.checked = true;
-
-                        // Tambahkan class selected ke label jawaban
                         const label = radio.closest('.option-label');
                         if (label) label.classList.add('selected');
                     }
@@ -341,33 +771,157 @@
                     if (textarea) {
                         textarea.value = val;
                     }
-                });
+                }
+            });
+        }
+
+        // 3. PERBAIKI FUNGSI isQuestionAnswered() untuk pgk_kategori
+        function isQuestionAnswered(questionNum) {
+            const questionCard = document.querySelector(`.question-card[data-question="${questionNum}"]`);
+
+            if (questionCard.querySelector('input[type="radio"]')) {
+                // Cek apakah ini PGK Kategori dengan melihat apakah ada tbody
+                const pgkTable = questionCard.querySelector('tbody');
+                if (pgkTable) {
+                    // Ini PGK Kategori - hitung berapa statement yang harus dijawab
+                    const totalStatements = pgkTable.querySelectorAll('tr').length;
+                    const answeredStatements = pgkTable.querySelectorAll('input[type="radio"]:checked').length;
+                    return answeredStatements === totalStatements;
+                } else {
+                    // Multiple choice biasa
+                    const radios = questionCard.querySelectorAll('input[type="radio"]:checked');
+                    return radios.length > 0;
+                }
+            } else if (questionCard.querySelector('input[type="checkbox"]')) {
+                return questionCard.querySelector('input[type="checkbox"]:checked') !== null;
+            } else if (questionCard.querySelector('textarea')) {
+                return questionCard.querySelector('textarea').value.trim() !== '';
             }
+            return false;
         }
 
         function updateQuestionNav() {
             document.querySelectorAll('.question-nav').forEach((btn, index) => {
                 const questionNum = index + 1;
                 const answered = isQuestionAnswered(questionNum);
-                btn.classList.remove('bg-primary-100', 'text-white', 'border-primary-100', 'bg-green-500');
 
-                if (questionNum === currentQuestion) {
-                    btn.classList.add('bg-primary-100', 'text-white', 'border-primary-100');
-                } else if (answered) {
-                    btn.classList.add('bg-green-500', 'text-white');
+                // Hanya update tombol yang sedang visible (tidak hidden)
+                if (btn.style.display !== 'none') {
+                    btn.classList.remove('bg-primary-100', 'text-white', 'border-primary-100', 'bg-green-500',
+                        'text-white');
+
+                    if (questionNum === currentQuestion) {
+                        btn.classList.add('bg-primary-100', 'text-white', 'border-primary-100');
+                    } else if (answered) {
+                        btn.classList.add('bg-green-500', 'text-white');
+                    } else {
+                        // Reset ke state default untuk tombol yang belum dijawab
+                        btn.classList.add('border-gray-300', 'text-gray-600');
+                        btn.classList.remove('bg-primary-100', 'bg-green-500', 'text-white');
+                    }
                 }
             });
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener untuk PGK Kategori radio buttons - DIPERBAIKI
+            document.querySelectorAll('.pgk-radio-label').forEach(label => {
+                label.addEventListener('click', function(e) {
+                    e.preventDefault(); // Prevent double firing
 
-        function isQuestionAnswered(questionNum) {
-            const questionCard = document.querySelector(`.question-card[data-question="${questionNum}"]`);
-            if (questionCard.querySelector('input[type="radio"]')) {
-                return questionCard.querySelector('input[type="radio"]:checked') !== null;
-            } else if (questionCard.querySelector('textarea')) {
-                return questionCard.querySelector('textarea').value.trim() !== '';
-            }
-            return false;
-        }
+                    const input = this.querySelector('.pgk-radio-input');
+                    if (input && !input.checked) {
+                        // Uncheck other radios in the same row
+                        const row = input.closest('tr');
+                        if (row) {
+                            row.querySelectorAll('.pgk-radio-input').forEach(radio => {
+                                radio.checked = false;
+                                // Reset visual
+                                const circle = radio.parentElement.querySelector(
+                                    '.pgk-radio-circle');
+                                const check = radio.parentElement.querySelector(
+                                    '.pgk-radio-check');
+                                if (circle && check) {
+                                    circle.style.borderColor = '#d1d5db';
+                                    circle.style.backgroundColor = 'white';
+                                    check.style.opacity = '0';
+                                }
+                            });
+                        }
+
+                        // Check current radio
+                        input.checked = true;
+
+                        // Update visual
+                        const circle = this.querySelector('.pgk-radio-circle');
+                        const check = this.querySelector('.pgk-radio-check');
+                        if (circle && check) {
+                            circle.style.borderColor = '#16a34a';
+                            circle.style.backgroundColor = '#dcfce7';
+                            check.style.opacity = '1';
+                        }
+
+                        // Save and update navigation
+                        saveAnswers();
+                        updateQuestionNav();
+                    }
+                });
+            });
+
+            // Event listener untuk input changes - DIPERBAIKI
+            document.querySelectorAll('input[type="radio"], input[type="checkbox"], textarea').forEach(input => {
+                input.addEventListener('change', function() {
+                    console.log('Input changed:', this.name, this.value, this.checked); // Debug log
+                    saveAnswers();
+                    updateQuestionNav();
+                });
+
+                if (input.tagName.toLowerCase() === 'textarea') {
+                    input.addEventListener('input', function() {
+                        saveAnswers();
+                        updateQuestionNav();
+                    });
+                }
+            });
+
+            // Event listener untuk option labels (multiple choice dan pgk_mcma)
+            document.querySelectorAll('.option-label').forEach(label => {
+                label.addEventListener('click', function() {
+                    const questionId = this.dataset.question;
+                    const input = this.querySelector('input[type="radio"], input[type="checkbox"]');
+
+                    if (input) {
+                        if (input.type === "radio") {
+                            // Reset pilihan lain dalam soal yang sama
+                            document.querySelectorAll(
+                                    `.option-label[data-question="${questionId}"]`)
+                                .forEach(el => el.classList.remove('selected'));
+
+                            this.classList.add('selected');
+                            input.checked = true;
+
+                        } else if (input.type === "checkbox") {
+                            // Toggle checkbox
+                            if (input.checked) {
+                                this.classList.remove('selected', 'checkbox-selected');
+                                input.checked = false;
+                            } else {
+                                this.classList.add('selected', 'checkbox-selected');
+                                input.checked = true;
+                            }
+                        }
+
+                        saveAnswers();
+                        updateQuestionNav();
+                    }
+                });
+            });
+
+            // Load saved answers and update navigation
+            loadAnswers();
+            updateQuestionNav();
+
+            console.log('All event listeners initialized'); // Debug log
+        });
 
         function showQuestion(questionNum) {
             document.querySelectorAll('.question-card').forEach(card => card.classList.add('hidden'));
@@ -381,6 +935,18 @@
                 document.getElementById('next-btn').classList.remove('hidden');
                 document.getElementById('submit-btn').classList.add('hidden');
             }
+
+            // Auto-update tab when showing question
+            const questionNavBtn = document.querySelector(`.question-nav[data-question="${questionNum}"]`);
+            if (questionNavBtn) {
+                const questionType = questionNavBtn.dataset.questionType;
+                const correspondingTab = document.querySelector(`.tab-button[data-type="${questionType}"]`);
+                if (correspondingTab && !correspondingTab.classList.contains('active')) {
+                    // Trigger click on the corresponding tab
+                    correspondingTab.click();
+                }
+            }
+
             updateQuestionNav();
         }
 
@@ -401,6 +967,38 @@
         function goToQuestion(questionNum) {
             currentQuestion = questionNum;
             showQuestion(currentQuestion);
+
+            // Auto-switch to appropriate tab based on question type
+            const questionNavBtn = document.querySelector(`.question-nav[data-question="${questionNum}"]`);
+            if (questionNavBtn) {
+                const questionType = questionNavBtn.dataset.questionType;
+
+                // Find and activate the corresponding tab
+                let correspondingTab = null;
+                document.querySelectorAll('.tab-button').forEach(tab => {
+                    if (tab.dataset.type === questionType) {
+                        correspondingTab = tab;
+                    }
+                });
+
+                if (correspondingTab) {
+                    // Update active tab
+                    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                    correspondingTab.classList.add('active');
+
+                    // Apply filter
+                    document.querySelectorAll('.question-nav').forEach(navBtn => {
+                        const navQuestionType = navBtn.dataset.questionType;
+                        if (questionType === navQuestionType) {
+                            navBtn.style.display = 'inline-flex';
+                        } else {
+                            navBtn.style.display = 'none';
+                        }
+                    });
+
+                    updateQuestionNav();
+                }
+            }
         }
 
         function confirmSubmit() {
@@ -411,15 +1009,6 @@
             document.getElementById('submit-modal').classList.add('hidden');
         }
 
-        let startTime;
-
-        // Cek apakah sudah ada startTime di localStorage
-        if (localStorage.getItem('quiz_start_time_{{ $quiz->id }}')) {
-            startTime = parseInt(localStorage.getItem('quiz_start_time_{{ $quiz->id }}'), 10);
-        } else {
-            startTime = Date.now();
-            localStorage.setItem('quiz_start_time_{{ $quiz->id }}', startTime);
-        }
 
         // Hitung durasi
         function getDurationInSeconds() {
@@ -429,6 +1018,9 @@
 
 
         function submitQuiz() {
+            updateDuration();
+            cleanupTimer();
+
             const durationInput = document.createElement('input');
             durationInput.type = 'hidden';
             durationInput.name = 'duration';
@@ -441,6 +1033,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            startTimer();
             loadAnswers();
             updateQuestionNav();
 
@@ -497,6 +1090,7 @@
                 cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
+                    cleanupTimer();
                     localStorage.removeItem(storageKey);
                     window.location.href = targetUrl;
                 }
@@ -510,25 +1104,6 @@
             } else if (e.key === 'ArrowLeft') {
                 if (currentQuestion > 1) previousQuestion();
             }
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.option-label').forEach(label => {
-                label.addEventListener('click', function() {
-                    const questionId = this.dataset.question;
-
-                    // reset pilihan lain dalam soal yang sama
-                    document.querySelectorAll(`.option-label[data-question="${questionId}"]`)
-                        .forEach(el => el.classList.remove('selected'));
-
-                    // tandai label yang dipilih
-                    this.classList.add('selected');
-                    this.querySelector('input[type="radio"]').checked = true;
-
-                    saveAnswers();
-                    updateQuestionNav();
-                });
-            });
         });
     </script>
 @endpush

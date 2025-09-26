@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Hasil Try Out - ' . $quiz->title)
+@section('title', 'Hasil Tryout - ' . $quiz->title)
 
 @section('content')
     <section class="py-8 bg-gradient-to-b from-primary-50 to-white min-h-screen">
@@ -27,25 +27,15 @@
                             <!-- Nilai dari 100 -->
                             @php
                                 $nilai = round(($score / count($questions)) * 100);
-                                function formatDuration($seconds)
-                                {
-                                    $h = floor($seconds / 3600);
-                                    $m = floor(($seconds % 3600) / 60);
-                                    $s = $seconds % 60;
-
-                                    return sprintf('%02d:%02d:%02d', $h, $m, $s);
-                                }
                             @endphp
                             <span
                                 class="inline-block px-3 py-1 text-sm rounded-full bg-green-100 text-green-700 font-medium ml-2">
                                 Nilai: {{ $nilai }}
                             </span>
-
                             <span
                                 class="inline-block px-3 py-1 text-sm rounded-full bg-purple-100 text-purple-700 font-medium ml-2">
-                                Waktu Pengerjaan : {{ formatDuration($duration) }}
+                                Waktu Pengerjaan : {{ $formattedDuration }}
                             </span>
-
 
                         </div>
                     </div>
@@ -65,11 +55,11 @@
                         @foreach ($questions as $index => $question)
                             @php
                                 $userAnswer = $answersDetail[$question->question_id]['answer'] ?? null;
-                                $isCorrect = $userAnswer === $question->correct_answer;
+                                $isCorrect = $answersDetail[$question->question_id]['is_correct'] ?? false;
                             @endphp
                             <button type="button"
                                 class="question-nav w-10 h-10 rounded-lg border text-white font-semibold
-                {{ $isCorrect ? 'bg-green-500 border-green-500' : ($userAnswer ? 'bg-red-500 border-red-500' : 'bg-gray-400 border-gray-400') }}"
+                    {{ $isCorrect ? 'bg-green-500 border-green-500' : ($userAnswer ? 'bg-red-500 border-red-500' : 'bg-gray-400 border-gray-400') }}"
                                 onclick="goToQuestion({{ $index + 1 }})">
                                 {{ $index + 1 }}
                             </button>
@@ -83,7 +73,7 @@
                     @foreach ($questions as $index => $question)
                         @php
                             $userAnswer = $answersDetail[$question->question_id]['answer'] ?? null;
-                            $isCorrect = $userAnswer === $question->correct_answer;
+                            $isCorrect = $answersDetail[$question->question_id]['is_correct'] ?? false;
                         @endphp
 
                         <div class="question-card bg-white rounded-xl shadow-lg overflow-hidden mb-6 {{ $index > 0 ? 'hidden' : '' }}"
@@ -96,45 +86,159 @@
                                     </div>
                                     <div class="flex-1">
                                         <!-- Soal -->
-                                        <div class="text-lg font-medium text-gray-900 mb-4">
+                                        <div class="text-lg font-medium text-gray-900 mb-4 ckeditor-output">
                                             {!! $question->question !!}
                                         </div>
 
-                                        <!-- Pilihan -->
-                                        <div class="space-y-3 mb-4">
-                                            @foreach ($question->formatted_options as $optionKey => $option)
-                                                @if ($option)
-                                                    <div
-                                                        class="flex items-center p-3 border rounded-lg
-                                                    {{ $optionKey === $question->correct_answer ? 'border-green-500 bg-green-50' : '' }}
-                                                    {{ $userAnswer === $optionKey && $optionKey !== $question->correct_answer ? 'border-red-500 bg-red-50' : '' }}">
-                                                        <span
-                                                            class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3
-                                                        {{ $optionKey === $question->correct_answer ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                                                            {{ $optionKey }}
-                                                        </span>
-                                                        <span class="text-gray-700 flex-1">{!! $option !!}</span>
-                                                    </div>
-                                                @endif
-                                            @endforeach
-                                        </div>
+                                        <!-- Tampilan berdasarkan tipe soal -->
+                                        @if ($question->question_type === 'multiple_choice')
+                                            <!-- Tampilan Multiple Choice (existing code) -->
+                                            <div class="space-y-3 mb-4">
+                                                @foreach ($question->formatted_options ?? [] as $optionKey => $option)
+                                                    @if ($option)
+                                                        <div
+                                                            class="flex items-center p-3 border rounded-lg
+                                            {{ $optionKey === $question->correct_answer ? 'border-green-500 bg-green-50' : '' }}
+                                            {{ $userAnswer === $optionKey && $optionKey !== $question->correct_answer ? 'border-red-500 bg-red-50' : '' }}">
+                                                            <span
+                                                                class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3
+                                                {{ $optionKey === $question->correct_answer ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700' }}">
+                                                                {{ $optionKey }}
+                                                            </span>
+                                                            <span
+                                                                class="text-gray-700 flex-1 ckeditor-output">{!! $option !!}</span>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @elseif($question->question_type === 'pgk_kategori')
+                                            <!-- Tampilan PGK Kategori -->
+                                            <div class="overflow-x-auto mt-4">
+                                                <table class="w-full border-collapse border border-gray-300">
+                                                    <thead>
+                                                        <tr class="bg-gray-50">
+                                                            <th
+                                                                class="border border-gray-300 px-4 py-3 text-left font-semibold text-gray-700">
+                                                                Pernyataan
+                                                            </th>
+                                                            @foreach ($question->custom_labels as $labelKey => $labelText)
+                                                                <th
+                                                                    class="border border-gray-300 px-4 py-3 text-center font-semibold text-gray-700 min-w-[100px]">
+                                                                    {{ $labelText }}
+                                                                </th>
+                                                            @endforeach
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($question->statements as $sIndex => $statement)
+                                                            @php
+                                                                $userAnswerForStatement = is_array($userAnswer)
+                                                                    ? $userAnswer[$sIndex] ?? null
+                                                                    : null;
+                                                                $correctAnswerForStatement =
+                                                                    $question->correct_answers[$sIndex] ?? null;
+                                                                $isStatementCorrect =
+                                                                    $userAnswerForStatement ===
+                                                                    $correctAnswerForStatement;
+                                                            @endphp
+                                                            <tr class="hover:bg-gray-50">
+                                                                <td
+                                                                    class="border border-gray-300 px-4 py-3 ckeditor-output">
+                                                                    {!! $statement !!}
+                                                                </td>
+                                                                @foreach ($question->custom_labels as $labelKey => $labelText)
+                                                                    <td
+                                                                        class="border border-gray-300 px-4 py-3 text-center">
+                                                                        <div class="flex justify-center">
+                                                                            <div
+                                                                                class="pgk-radio-circle w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200
+                                                                {{ $labelKey === $correctAnswerForStatement ? 'border-green-500 bg-green-100' : 'border-gray-300' }}
+                                                                {{ $userAnswerForStatement === $labelKey && !$isStatementCorrect ? 'border-red-500 bg-red-100' : '' }}">
+                                                                                @if ($labelKey === $correctAnswerForStatement)
+                                                                                    <span
+                                                                                        class="text-green-600 text-sm">✓</span>
+                                                                                @elseif($userAnswerForStatement === $labelKey && !$isStatementCorrect)
+                                                                                    <span
+                                                                                        class="text-red-600 text-sm">✗</span>
+                                                                                @endif
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                @endforeach
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @elseif($question->question_type === 'pgk_mcma')
+                                            <!-- Tampilan PGK MCMA -->
+                                            <div class="space-y-3 mb-4">
+                                                @foreach ($question->formatted_options as $optionKey => $option)
+                                                    @if ($option)
+                                                        @php
+                                                            $isOptionCorrect = in_array(
+                                                                $optionKey,
+                                                                $question->correct_answers ?? [],
+                                                            );
+                                                            $isUserSelected = is_array($userAnswer)
+                                                                ? in_array($optionKey, $userAnswer)
+                                                                : false;
+                                                        @endphp
+                                                        <div
+                                                            class="flex items-center p-3 border rounded-lg
+                                            {{ $isOptionCorrect ? 'border-green-500 bg-green-50' : '' }}
+                                            {{ $isUserSelected && !$isOptionCorrect ? 'border-red-500 bg-red-50' : '' }}">
+                                                            <span
+                                                                class="circle-label flex items-center justify-center w-8 h-8 rounded-full font-semibold mr-3
+                                                {{ $isOptionCorrect ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700' }}">
+                                                                {{ $optionKey }}
+                                                            </span>
+                                                            <span
+                                                                class="text-gray-700 flex-1 ckeditor-output">{!! $option !!}</span>
+                                                            @if ($isUserSelected)
+                                                                <span
+                                                                    class="ml-2 text-sm font-semibold
+                                                    {{ $isOptionCorrect ? 'text-green-600' : 'text-red-600' }}">
+                                                                    {{ $isOptionCorrect ? '✓' : '✗' }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
 
-                                        <!-- Pembahasan + Jawaban -->
-                                        <div
-                                            class="p-4 border rounded-lg text-[17px] space-y-2 font-[_Inter_Fallback_f4ae04]">
-                                            <!-- Jawaban User -->
+                                        <!-- Status Jawaban dan Pembahasan -->
+                                        <div class="p-4 bg-gray-50 border rounded-lg text-sm text-gray-700 space-y-2 mt-4">
+                                            <!-- Status Jawaban User -->
                                             @if ($userAnswer)
                                                 <div
                                                     class="p-4 mb-4 rounded-lg text-[19px]
-        {{ $isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-500 text-red-50' }}
-        font-[_Inter_Fallback_f4ae04]">
-                                                    <p><strong>Jawaban kamu adalah {{ $userAnswer }}</strong></p>
+                                    {{ $isCorrect ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700' }}
+                                    font-[_Inter_Fallback_f4ae04]">
+                                                    <p>
+                                                    <div class="ms-3 flex flex-col justify-center leading-snug">
+                                                        <strong>
+                                                            @if ($question->question_type === 'pgk_kategori')
+                                                                Jawaban kamu:
+                                                                @if (is_array($answersDetail[$question->question_id]['mapped_answer']))
+                                                                    {{ implode(', ', $answersDetail[$question->question_id]['mapped_answer']) }}
+                                                                @else
+                                                                    {{ $answersDetail[$question->question_id]['mapped_answer'] }}
+                                                                @endif
+                                                            @elseif($question->question_type === 'pgk_mcma')
+                                                                Jawaban kamu:
+                                                                {{ $answersDetail[$question->question_id]['mapped_answer'] }}
+                                                            @else
+                                                                Jawaban kamu adalah {{ $userAnswer }}
+                                                            @endif
+                                                        </strong>
+                                                    </div>
+                                                    </p>
 
                                                     @if ($isCorrect)
-                                                        <div id="alert-salah"
-                                                            class="flex items-stretch p-4 mb-3 text-green-500 rounded-lg bg-white dark:bg-gray-800 dark:text-red-400"
+                                                        <div class="flex items-stretch p-4 mb-3 text-green-500 rounded-lg bg-white"
                                                             role="alert">
-
                                                             <div
                                                                 class="flex items-center justify-center p-3 bg-green-100 text-green-600 rounded-xl border border-green-300 shadow-md">
                                                                 <svg class="w-6 h-6" aria-hidden="true"
@@ -145,77 +249,69 @@
                                                                         clip-rule="evenodd" />
                                                                 </svg>
                                                             </div>
-
-
-                                                            <span class="sr-only">Error</span>
-
-                                                            <!-- Teks lebih besar -->
                                                             <div class="ms-3 flex flex-col justify-center leading-snug">
                                                                 <div class="text-xl font-medium">Yes, Jawaban kamu benar!
                                                                 </div>
-                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
-                                                                    agar makin
-                                                                    paham. Oke!</div>
+                                                                <div class="text-sm font-medium text-black">Try out lagi ya,
+                                                                    agar makin paham. Oke!</div>
                                                             </div>
-
                                                         </div>
                                                     @else
-                                                        <!-- Card untuk jawaban salah -->
-                                                        <div id="alert-salah"
-                                                            class="flex items-stretch p-4 mb-3 text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
+                                                        <div class="flex items-stretch p-4 rounded-lg bg-white text-red-700 border shadow-sm"
                                                             role="alert">
-
-                                                            <!-- Icon ❌ dalam kotak -->
                                                             <div
-                                                                class="flex items-center justify-center p-2 bg-red-100 text-red-700 rounded-md border border-red-300">
-                                                                <svg class="w-5 h-5" aria-hidden="true"
+                                                                class="flex items-center justify-center p-3 bg-red-100 rounded-lg border border-red-300">
+                                                                <svg class="w-6 h-6" aria-hidden="true"
                                                                     xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                                                                     viewBox="0 0 20 20">
                                                                     <path
                                                                         d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0ZM13.414 6.586a1 1 0 0 1 0 1.414L11.414 10l2 2a1 1 0 0 1-1.414 1.414L10 11.414l-2 2a1 1 0 0 1-1.414-1.414l2-2-2-2a1 1 0 0 1 1.414-1.414l2 2 2-2a1 1 0 0 1 1.414 0Z" />
                                                                 </svg>
                                                             </div>
-
-                                                            <span class="sr-only">Error</span>
-
-                                                            <!-- Teks lebih besar -->
                                                             <div class="ms-3 flex flex-col justify-center leading-snug">
-                                                                <div class="text-xl font-medium">Jawaban kamu kurang tepat.
-                                                                </div>
-                                                                <div class="text-sm font-medium text-black">Latihan lagi ya,
-                                                                    agar makin paham. Ok!</div>
+                                                                <div class="text-xl font-medium">Jawaban kamu kurang
+                                                                    tepat.</div>
+                                                                <div class="text-sm font-medium text-black">Try out lagi ya,
+                                                                    agar
+                                                                    makin paham. Ok!</div>
                                                             </div>
-
                                                         </div>
                                                     @endif
-
                                                 </div>
                                             @else
-                                                <div
-                                                    class="p-4 mb-4 rounded-lg text-[17px] text-gray-700 bg-gray-200 font-[_Inter_Fallback_f4ae04]">
+                                                <div class="p-4 mb-4 rounded-lg text-[17px] text-gray-700 bg-gray-200">
                                                     <p><strong>Kamu tidak menjawab soal ini.</strong></p>
                                                 </div>
                                             @endif
 
-
                                             <!-- Jawaban Benar + Pembahasan -->
-                                            <div
-                                                class="p-4 bg-gray-50  border rounded-lg text-[17px] text-gray-700 space-y-2 font-[_Inter_Fallback_f4ae04]">
+                                            <div class="p-4 bg-white border rounded-lg space-y-2">
                                                 <div>
                                                     <strong>Jawaban Benar:</strong>
-                                                    <span class="text-green-600 font-semibold">
-                                                        {{ $question->correct_answer }}. {!! $question->formatted_options[$question->correct_answer] ?? '-' !!}
+                                                    <span class="text-green-600 font-semibold ml-2">
+                                                        @if ($question->question_type === 'pgk_kategori')
+                                                            @if (isset($question->mapped_correct_answers) && is_array($question->mapped_correct_answers))
+                                                                {{ implode(', ', $question->mapped_correct_answers) }}
+                                                            @else
+                                                                {{ is_array($question->correct_answers) ? implode(', ', $question->correct_answers) : $question->correct_answers }}
+                                                            @endif
+                                                        @elseif($question->question_type === 'pgk_mcma')
+                                                            {{ is_array($question->correct_answers) ? implode(', ', $question->correct_answers) : $question->correct_answers }}
+                                                        @else
+                                                            {{ $question->correct_answer }}
+                                                        @endif
+
                                                     </span>
                                                 </div>
 
                                                 <div>
                                                     <strong>Pembahasan:</strong>
-                                                    {!! $question->pembahasan ?? 'Belum ada pembahasan untuk soal ini.' !!}
+                                                    <div class="ckeditor-output mt-1">
+                                                        {!! $question->pembahasan ?? 'Belum ada pembahasan untuk soal ini.' !!}
+                                                    </div>
                                                 </div>
                                             </div>
-
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -250,7 +346,6 @@
 
 @push('style')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
-
     <style>
         .party-popper {
             position: absolute;
@@ -385,7 +480,6 @@
     <script>
         let currentQuestion = 1;
         const totalQuestions = {{ count($questions) }};
-
 
         function showQuestion(num) {
             document.querySelectorAll('.question-card').forEach(card => card.classList.add('hidden'));

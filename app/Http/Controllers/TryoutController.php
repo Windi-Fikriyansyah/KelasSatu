@@ -190,58 +190,139 @@ class TryoutController extends Controller
             // Mengambil course
             $course = DB::table('course_modules')->where('id', $soal->module_id)->first();
 
-
             if (!$course) {
-                return redirect()->route('tryout.index')->with('error', 'course tidak ditemukan');
+                return redirect()->route('tryout.index')->with('error', 'Materi tidak ditemukan');
             }
 
+            // Mengambil semua questions dengan field yang lengkap
             $questions = DB::table('quiz_questions')
                 ->where('quiz_id', $decryptedId)
                 ->get([
                     'id',
                     'question',
+                    'question_type',
                     'option_a',
                     'option_b',
                     'option_c',
                     'option_d',
                     'option_e',
                     'correct_answer',
-                    'pembahasan' // Gunakan nama field asli dari database
+                    'correct_answers', // untuk PGK MCMA
+                    'statements', // untuk PGK Kategori
+                    'custom_labels', // untuk PGK Kategori
+                    'pembahasan'
                 ]);
 
             // Transform data untuk konsistensi dengan frontend
             $questions = $questions->map(function ($question) {
-                $question->explanation = $question->pembahasan; // Map pembahasan ke explanation
+                $question->explanation = $question->pembahasan;
+
+                // Parse JSON fields jika ada
+                if ($question->correct_answers) {
+                    $question->correct_answers = is_string($question->correct_answers)
+                        ? json_decode($question->correct_answers, true)
+                        : $question->correct_answers;
+                }
+
+                if ($question->statements) {
+                    $question->statements = is_string($question->statements)
+                        ? json_decode($question->statements, true)
+                        : $question->statements;
+                }
+
+                if ($question->custom_labels) {
+                    $question->custom_labels = is_string($question->custom_labels)
+                        ? json_decode($question->custom_labels, true)
+                        : $question->custom_labels;
+                }
+
+                // Set default question_type jika null
+                if (!$question->question_type) {
+                    $question->question_type = 'multiple_choice';
+                }
+
                 return $question;
             });
 
             // Menambahkan questions ke objek soal
             $soal->questions = $questions;
 
-            return view('tryout.edit', compact('course', 'soal'));
+            return view('tryout.create', compact('course', 'soal'));
         } catch (\Exception $e) {
             return redirect()->route('tryout.index')->with('error', 'ID tidak valid');
         }
     }
 
+
+
     public function store(Request $request)
     {
+
+
         // Validasi
         $validator = Validator::make($request->all(), [
             'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
-            'durasi' => 'required|integer|min:0',
             'questions' => 'required|array|min:1',
+            'questions.*.question_type' => 'required|in:multiple_choice,pgk_kategori,pgk_mcma',
             'questions.*.question' => 'required|string',
-            'questions.*.option_a' => 'required|string|max:255',
-            'questions.*.option_b' => 'required|string|max:255',
-            'questions.*.option_c' => 'nullable|string|max:255',
-            'questions.*.option_d' => 'nullable|string|max:255',
-            'questions.*.option_e' => 'nullable|string|max:255',
-            'questions.*.correct_answer' => 'required|in:A,B,C,D,E',
-            'quiz_type' => 'required|in:tryout,tryout',
             'questions.*.explanation' => 'nullable|string',
+            'quiz_type' => 'required|in:tryout',
         ]);
+
+        foreach ($request->questions as $index => $question) {
+            $questionType = $question['question_type'];
+
+            if ($questionType === 'multiple_choice') {
+                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.option_c", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.option_d", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.option_e", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.correct_answer", 'required|in:A,B,C,D,E', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+            } elseif ($questionType === 'pgk_kategori') {
+                $validator->sometimes("questions.$index.statements", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+                $validator->sometimes("questions.$index.custom_labels", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+            } elseif ($questionType === 'pgk_mcma') {
+                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.option_c", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.option_d", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.option_e", 'nullable|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+            }
+        }
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -259,8 +340,8 @@ class TryoutController extends Controller
             $quizId = DB::table('quiz')->insertGetId([
                 'module_id' => $request->course_id,
                 'course_id' => $courseId,
-                'durasi' => $request->durasi,
                 'title' => $request->title,
+                'durasi' => $request->durasi,
                 'quiz_type' => $request->quiz_type,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -268,24 +349,53 @@ class TryoutController extends Controller
 
             // Simpan pertanyaan
             foreach ($request->questions as $q) {
-                DB::table('quiz_questions')->insert([
+                $questionData = [
                     'quiz_id' => $quizId,
+                    'question_type' => $q['question_type'],
                     'question' => $q['question'],
-                    'option_a' => $q['option_a'],
-                    'option_b' => $q['option_b'],
-                    'option_c' => $q['option_c'] ?? null,
-                    'option_d' => $q['option_d'] ?? null,
-                    'option_e' => $q['option_e'] ?? null,
-                    'correct_answer' => $q['correct_answer'],
                     'pembahasan' => $q['explanation'] ?? null,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
+                ];
+
+                // Handle data berdasarkan tipe soal
+                if ($q['question_type'] === 'multiple_choice') {
+                    $questionData['option_a'] = $q['option_a'];
+                    $questionData['option_b'] = $q['option_b'];
+                    $questionData['option_c'] = $q['option_c'] ?? null;
+                    $questionData['option_d'] = $q['option_d'] ?? null;
+                    $questionData['option_e'] = $q['option_e'] ?? null;
+                    $questionData['correct_answer'] = $q['correct_answer'];
+                } elseif ($q['question_type'] === 'pgk_kategori') {
+                    $questionData['statements'] = $q['statements'];
+                    $questionData['correct_answers'] = $q['correct_answers'];
+                    $questionData['custom_labels'] = $q['custom_labels'];
+
+                    // Kosongkan field yang tidak digunakan
+                    $questionData['option_a'] = null;
+                    $questionData['option_b'] = null;
+                    $questionData['option_c'] = null;
+                    $questionData['option_d'] = null;
+                    $questionData['option_e'] = null;
+                    $questionData['correct_answer'] = null;
+                } elseif ($q['question_type'] === 'pgk_mcma') {
+                    $questionData['option_a'] = $q['option_a'];
+                    $questionData['option_b'] = $q['option_b'];
+                    $questionData['option_c'] = $q['option_c'] ?? null;
+                    $questionData['option_d'] = $q['option_d'] ?? null;
+                    $questionData['option_e'] = $q['option_e'] ?? null;
+                    $questionData['correct_answers'] = $q['correct_answers'];
+
+                    // Kosongkan field yang tidak digunakan
+                    $questionData['correct_answer'] = null;
+                }
+
+                DB::table('quiz_questions')->insert($questionData);
             }
 
             DB::table('quiz_drafts')
                 ->where('user_id', Auth::id())
-                ->where('module_id', $courseId)
+                ->where('module_id', $request->course_id)
                 ->where('quiz_type', $quizType)
                 ->delete();
             // TAMBAHKAN INI - Commit transaksi
@@ -302,27 +412,56 @@ class TryoutController extends Controller
     }
 
     // Method update soal
-    // Tambahkan method ini di controller untuk menangani penghapusan pertanyaan yang tidak ada lagi
     public function update(Request $request)
     {
 
-
-        // Validasi utama
+        // Validasi
         $validator = Validator::make($request->all(), [
             'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
-            'durasi' => 'required|integer|min:0',
             'questions' => 'required|array|min:1',
+            'questions.*.question_type' => 'required|in:multiple_choice,pgk_kategori,pgk_mcma',
             'questions.*.question' => 'required|string',
-            'questions.*.option_a' => 'required|string|max:255',
-            'questions.*.option_b' => 'required|string|max:255',
-            'questions.*.option_c' => 'nullable|string|max:255',
-            'questions.*.option_d' => 'nullable|string|max:255',
-            'questions.*.option_e' => 'nullable|string|max:255',
-            'questions.*.correct_answer' => 'required|in:A,B,C,D,E',
-            'quiz_type' => 'required|in:tryout,tryout',
             'questions.*.explanation' => 'nullable|string',
+            'quiz_type' => 'required|in:tryout',
         ]);
+
+        // Validasi dinamis berdasarkan question_type
+        foreach ($request->questions as $index => $question) {
+            $questionType = $question['question_type'];
+
+            if ($questionType === 'multiple_choice') {
+                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+                $validator->sometimes("questions.$index.correct_answer", 'required|in:A,B,C,D,E', function () use ($questionType) {
+                    return $questionType === 'multiple_choice';
+                });
+            } elseif ($questionType === 'pgk_kategori') {
+                $validator->sometimes("questions.$index.statements", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+                $validator->sometimes("questions.$index.custom_labels", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_kategori';
+                });
+            } elseif ($questionType === 'pgk_mcma') {
+                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
+                    return $questionType === 'pgk_mcma';
+                });
+            }
+        }
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
@@ -333,15 +472,19 @@ class TryoutController extends Controller
             $courseId = DB::table('course_modules')
                 ->where('id', $request->course_id)
                 ->value('course_id');
+
+
+
             // Update data quiz
             DB::table('quiz')->where('id', $request->quiz_id)->update([
                 'module_id' => $request->course_id,
                 'course_id' => $courseId,
-                'durasi' => $request->durasi,
                 'title' => $request->title,
+                'durasi' => $request->durasi,
                 'quiz_type' => $request->quiz_type,
                 'updated_at' => now(),
             ]);
+
 
             // Kumpulkan ID pertanyaan yang ada di request
             $requestQuestionIds = [];
@@ -351,14 +494,13 @@ class TryoutController extends Controller
                 }
             }
 
-            // Hapus pertanyaan yang tidak ada dalam request (yang dihapus user)
+            // Hapus pertanyaan yang tidak ada dalam request
             if (!empty($requestQuestionIds)) {
                 DB::table('quiz_questions')
                     ->where('quiz_id', $request->quiz_id)
                     ->whereNotIn('id', $requestQuestionIds)
                     ->delete();
             } else {
-                // Jika tidak ada ID sama sekali, hapus semua pertanyaan lama
                 DB::table('quiz_questions')
                     ->where('quiz_id', $request->quiz_id)
                     ->delete();
@@ -366,39 +508,66 @@ class TryoutController extends Controller
 
             // Update atau insert pertanyaan
             foreach ($request->questions as $q) {
+                $questionData = [
+                    'question_type' => $q['question_type'],
+                    'question' => $q['question'],
+                    'pembahasan' => $q['explanation'] ?? null,
+                    'updated_at' => now(),
+                ];
+
+                // Handle data berdasarkan tipe soal
+                if ($q['question_type'] === 'multiple_choice') {
+                    $questionData['option_a'] = $q['option_a'];
+                    $questionData['option_b'] = $q['option_b'];
+                    $questionData['option_c'] = $q['option_c'] ?? null;
+                    $questionData['option_d'] = $q['option_d'] ?? null;
+                    $questionData['option_e'] = $q['option_e'] ?? null;
+                    $questionData['correct_answer'] = $q['correct_answer'];
+
+                    // Kosongkan field yang tidak digunakan
+                    $questionData['statements'] = null;
+                    $questionData['correct_answers'] = null;
+                    $questionData['custom_labels'] = null;
+                } elseif ($q['question_type'] === 'pgk_kategori') {
+                    $questionData['statements'] = $q['statements'];
+                    $questionData['correct_answers'] = $q['correct_answers'];
+                    $questionData['custom_labels'] = $q['custom_labels'];
+
+                    // Kosongkan field yang tidak digunakan
+                    $questionData['option_a'] = null;
+                    $questionData['option_b'] = null;
+                    $questionData['option_c'] = null;
+                    $questionData['option_d'] = null;
+                    $questionData['option_e'] = null;
+                    $questionData['correct_answer'] = null;
+                } elseif ($q['question_type'] === 'pgk_mcma') {
+                    $questionData['option_a'] = $q['option_a'];
+                    $questionData['option_b'] = $q['option_b'];
+                    $questionData['option_c'] = $q['option_c'] ?? null;
+                    $questionData['option_d'] = $q['option_d'] ?? null;
+                    $questionData['option_e'] = $q['option_e'] ?? null;
+                    $questionData['correct_answers'] = $q['correct_answers'];
+
+                    // Kosongkan field yang tidak digunakan
+                    $questionData['correct_answer'] = null;
+                    $questionData['statements'] = null;
+                    $questionData['custom_labels'] = null;
+                }
+
                 if (!empty($q['id'])) {
                     // Update pertanyaan existing
-                    DB::table('quiz_questions')->where('id', $q['id'])->update([
-                        'question' => $q['question'],
-                        'option_a' => $q['option_a'],
-                        'option_b' => $q['option_b'],
-                        'option_c' => $q['option_c'] ?? null,
-                        'option_d' => $q['option_d'] ?? null,
-                        'option_e' => $q['option_e'] ?? null,
-                        'correct_answer' => $q['correct_answer'],
-                        'pembahasan' => $q['explanation'] ?? null,
-                        'updated_at' => now(),
-                    ]);
+                    DB::table('quiz_questions')->where('id', $q['id'])->update($questionData);
                 } else {
                     // Insert pertanyaan baru
-                    DB::table('quiz_questions')->insert([
-                        'quiz_id' => $request->quiz_id,
-                        'question' => $q['question'],
-                        'option_a' => $q['option_a'],
-                        'option_b' => $q['option_b'],
-                        'option_c' => $q['option_c'] ?? null,
-                        'option_d' => $q['option_d'] ?? null,
-                        'option_e' => $q['option_e'] ?? null,
-                        'correct_answer' => $q['correct_answer'],
-                        'pembahasan' => $q['explanation'] ?? null,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
+                    $questionData['quiz_id'] = $request->quiz_id;
+                    $questionData['created_at'] = now();
+                    DB::table('quiz_questions')->insert($questionData);
                 }
             }
 
             $quizType = $request->quiz_type;
 
+            // Hapus draft setelah berhasil update
             DB::table('quiz_drafts')
                 ->where('user_id', Auth::id())
                 ->where('module_id', $request->course_id)

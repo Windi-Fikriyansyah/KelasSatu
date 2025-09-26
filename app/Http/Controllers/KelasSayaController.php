@@ -111,14 +111,14 @@ class KelasSayaController extends Controller
     public function latihan($quizId)
     {
         $quizId = base64_decode($quizId);
-        // Validasi apakah user memiliki akses ke quiz ini
+
         $quiz = DB::table('quiz')
             ->join('courses', 'quiz.course_id', '=', 'courses.id')
             ->join('enrollments', function ($join) {
                 $join->on('courses.id', '=', 'enrollments.course_id')
                     ->where('enrollments.user_id', Auth::id());
             })
-            ->select('quiz.*', 'courses.title as course_title')
+            ->select('quiz.*', 'courses.title as course_title', 'courses.mapel')
             ->where('quiz.id', $quizId)
             ->where('quiz.quiz_type', 'latihan')
             ->first();
@@ -128,35 +128,78 @@ class KelasSayaController extends Controller
                 ->with('error', 'Anda tidak memiliki akses ke latihan ini.');
         }
 
-        // Ambil semua soal untuk quiz ini
         $questions = DB::table('quiz_questions as qq')
             ->select(
                 'qq.id as question_id',
                 'qq.question',
+                'qq.question_type',
                 'qq.option_a',
                 'qq.option_b',
                 'qq.option_c',
                 'qq.option_d',
                 'qq.option_e',
-                'qq.correct_answer'
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels'
             )
             ->where('qq.quiz_id', $quizId)
             ->orderBy('qq.id')
             ->get();
 
-        // Format options untuk setiap soal
-        foreach ($questions as $question) {
-            $question->formatted_options = [
-                'A' => $question->option_a,
-                'B' => $question->option_b,
-                'C' => $question->option_c,
-                'D' => $question->option_d,
-                'E' => $question->option_e,
-            ];
-            $question->correct_answer = $question->correct_answer;
+        $questionRanges = [];
+        if ($quiz->mapel === 'wajib') {
+            $currentNumber = 1; // Gunakan counter terpisah untuk nomor urut
+            $typeGroups = [];
+
+            // Kelompokkan soal dan beri nomor urut yang benar
+            foreach ($questions as $question) {
+                $typeGroups[$question->question_type][] = $currentNumber;
+                $currentNumber++;
+            }
+
+            // Buat range untuk setiap tipe
+            foreach ($typeGroups as $type => $questionNumbers) {
+                if (!empty($questionNumbers)) {
+                    $min = min($questionNumbers);
+                    $max = max($questionNumbers);
+                    $questionRanges[$type] = [
+                        'range' => $min === $max ? "$min" : "$min-$max",
+                        'questions' => $questionNumbers
+                    ];
+                }
+            }
         }
 
-        return view('kelas_saya.latihan', compact('quiz', 'questions'));
+        foreach ($questions as $index => $question) {
+            // Beri nomor urut yang sequential
+            $question->display_number = $index + 1;
+
+            if ($question->question_type === 'multiple_choice') {
+                $question->formatted_options = [
+                    'A' => $question->option_a,
+                    'B' => $question->option_b,
+                    'C' => $question->option_c,
+                    'D' => $question->option_d,
+                    'E' => $question->option_e,
+                ];
+            } elseif ($question->question_type === 'pgk_kategori') {
+                $question->statements = json_decode($question->statements, true);
+                $question->custom_labels = json_decode($question->custom_labels, true);
+                $question->correct_answers = json_decode($question->correct_answers, true);
+            } elseif ($question->question_type === 'pgk_mcma') {
+                $question->formatted_options = [
+                    'A' => $question->option_a,
+                    'B' => $question->option_b,
+                    'C' => $question->option_c,
+                    'D' => $question->option_d,
+                    'E' => $question->option_e,
+                ];
+                $question->correct_answers = json_decode($question->correct_answers, true);
+            }
+        }
+
+        return view('kelas_saya.latihan', compact('quiz', 'questions', 'questionRanges'));
     }
 
 
@@ -165,14 +208,13 @@ class KelasSayaController extends Controller
 
         $quizId = base64_decode($quizId);
 
-        // Validasi apakah user memiliki akses ke quiz ini
         $quiz = DB::table('quiz')
             ->join('courses', 'quiz.course_id', '=', 'courses.id')
             ->join('enrollments', function ($join) {
                 $join->on('courses.id', '=', 'enrollments.course_id')
                     ->where('enrollments.user_id', Auth::id());
             })
-            ->select('quiz.*', 'courses.title as course_title')
+            ->select('quiz.*', 'courses.title as course_title', 'courses.mapel')
             ->where('quiz.id', $quizId)
             ->where('quiz.quiz_type', 'tryout')
             ->first();
@@ -182,35 +224,79 @@ class KelasSayaController extends Controller
                 ->with('error', 'Anda tidak memiliki akses ke tryout ini.');
         }
 
-        // Ambil semua soal untuk quiz ini
+        $quizDuration = $quiz->durasi * 60;
         $questions = DB::table('quiz_questions as qq')
             ->select(
                 'qq.id as question_id',
                 'qq.question',
+                'qq.question_type',
                 'qq.option_a',
                 'qq.option_b',
                 'qq.option_c',
                 'qq.option_d',
                 'qq.option_e',
-                'qq.correct_answer'
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels'
             )
             ->where('qq.quiz_id', $quizId)
             ->orderBy('qq.id')
             ->get();
 
-        // Format options untuk setiap soal
-        foreach ($questions as $question) {
-            $question->formatted_options = [
-                'A' => $question->option_a,
-                'B' => $question->option_b,
-                'C' => $question->option_c,
-                'D' => $question->option_d,
-                'E' => $question->option_e,
-            ];
-            $question->correct_answer = $question->correct_answer;
+        $questionRanges = [];
+        if ($quiz->mapel === 'wajib') {
+            $currentNumber = 1; // Gunakan counter terpisah untuk nomor urut
+            $typeGroups = [];
+
+            // Kelompokkan soal dan beri nomor urut yang benar
+            foreach ($questions as $question) {
+                $typeGroups[$question->question_type][] = $currentNumber;
+                $currentNumber++;
+            }
+
+            // Buat range untuk setiap tipe
+            foreach ($typeGroups as $type => $questionNumbers) {
+                if (!empty($questionNumbers)) {
+                    $min = min($questionNumbers);
+                    $max = max($questionNumbers);
+                    $questionRanges[$type] = [
+                        'range' => $min === $max ? "$min" : "$min-$max",
+                        'questions' => $questionNumbers
+                    ];
+                }
+            }
         }
 
-        return view('kelas_saya.tryout', compact('quiz', 'questions'));
+        foreach ($questions as $index => $question) {
+            // Beri nomor urut yang sequential
+            $question->display_number = $index + 1;
+
+            if ($question->question_type === 'multiple_choice') {
+                $question->formatted_options = [
+                    'A' => $question->option_a,
+                    'B' => $question->option_b,
+                    'C' => $question->option_c,
+                    'D' => $question->option_d,
+                    'E' => $question->option_e,
+                ];
+            } elseif ($question->question_type === 'pgk_kategori') {
+                $question->statements = json_decode($question->statements, true);
+                $question->custom_labels = json_decode($question->custom_labels, true);
+                $question->correct_answers = json_decode($question->correct_answers, true);
+            } elseif ($question->question_type === 'pgk_mcma') {
+                $question->formatted_options = [
+                    'A' => $question->option_a,
+                    'B' => $question->option_b,
+                    'C' => $question->option_c,
+                    'D' => $question->option_d,
+                    'E' => $question->option_e,
+                ];
+                $question->correct_answers = json_decode($question->correct_answers, true);
+            }
+        }
+
+        return view('kelas_saya.tryout', compact('quiz', 'questions', 'questionRanges', 'quizDuration'));
     }
 
 
@@ -222,138 +308,355 @@ class KelasSayaController extends Controller
         $answers = $request->input('answers', []);
         $duration = $request->input('duration');
 
-
         $quiz = DB::table('quiz')->where('id', $quizId)->first();
-        $questions = DB::table('quiz_questions')->where('quiz_id', $quizId)->get();
 
-
+        // Ambil semua field yang diperlukan untuk berbagai tipe soal
+        $questions = DB::table('quiz_questions')
+            ->select(
+                'id',
+                'question',
+                'question_type',
+                'option_a',
+                'option_b',
+                'option_c',
+                'option_d',
+                'option_e',
+                'correct_answer',
+                'correct_answers',
+                'statements',
+                'custom_labels',
+                'pembahasan'
+            )
+            ->where('quiz_id', $quizId)
+            ->get();
 
         $totalQuestions = $questions->count();
-        $correctAnswers = 0;
+
+        // Ganti nama counter supaya tidak bentrok dengan array correct_answers
+        $correctCount = 0;
         $results = [];
 
         foreach ($questions as $question) {
             $userAnswer = $answers[$question->id] ?? null;
-            $isCorrect = $userAnswer === $question->correct_answer;
+            $isCorrect = false;
 
-            if ($isCorrect) $correctAnswers++;
+            if ($question->question_type === 'multiple_choice') {
+                $isCorrect = $userAnswer === $question->correct_answer;
 
-            $results[] = [
-                'question'       => $question->question,
-                'options'        => [
-                    'A' => $question->option_a,
-                    'B' => $question->option_b,
-                    'C' => $question->option_c,
-                    'D' => $question->option_d,
-                    'E' => $question->option_e,
-                ],
-                'user_answer'    => $userAnswer,
-                'correct_answer' => $question->correct_answer,
-                'explanation'    => $question->pembahasan ?? '-',
-                'is_correct'     => $isCorrect,
-            ];
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'options'        => [
+                        'A' => $question->option_a,
+                        'B' => $question->option_b,
+                        'C' => $question->option_c,
+                        'D' => $question->option_d,
+                        'E' => $question->option_e,
+                    ],
+                    'user_answer'    => $userAnswer,
+                    'correct_answer' => $question->correct_answer,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            } elseif ($question->question_type === 'pgk_kategori') {
+                // gunakan nama berbeda untuk array correct answers per soal
+                $questionCorrectAnswers = json_decode($question->correct_answers, true) ?? [];
+                $statements = json_decode($question->statements, true) ?? [];
+                $customLabels = json_decode($question->custom_labels, true) ?? [];
+
+                // decode jawaban user (bisa string JSON atau array)
+                $userAnswersRaw = is_array($userAnswer) ? $userAnswer : (json_decode($userAnswer, true) ?? []);
+
+                // konversi nilai user ke boolean (true/false)
+                $userAnswersBoolean = [];
+                foreach ($userAnswersRaw as $k => $v) {
+                    // deteksi berbagai kemungkinan nilai "true"
+                    $isTrue = ($v === 'true_label') || filter_var($v, FILTER_VALIDATE_BOOLEAN);
+                    $userAnswersBoolean[$k] = (bool) $isTrue;
+                }
+
+                // cek kebenaran: bandingkan boolean arrays
+                $isCorrect = $userAnswersBoolean === $questionCorrectAnswers;
+
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'statements'     => $statements,
+                    'custom_labels'  => $customLabels,
+                    'user_answer'    => $userAnswersBoolean,
+                    'correct_answer' => $questionCorrectAnswers,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            } elseif ($question->question_type === 'pgk_mcma') {
+                $questionCorrectAnswers = json_decode($question->correct_answers, true) ?? [];
+
+                $userAnswers = is_array($userAnswer) ? $userAnswer : (json_decode($userAnswer, true) ?? []);
+
+                if (is_array($userAnswers) && is_array($questionCorrectAnswers)) {
+                    sort($userAnswers);
+                    $sortedCorrectAnswers = $questionCorrectAnswers;
+                    sort($sortedCorrectAnswers);
+                    $isCorrect = $userAnswers === $sortedCorrectAnswers;
+                }
+
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'options'        => [
+                        'A' => $question->option_a,
+                        'B' => $question->option_b,
+                        'C' => $question->option_c,
+                        'D' => $question->option_d,
+                        'E' => $question->option_e,
+                    ],
+                    'user_answer'    => $userAnswers,
+                    'correct_answer' => $questionCorrectAnswers,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            }
+
+            if ($isCorrect) {
+                $correctCount++;
+            }
         }
 
-        $score = $totalQuestions > 0 ? ($correctAnswers / $totalQuestions) * 100 : 0;
+        // Hitung score — gunakan $correctCount, bukan $correctAnswers (array)
+        $score = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
+
+        // Simpan hasil quiz
         $quizResultId = DB::table('quiz_result')->insertGetId([
             'user_id'    => $userId,
             'quiz_id'    => $quizId,
-            'duration'   => $duration, // dalam detik
+            'duration'   => $duration,
             'score'      => $score,
+            'duration' => $duration,
             'created_at' => now(),
         ]);
 
+        // Simpan jawaban detail ke DB
         foreach ($answers as $questionId => $answer) {
+            $question = $questions->firstWhere('id', $questionId);
+
+            if ($question && $question->question_type === 'pgk_kategori') {
+                $decodedAnswer = is_array($answer) ? $answer : (json_decode($answer, true) ?? []);
+                $booleanAnswer = [];
+                foreach ($decodedAnswer as $k => $v) {
+                    $isTrue = ($v === 'true_label') || filter_var($v, FILTER_VALIDATE_BOOLEAN);
+                    $booleanAnswer[$k] = (bool) $isTrue;
+                }
+                $answerToStore = json_encode($booleanAnswer);
+            } elseif ($question && $question->question_type === 'pgk_mcma') {
+                $decoded = is_array($answer) ? $answer : (json_decode($answer, true) ?? []);
+                $answerToStore = json_encode($decoded);
+            } else {
+                $answerToStore = is_array($answer) ? json_encode($answer) : $answer;
+            }
+
             DB::table('quiz_answer')->insert([
                 'quiz_result_id' => $quizResultId,
-                'user_id' => $userId,
-                'quiz_id' => $quizId,
-                'question_id' => $questionId,
-                'answer' => $answer,
-                'created_at' => now(),
+                'user_id'        => $userId,
+                'quiz_id'        => $quizId,
+                'question_id'    => $questionId,
+                'answer'         => $answerToStore,
+                'created_at'     => now(),
             ]);
         }
-        // simpan ke session
+
+        // Simpan ke session (gunakan $correctCount)
         session([
-            'score' => $score,
-            'correct_answers' => $correctAnswers,
+            'score'           => $score,
+            'correct_answers' => $correctCount,
             'total_questions' => $totalQuestions,
-            'answersDetail' => $results,
-            'duration' => $duration
+            'answersDetail'   => $results,
+            'duration'        => $duration
         ]);
 
-        // redirect ke route hasil (sesuaikan nama routenya)
+        // Redirect ke route hasil
         return redirect()->route('kelas.latihan.hasil', $quizId);
     }
 
+
     public function submitTryout(Request $request, $quizId)
     {
+
         $userId = Auth::id();
         $answers = $request->input('answers', []);
         $duration = $request->input('duration');
 
-
         $quiz = DB::table('quiz')->where('id', $quizId)->first();
-        $questions = DB::table('quiz_questions')->where('quiz_id', $quizId)->get();
 
-
+        // Ambil semua field yang diperlukan untuk berbagai tipe soal
+        $questions = DB::table('quiz_questions')
+            ->select(
+                'id',
+                'question',
+                'question_type',
+                'option_a',
+                'option_b',
+                'option_c',
+                'option_d',
+                'option_e',
+                'correct_answer',
+                'correct_answers',
+                'statements',
+                'custom_labels',
+                'pembahasan'
+            )
+            ->where('quiz_id', $quizId)
+            ->get();
 
         $totalQuestions = $questions->count();
-        $correctAnswers = 0;
+
+        // Ganti nama counter supaya tidak bentrok dengan array correct_answers
+        $correctCount = 0;
         $results = [];
 
         foreach ($questions as $question) {
             $userAnswer = $answers[$question->id] ?? null;
-            $isCorrect = $userAnswer === $question->correct_answer;
+            $isCorrect = false;
 
-            if ($isCorrect) $correctAnswers++;
+            if ($question->question_type === 'multiple_choice') {
+                $isCorrect = $userAnswer === $question->correct_answer;
 
-            $results[] = [
-                'question'       => $question->question,
-                'options'        => [
-                    'A' => $question->option_a,
-                    'B' => $question->option_b,
-                    'C' => $question->option_c,
-                    'D' => $question->option_d,
-                    'E' => $question->option_e,
-                ],
-                'user_answer'    => $userAnswer,
-                'correct_answer' => $question->correct_answer,
-                'explanation'    => $question->pembahasan ?? '-',
-                'is_correct'     => $isCorrect,
-            ];
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'options'        => [
+                        'A' => $question->option_a,
+                        'B' => $question->option_b,
+                        'C' => $question->option_c,
+                        'D' => $question->option_d,
+                        'E' => $question->option_e,
+                    ],
+                    'user_answer'    => $userAnswer,
+                    'correct_answer' => $question->correct_answer,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            } elseif ($question->question_type === 'pgk_kategori') {
+                // gunakan nama berbeda untuk array correct answers per soal
+                $questionCorrectAnswers = json_decode($question->correct_answers, true) ?? [];
+                $statements = json_decode($question->statements, true) ?? [];
+                $customLabels = json_decode($question->custom_labels, true) ?? [];
+
+                // decode jawaban user (bisa string JSON atau array)
+                $userAnswersRaw = is_array($userAnswer) ? $userAnswer : (json_decode($userAnswer, true) ?? []);
+
+                // konversi nilai user ke boolean (true/false)
+                $userAnswersBoolean = [];
+                foreach ($userAnswersRaw as $k => $v) {
+                    // deteksi berbagai kemungkinan nilai "true"
+                    $isTrue = ($v === 'true_label') || filter_var($v, FILTER_VALIDATE_BOOLEAN);
+                    $userAnswersBoolean[$k] = (bool) $isTrue;
+                }
+
+                // cek kebenaran: bandingkan boolean arrays
+                $isCorrect = $userAnswersBoolean === $questionCorrectAnswers;
+
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'statements'     => $statements,
+                    'custom_labels'  => $customLabels,
+                    'user_answer'    => $userAnswersBoolean,
+                    'correct_answer' => $questionCorrectAnswers,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            } elseif ($question->question_type === 'pgk_mcma') {
+                $questionCorrectAnswers = json_decode($question->correct_answers, true) ?? [];
+
+                $userAnswers = is_array($userAnswer) ? $userAnswer : (json_decode($userAnswer, true) ?? []);
+
+                if (is_array($userAnswers) && is_array($questionCorrectAnswers)) {
+                    sort($userAnswers);
+                    $sortedCorrectAnswers = $questionCorrectAnswers;
+                    sort($sortedCorrectAnswers);
+                    $isCorrect = $userAnswers === $sortedCorrectAnswers;
+                }
+
+                $results[] = [
+                    'question_id'    => $question->id,
+                    'question'       => $question->question,
+                    'question_type'  => $question->question_type,
+                    'options'        => [
+                        'A' => $question->option_a,
+                        'B' => $question->option_b,
+                        'C' => $question->option_c,
+                        'D' => $question->option_d,
+                        'E' => $question->option_e,
+                    ],
+                    'user_answer'    => $userAnswers,
+                    'correct_answer' => $questionCorrectAnswers,
+                    'explanation'    => $question->pembahasan ?? '-',
+                    'is_correct'     => $isCorrect,
+                ];
+            }
+
+            if ($isCorrect) {
+                $correctCount++;
+            }
         }
 
-        $score = $totalQuestions > 0 ? ($correctAnswers / $totalQuestions) * 100 : 0;
+        // Hitung score — gunakan $correctCount, bukan $correctAnswers (array)
+        $score = $totalQuestions > 0 ? ($correctCount / $totalQuestions) * 100 : 0;
 
+        // Simpan hasil quiz
         $quizResultId = DB::table('quiz_result')->insertGetId([
             'user_id'    => $userId,
             'quiz_id'    => $quizId,
-            'duration'   => $duration, // dalam detik
+            'duration'   => $duration,
             'score'      => $score,
+            'duration'   => $duration,
             'created_at' => now(),
         ]);
 
+        // Simpan jawaban detail ke DB
         foreach ($answers as $questionId => $answer) {
+            $question = $questions->firstWhere('id', $questionId);
+
+            if ($question && $question->question_type === 'pgk_kategori') {
+                $decodedAnswer = is_array($answer) ? $answer : (json_decode($answer, true) ?? []);
+                $booleanAnswer = [];
+                foreach ($decodedAnswer as $k => $v) {
+                    $isTrue = ($v === 'true_label') || filter_var($v, FILTER_VALIDATE_BOOLEAN);
+                    $booleanAnswer[$k] = (bool) $isTrue;
+                }
+                $answerToStore = json_encode($booleanAnswer);
+            } elseif ($question && $question->question_type === 'pgk_mcma') {
+                $decoded = is_array($answer) ? $answer : (json_decode($answer, true) ?? []);
+                $answerToStore = json_encode($decoded);
+            } else {
+                $answerToStore = is_array($answer) ? json_encode($answer) : $answer;
+            }
+
             DB::table('quiz_answer')->insert([
                 'quiz_result_id' => $quizResultId,
-                'user_id' => $userId,
-                'quiz_id' => $quizId,
-                'question_id' => $questionId,
-                'answer' => $answer,
-                'created_at' => now(),
+                'user_id'        => $userId,
+                'quiz_id'        => $quizId,
+                'question_id'    => $questionId,
+                'answer'         => $answerToStore,
+                'created_at'     => now(),
             ]);
         }
-        // simpan ke session
+
+        // Simpan ke session (gunakan $correctCount)
         session([
-            'score' => $score,
-            'correct_answers' => $correctAnswers,
+            'score'           => $score,
+            'correct_answers' => $correctCount,
             'total_questions' => $totalQuestions,
-            'answersDetail' => $results,
+            'answersDetail'   => $results,
             'duration' => $duration,
         ]);
 
-        // redirect ke route hasil (sesuaikan nama routenya)
+        // Redirect ke route hasil
         return redirect()->route('kelas.tryout.hasil', $quizId);
     }
 
@@ -372,20 +675,64 @@ class KelasSayaController extends Controller
             return redirect()->route('kelas.index')->with('error', 'Latihan tidak ditemukan.');
         }
 
+        // Ambil semua field yang diperlukan untuk berbagai tipe soal
         $questions = DB::table('quiz_questions as qq')
-            ->select('qq.id as question_id', 'qq.question', 'qq.option_a', 'qq.option_b', 'qq.option_c', 'qq.option_d', 'qq.option_e', 'qq.correct_answer', 'qq.pembahasan')
+            ->select(
+                'qq.id as question_id',
+                'qq.question',
+                'qq.question_type',
+                'qq.option_a',
+                'qq.option_b',
+                'qq.option_c',
+                'qq.option_d',
+                'qq.option_e',
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels',
+                'qq.pembahasan'
+            )
             ->where('qq.quiz_id', $quizId)
             ->orderBy('qq.id')
             ->get();
 
+        // Format questions berdasarkan tipe soal
         foreach ($questions as $q) {
-            $q->formatted_options = [
-                'A' => $q->option_a,
-                'B' => $q->option_b,
-                'C' => $q->option_c,
-                'D' => $q->option_d,
-                'E' => $q->option_e,
-            ];
+            if ($q->question_type === 'multiple_choice') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $q->statements = json_decode($q->statements, true);
+                $q->custom_labels = json_decode($q->custom_labels, true);
+                $q->correct_answers = json_decode($q->correct_answers, true);
+
+                // Mapping correct_answers ke custom_labels
+                if ($q->correct_answers && $q->custom_labels) {
+                    $q->mapped_correct_answers = [];
+                    foreach ($q->correct_answers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+                $q->correct_answers = json_decode($q->correct_answers, true);
+            }
         }
 
         $answers = DB::table('quiz_answer')
@@ -396,13 +743,61 @@ class KelasSayaController extends Controller
 
         $answersDetail = [];
         $score = 0;
+
         foreach ($questions as $q) {
             $answer = $answers[$q->question_id]->answer ?? null;
+            $isCorrect = false;
+            $mappedUserAnswer = null;
+
+            // Evaluasi jawaban berdasarkan tipe soal
+            if ($q->question_type === 'multiple_choice') {
+                $isCorrect = $answer === $q->correct_answer;
+                $mappedUserAnswer = $answer;
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $userAnswers = json_decode($answer, true);
+                $isCorrect = $userAnswers === $q->correct_answers;
+
+                // Map user answers ke custom_labels
+                if ($userAnswers && $q->custom_labels) {
+                    $mappedUserAnswer = [];
+                    foreach ($userAnswers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                } else {
+                    $mappedUserAnswer = $userAnswers;
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                // Untuk pgk_mcma, jawaban bisa berupa array
+                $userAnswers = is_array($answer) ? $answer : json_decode($answer, true);
+                if (is_array($userAnswers) && is_array($q->correct_answers)) {
+                    sort($userAnswers);
+                    sort($q->correct_answers);
+                    $isCorrect = $userAnswers === $q->correct_answers;
+                }
+
+                // Mapping jawaban user jadi string "A, C, D"
+                $mappedUserAnswer = is_array($userAnswers) ? implode(', ', $userAnswers) : $userAnswers;
+
+                // Mapping jawaban benar juga sama
+                $q->mapped_correct_answers = is_array($q->correct_answers) ? implode(', ', $q->correct_answers) : $q->correct_answers;
+            }
+
             $answersDetail[$q->question_id] = [
                 'answer' => $answer,
-                'is_correct' => $answer === $q->correct_answer,
+                'mapped_answer' => $mappedUserAnswer, // Tambahkan mapped answer
+                'is_correct' => $isCorrect,
             ];
-            if ($answer === $q->correct_answer) {
+
+            if (isset($q->mapped_correct_answers)) {
+                $answersDetail[$q->question_id]['mapped_correct_answer'] = $q->mapped_correct_answers;
+            }
+
+            if ($isCorrect) {
                 $score++;
             }
         }
@@ -410,10 +805,8 @@ class KelasSayaController extends Controller
         return view('kelas_saya.hasil_latihan', compact('quiz', 'questions', 'answersDetail', 'score'));
     }
 
-
     public function hasilTryout($quizId)
     {
-
         $quiz = DB::table('quiz')
             ->join('courses', 'quiz.course_id', '=', 'courses.id')
             ->select('quiz.*', 'courses.title as course_title', 'courses.id as course_id')
@@ -422,23 +815,67 @@ class KelasSayaController extends Controller
             ->first();
 
         if (!$quiz) {
-            return redirect()->route('kelas.index')->with('error', 'Latihan tidak ditemukan.');
+            return redirect()->route('kelas.index')->with('error', 'Tryout tidak ditemukan.');
         }
 
+        // Ambil semua field yang diperlukan untuk berbagai tipe soal
         $questions = DB::table('quiz_questions as qq')
-            ->select('qq.id as question_id', 'qq.question', 'qq.option_a', 'qq.option_b', 'qq.option_c', 'qq.option_d', 'qq.option_e', 'qq.correct_answer', 'qq.pembahasan')
+            ->select(
+                'qq.id as question_id',
+                'qq.question',
+                'qq.question_type',
+                'qq.option_a',
+                'qq.option_b',
+                'qq.option_c',
+                'qq.option_d',
+                'qq.option_e',
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels',
+                'qq.pembahasan'
+            )
             ->where('qq.quiz_id', $quizId)
             ->orderBy('qq.id')
             ->get();
 
+        // Format questions berdasarkan tipe soal
         foreach ($questions as $q) {
-            $q->formatted_options = [
-                'A' => $q->option_a,
-                'B' => $q->option_b,
-                'C' => $q->option_c,
-                'D' => $q->option_d,
-                'E' => $q->option_e,
-            ];
+            if ($q->question_type === 'multiple_choice') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $q->statements = json_decode($q->statements, true);
+                $q->custom_labels = json_decode($q->custom_labels, true);
+                $q->correct_answers = json_decode($q->correct_answers, true);
+
+                // Mapping correct_answers ke custom_labels
+                if ($q->correct_answers && $q->custom_labels) {
+                    $q->mapped_correct_answers = [];
+                    foreach ($q->correct_answers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+                $q->correct_answers = json_decode($q->correct_answers, true);
+            }
         }
 
         $answers = DB::table('quiz_answer')
@@ -449,13 +886,61 @@ class KelasSayaController extends Controller
 
         $answersDetail = [];
         $score = 0;
+
         foreach ($questions as $q) {
             $answer = $answers[$q->question_id]->answer ?? null;
+            $isCorrect = false;
+            $mappedUserAnswer = null;
+
+            // Evaluasi jawaban berdasarkan tipe soal
+            if ($q->question_type === 'multiple_choice') {
+                $isCorrect = $answer === $q->correct_answer;
+                $mappedUserAnswer = $answer;
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $userAnswers = json_decode($answer, true);
+                $isCorrect = $userAnswers === $q->correct_answers;
+
+                // Map user answers ke custom_labels
+                if ($userAnswers && $q->custom_labels) {
+                    $mappedUserAnswer = [];
+                    foreach ($userAnswers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                } else {
+                    $mappedUserAnswer = $userAnswers;
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                // Untuk pgk_mcma, jawaban bisa berupa array
+                $userAnswers = is_array($answer) ? $answer : json_decode($answer, true);
+                if (is_array($userAnswers) && is_array($q->correct_answers)) {
+                    sort($userAnswers);
+                    sort($q->correct_answers);
+                    $isCorrect = $userAnswers === $q->correct_answers;
+                }
+
+                // Mapping jawaban user jadi string "A, C, D"
+                $mappedUserAnswer = is_array($userAnswers) ? implode(', ', $userAnswers) : $userAnswers;
+
+                // Mapping jawaban benar juga sama
+                $q->mapped_correct_answers = is_array($q->correct_answers) ? implode(', ', $q->correct_answers) : $q->correct_answers;
+            }
+
             $answersDetail[$q->question_id] = [
                 'answer' => $answer,
-                'is_correct' => $answer === $q->correct_answer,
+                'mapped_answer' => $mappedUserAnswer, // Tambahkan mapped answer
+                'is_correct' => $isCorrect,
             ];
-            if ($answer === $q->correct_answer) {
+
+            if (isset($q->mapped_correct_answers)) {
+                $answersDetail[$q->question_id]['mapped_correct_answer'] = $q->mapped_correct_answers;
+            }
+
+            if ($isCorrect) {
                 $score++;
             }
         }
@@ -467,10 +952,18 @@ class KelasSayaController extends Controller
             ->first();
 
         $duration = $result ? $result->duration : 0;
-        // dd($duration);
 
-        return view('kelas_saya.hasil_tryout', compact('quiz', 'questions', 'answersDetail', 'score', 'duration'));
+        $formattedDuration = sprintf(
+            '%02d:%02d:%02d',
+            floor($duration / 3600),
+            floor(($duration % 3600) / 60),
+            $duration % 60
+        );
+        return view('kelas_saya.hasil_tryout', compact('quiz', 'questions', 'answersDetail', 'score', 'duration', 'formattedDuration'));
     }
+
+
+
 
     public function riwayat($quizId)
     {
@@ -506,21 +999,62 @@ class KelasSayaController extends Controller
         }
 
         $questions = DB::table('quiz_questions as qq')
-            ->select('qq.id as question_id', 'qq.question', 'qq.option_a', 'qq.option_b', 'qq.option_c', 'qq.option_d', 'qq.option_e', 'qq.correct_answer', 'qq.pembahasan')
+            ->select(
+                'qq.id as question_id',
+                'qq.question',
+                'qq.question_type',
+                'qq.option_a',
+                'qq.option_b',
+                'qq.option_c',
+                'qq.option_d',
+                'qq.option_e',
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels',
+                'qq.pembahasan'
+            )
             ->where('qq.quiz_id', $quiz->quiz_id)
             ->orderBy('qq.id')
             ->get();
 
         foreach ($questions as $q) {
-            $q->formatted_options = [
-                'A' => $q->option_a,
-                'B' => $q->option_b,
-                'C' => $q->option_c,
-                'D' => $q->option_d,
-                'E' => $q->option_e,
-            ];
-        }
+            if ($q->question_type === 'multiple_choice') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $q->statements = json_decode($q->statements, true);
+                $q->custom_labels = json_decode($q->custom_labels, true);
+                $q->correct_answers = json_decode($q->correct_answers, true);
 
+                // Mapping correct_answers ke custom_labels
+                if ($q->correct_answers && $q->custom_labels) {
+                    $q->mapped_correct_answers = [];
+                    foreach ($q->correct_answers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+                $q->correct_answers = json_decode($q->correct_answers, true);
+            }
+        }
         $answers = DB::table('quiz_answer')
             ->where('user_id', Auth::id())
             ->where('quiz_result_id', $quiz->id)
@@ -531,11 +1065,58 @@ class KelasSayaController extends Controller
         $score = 0;
         foreach ($questions as $q) {
             $answer = $answers[$q->question_id]->answer ?? null;
+            $isCorrect = false;
+            $mappedUserAnswer = null;
+
+            // Evaluasi jawaban berdasarkan tipe soal
+            if ($q->question_type === 'multiple_choice') {
+                $isCorrect = $answer === $q->correct_answer;
+                $mappedUserAnswer = $answer;
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $userAnswers = json_decode($answer, true);
+                $isCorrect = $userAnswers === $q->correct_answers;
+
+                // Map user answers ke custom_labels
+                if ($userAnswers && $q->custom_labels) {
+                    $mappedUserAnswer = [];
+                    foreach ($userAnswers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                } else {
+                    $mappedUserAnswer = $userAnswers;
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                // Untuk pgk_mcma, jawaban bisa berupa array
+                $userAnswers = is_array($answer) ? $answer : json_decode($answer, true);
+                if (is_array($userAnswers) && is_array($q->correct_answers)) {
+                    sort($userAnswers);
+                    sort($q->correct_answers);
+                    $isCorrect = $userAnswers === $q->correct_answers;
+                }
+
+                // Mapping jawaban user jadi string "A, C, D"
+                $mappedUserAnswer = is_array($userAnswers) ? implode(', ', $userAnswers) : $userAnswers;
+
+                // Mapping jawaban benar juga sama
+                $q->mapped_correct_answers = is_array($q->correct_answers) ? implode(', ', $q->correct_answers) : $q->correct_answers;
+            }
+
             $answersDetail[$q->question_id] = [
                 'answer' => $answer,
-                'is_correct' => $answer === $q->correct_answer,
+                'mapped_answer' => $mappedUserAnswer, // Tambahkan mapped answer
+                'is_correct' => $isCorrect,
             ];
-            if ($answer === $q->correct_answer) {
+
+            if (isset($q->mapped_correct_answers)) {
+                $answersDetail[$q->question_id]['mapped_correct_answer'] = $q->mapped_correct_answers;
+            }
+
+            if ($isCorrect) {
                 $score++;
             }
         }
@@ -549,7 +1130,7 @@ class KelasSayaController extends Controller
         $quiz = DB::table('quiz_result as qr')
             ->join('quiz as q', 'qr.quiz_id', '=', 'q.id')
             ->join('courses as c', 'q.course_id', '=', 'c.id')
-            ->select('qr.*', 'q.title', 'q.quiz_type', 'q.course_id', 'c.title as course_title')
+            ->select('qr.*', 'q.title', 'q.quiz_type', 'q.course_id', 'c.title as course_title', 'c.mapel')
             ->where('qr.id', $id)
             ->where('qr.user_id', Auth::id())
             ->orderBy('qr.created_at', 'desc')
@@ -560,20 +1141,64 @@ class KelasSayaController extends Controller
         }
 
         $questions = DB::table('quiz_questions as qq')
-            ->select('qq.id as question_id', 'qq.question', 'qq.option_a', 'qq.option_b', 'qq.option_c', 'qq.option_d', 'qq.option_e', 'qq.correct_answer', 'qq.pembahasan')
+            ->select(
+                'qq.id as question_id',
+                'qq.question',
+                'qq.question_type',
+                'qq.option_a',
+                'qq.option_b',
+                'qq.option_c',
+                'qq.option_d',
+                'qq.option_e',
+                'qq.correct_answer',
+                'qq.correct_answers',
+                'qq.statements',
+                'qq.custom_labels',
+                'qq.pembahasan'
+            )
             ->where('qq.quiz_id', $quiz->quiz_id)
             ->orderBy('qq.id')
             ->get();
 
         foreach ($questions as $q) {
-            $q->formatted_options = [
-                'A' => $q->option_a,
-                'B' => $q->option_b,
-                'C' => $q->option_c,
-                'D' => $q->option_d,
-                'E' => $q->option_e,
-            ];
+            if ($q->question_type === 'multiple_choice') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $q->statements = json_decode($q->statements, true);
+                $q->custom_labels = json_decode($q->custom_labels, true);
+                $q->correct_answers = json_decode($q->correct_answers, true);
+
+                // Mapping correct_answers ke custom_labels
+                if ($q->correct_answers && $q->custom_labels) {
+                    $q->mapped_correct_answers = [];
+                    foreach ($q->correct_answers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $q->mapped_correct_answers[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                $q->formatted_options = [
+                    'A' => $q->option_a,
+                    'B' => $q->option_b,
+                    'C' => $q->option_c,
+                    'D' => $q->option_d,
+                    'E' => $q->option_e,
+                ];
+                $q->correct_answers = json_decode($q->correct_answers, true);
+            }
         }
+
+
 
         $answers = DB::table('quiz_answer')
             ->where('user_id', Auth::id())
@@ -585,14 +1210,62 @@ class KelasSayaController extends Controller
         $score = 0;
         foreach ($questions as $q) {
             $answer = $answers[$q->question_id]->answer ?? null;
+            $isCorrect = false;
+            $mappedUserAnswer = null;
+
+            // Evaluasi jawaban berdasarkan tipe soal
+            if ($q->question_type === 'multiple_choice') {
+                $isCorrect = $answer === $q->correct_answer;
+                $mappedUserAnswer = $answer;
+            } elseif ($q->question_type === 'pgk_kategori') {
+                $userAnswers = json_decode($answer, true);
+                $isCorrect = $userAnswers === $q->correct_answers;
+
+                // Map user answers ke custom_labels
+                if ($userAnswers && $q->custom_labels) {
+                    $mappedUserAnswer = [];
+                    foreach ($userAnswers as $answerKey => $isTrue) {
+                        // Jika nilai true, gunakan true_label; jika false, gunakan false_label
+                        if ($isTrue) {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['true_label'] ?? 'Setuju';
+                        } else {
+                            $mappedUserAnswer[$answerKey] = $q->custom_labels['false_label'] ?? 'Salah';
+                        }
+                    }
+                } else {
+                    $mappedUserAnswer = $userAnswers;
+                }
+            } elseif ($q->question_type === 'pgk_mcma') {
+                // Untuk pgk_mcma, jawaban bisa berupa array
+                $userAnswers = is_array($answer) ? $answer : json_decode($answer, true);
+                if (is_array($userAnswers) && is_array($q->correct_answers)) {
+                    sort($userAnswers);
+                    sort($q->correct_answers);
+                    $isCorrect = $userAnswers === $q->correct_answers;
+                }
+
+                // Mapping jawaban user jadi string "A, C, D"
+                $mappedUserAnswer = is_array($userAnswers) ? implode(', ', $userAnswers) : $userAnswers;
+
+                // Mapping jawaban benar juga sama
+                $q->mapped_correct_answers = is_array($q->correct_answers) ? implode(', ', $q->correct_answers) : $q->correct_answers;
+            }
+
             $answersDetail[$q->question_id] = [
                 'answer' => $answer,
-                'is_correct' => $answer === $q->correct_answer,
+                'mapped_answer' => $mappedUserAnswer, // Tambahkan mapped answer
+                'is_correct' => $isCorrect,
             ];
-            if ($answer === $q->correct_answer) {
+
+            if (isset($q->mapped_correct_answers)) {
+                $answersDetail[$q->question_id]['mapped_correct_answer'] = $q->mapped_correct_answers;
+            }
+
+            if ($isCorrect) {
                 $score++;
             }
         }
+
 
         $result = DB::table('quiz_result')
             ->where('user_id', Auth::id())
@@ -601,6 +1274,13 @@ class KelasSayaController extends Controller
             ->first();
 
         $duration = $result ? $result->duration : 0;
-        return view('kelas_saya.hasil_tryout', compact('quiz', 'duration', 'questions', 'answersDetail', 'score'));
+        $formattedDuration = sprintf(
+            '%02d:%02d:%02d',
+            floor($duration / 3600),
+            floor(($duration % 3600) / 60),
+            $duration % 60
+        );
+
+        return view('kelas_saya.hasil_tryout', compact('quiz', 'duration', 'questions', 'answersDetail', 'score', 'formattedDuration'));
     }
 }
