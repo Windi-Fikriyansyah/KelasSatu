@@ -253,14 +253,150 @@ class TryoutController extends Controller
         }
     }
 
+    private function cleanJsonStatements($statements)
+    {
+        if (!$statements) return $statements;
+
+        Log::info('Starting JSON cleaning:', ['original_length' => strlen($statements)]);
+
+        // Pendekatan baru: fix dulu, baru decode
+        $fixed = $this->fixJsonString($statements);
+
+        // Coba decode hasil fix
+        $decoded = json_decode($fixed, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            Log::info('JSON successfully decoded after initial fix');
+
+            // Clean HTML dalam setiap value
+            foreach ($decoded as $key => $value) {
+                if (is_string($value)) {
+                    // Hapus style attributes dengan hati-hati
+                    $originalValue = $value;
+
+                    // Method 1: Hapus seluruh style attribute
+                    $value = preg_replace('/\s+style\s*=\s*"[^"]*"/i', '', $value);
+
+                    // Method 2: Bersihkan space berlebihan
+                    $value = preg_replace('/\s+/', ' ', $value);
+                    $value = trim($value);
+
+                    $decoded[$key] = $value;
+
+                    Log::info("Cleaned value for key '$key':", [
+                        'original' => substr($originalValue, 0, 100) . '...',
+                        'cleaned' => substr($value, 0, 100) . '...'
+                    ]);
+                }
+            }
+            return json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        // Jika masih gagal, coba manual extraction yang lebih robust
+        Log::warning('JSON decode failed after fix, trying manual extraction');
+
+        // Pattern yang lebih spesifik untuk data kita
+        $pattern = '/"([a-c])"\s*:\s*"(.*?)(?=",\s*"[a-c]"|\s*})/s';
+
+        if (preg_match_all($pattern, $statements, $matches, PREG_SET_ORDER)) {
+            $decoded = [];
+
+            foreach ($matches as $match) {
+                $key = $match[1];
+                $value = $match[2];
+
+                // Unescape JSON escape sequences
+                $value = str_replace(['\\"', '\\\\'], ['"', '\\'], $value);
+
+                // Remove style attributes safely
+                $value = preg_replace('/\s+style\s*=\s*"[^"]*"/i', '', $value);
+
+                // Clean up whitespace
+                $value = preg_replace('/\s+/', ' ', $value);
+                $value = trim($value);
+
+                $decoded[$key] = $value;
+
+                Log::info("Manual extraction for key '$key':", ['value' => substr($value, 0, 100) . '...']);
+            }
+
+            if (count($decoded) >= 3) { // Expect at least keys a, b, c
+                Log::info('Manual extraction successful');
+                return json_encode($decoded, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+        }
+
+        // Final fallback - return as-is but log error
+        Log::error('All attempts to clean JSON failed, returning original');
+        return $statements;
+    }
+
+    // Tambahkan method untuk fix JSON dengan pendekatan berbeda
+    private function fixJsonString($jsonString)
+    {
+        if (!$jsonString) return $jsonString;
+
+        // Pendekatan konservatif: hanya hapus style attributes yang bermasalah
+        // tanpa mengubah struktur JSON
+
+        $fixed = $jsonString;
+
+        // 1. Ganti escaped quotes di dalam style attributes
+        $fixed = preg_replace('/style\\\\?=\\\\?"[^"]*font-family:\\\\?"Times New Roman\\\\?"[^"]*\\\\?"/i', '', $fixed);
+
+        // 2. Hapus style attributes yang mengandung escaped quotes
+        $fixed = preg_replace('/style\\\\?=\\\\?"[^"]*\\\\?"[^"]*"/i', '', $fixed);
+
+        // 3. Clean up extra spaces yang mungkin tertinggal
+        $fixed = preg_replace('/\s+/', ' ', $fixed);
+        $fixed = preg_replace('/\s*>\s*/', '>', $fixed);
+        $fixed = preg_replace('/\s*<\s*/', '<', $fixed);
+
+        return $fixed;
+    }
+
+    // Tambahkan method untuk validasi custom JSON
+    private function isValidJson($value)
+    {
+        if (!is_string($value)) {
+            return false;
+        }
+
+        json_decode($value);
+        return json_last_error() === JSON_ERROR_NONE;
+    }
+
 
 
     public function store(Request $request)
     {
 
 
-        // Validasi
-        $validator = Validator::make($request->all(), [
+        // Bersihkan statements dulu sebelum validasi
+        if ($request->has('questions')) {
+            $questions = $request->questions;
+            foreach ($questions as $index => $question) {
+                if (isset($question['question_type']) && $question['question_type'] === 'pgk_kategori' && isset($question['statements'])) {
+                    $originalStatements = $question['statements'];
+                    $cleanStatements = $this->cleanJsonStatements($question['statements']);
+                    $questions[$index]['statements'] = $cleanStatements;
+
+                    // Debug: Log cleaning process
+                    Log::info("Question $index cleaning:", [
+                        'original' => $originalStatements,
+                        'cleaned' => $cleanStatements,
+                        'is_valid_json' => $this->isValidJson($cleanStatements)
+                    ]);
+                }
+            }
+            $request->merge(['questions' => $questions]);
+        }
+
+        // Debug: Log cleaned data
+        Log::info('Cleaned request data:', $request->all());
+
+        // Validasi dasar
+        $rules = [
             'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
             'questions' => 'required|array|min:1',
@@ -268,66 +404,68 @@ class TryoutController extends Controller
             'questions.*.question' => 'required|string',
             'questions.*.explanation' => 'nullable|string',
             'quiz_type' => 'required|in:tryout',
-        ]);
+        ];
 
+        // Tambahkan rules untuk setiap question type
         foreach ($request->questions as $index => $question) {
             $questionType = $question['question_type'];
 
             if ($questionType === 'multiple_choice') {
-                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.option_c", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.option_d", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.option_e", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.correct_answer", 'required|in:A,B,C,D,E', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
+                $rules["questions.$index.option_a"] = 'required|string';
+                $rules["questions.$index.option_b"] = 'required|string';
+                $rules["questions.$index.option_c"] = 'nullable|string';
+                $rules["questions.$index.option_d"] = 'nullable|string';
+                $rules["questions.$index.option_e"] = 'nullable|string';
+                $rules["questions.$index.correct_answer"] = 'required|in:A,B,C,D,E';
             } elseif ($questionType === 'pgk_kategori') {
-                $validator->sometimes("questions.$index.statements", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
-                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
-                $validator->sometimes("questions.$index.custom_labels", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
+                $rules["questions.$index.statements"] = 'required|string';
+                $rules["questions.$index.correct_answers"] = 'required|string';
+                $rules["questions.$index.custom_labels"] = 'required|string';
             } elseif ($questionType === 'pgk_mcma') {
-                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.option_c", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.option_d", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.option_e", 'nullable|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
+                $rules["questions.$index.option_a"] = 'required|string';
+                $rules["questions.$index.option_b"] = 'required|string';
+                $rules["questions.$index.option_c"] = 'nullable|string';
+                $rules["questions.$index.option_d"] = 'nullable|string';
+                $rules["questions.$index.option_e"] = 'nullable|string';
+                $rules["questions.$index.correct_answers"] = 'required|string';
             }
         }
 
+        $validator = Validator::make($request->all(), $rules);
+
+        // Custom JSON validation
+        $validator->after(function ($validator) use ($request) {
+            foreach ($request->questions as $index => $question) {
+                $questionType = $question['question_type'];
+
+                if ($questionType === 'pgk_kategori') {
+                    // Validasi statements
+                    if (isset($question['statements']) && !$this->isValidJson($question['statements'])) {
+                        $validator->errors()->add("questions.$index.statements", 'Field statements harus berupa JSON yang valid.');
+                    }
+
+                    // Validasi correct_answers
+                    if (isset($question['correct_answers']) && !$this->isValidJson($question['correct_answers'])) {
+                        $validator->errors()->add("questions.$index.correct_answers", 'Field correct_answers harus berupa JSON yang valid.');
+                    }
+
+                    // Validasi custom_labels
+                    if (isset($question['custom_labels']) && !$this->isValidJson($question['custom_labels'])) {
+                        $validator->errors()->add("questions.$index.custom_labels", 'Field custom_labels harus berupa JSON yang valid.');
+                    }
+                } elseif ($questionType === 'pgk_mcma') {
+                    // Validasi correct_answers untuk pgk_mcma
+                    if (isset($question['correct_answers']) && !$this->isValidJson($question['correct_answers'])) {
+                        $validator->errors()->add("questions.$index.correct_answers", 'Field correct_answers harus berupa JSON yang valid.');
+                    }
+                }
+            }
+        });
+
         if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
         DB::beginTransaction();
 
         try {
@@ -415,8 +553,30 @@ class TryoutController extends Controller
     public function update(Request $request)
     {
 
-        // Validasi
-        $validator = Validator::make($request->all(), [
+        if ($request->has('questions')) {
+            $questions = $request->questions;
+            foreach ($questions as $index => $question) {
+                if (isset($question['question_type']) && $question['question_type'] === 'pgk_kategori' && isset($question['statements'])) {
+                    $originalStatements = $question['statements'];
+                    $cleanStatements = $this->cleanJsonStatements($question['statements']);
+                    $questions[$index]['statements'] = $cleanStatements;
+
+                    // Debug: Log cleaning process
+                    Log::info("Question $index cleaning:", [
+                        'original' => $originalStatements,
+                        'cleaned' => $cleanStatements,
+                        'is_valid_json' => $this->isValidJson($cleanStatements)
+                    ]);
+                }
+            }
+            $request->merge(['questions' => $questions]);
+        }
+
+        // Debug: Log cleaned data
+        Log::info('Cleaned request data:', $request->all());
+
+        // Validasi dasar
+        $rules = [
             'course_id' => 'required|exists:course_modules,id',
             'title' => 'required|string|max:255',
             'questions' => 'required|array|min:1',
@@ -424,46 +584,66 @@ class TryoutController extends Controller
             'questions.*.question' => 'required|string',
             'questions.*.explanation' => 'nullable|string',
             'quiz_type' => 'required|in:tryout',
-        ]);
+        ];
 
-        // Validasi dinamis berdasarkan question_type
+        // Tambahkan rules untuk setiap question type
         foreach ($request->questions as $index => $question) {
             $questionType = $question['question_type'];
 
             if ($questionType === 'multiple_choice') {
-                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
-                $validator->sometimes("questions.$index.correct_answer", 'required|in:A,B,C,D,E', function () use ($questionType) {
-                    return $questionType === 'multiple_choice';
-                });
+                $rules["questions.$index.option_a"] = 'required|string';
+                $rules["questions.$index.option_b"] = 'required|string';
+                $rules["questions.$index.option_c"] = 'nullable|string';
+                $rules["questions.$index.option_d"] = 'nullable|string';
+                $rules["questions.$index.option_e"] = 'nullable|string';
+                $rules["questions.$index.correct_answer"] = 'required|in:A,B,C,D,E';
             } elseif ($questionType === 'pgk_kategori') {
-                $validator->sometimes("questions.$index.statements", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
-                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
-                $validator->sometimes("questions.$index.custom_labels", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_kategori';
-                });
+                $rules["questions.$index.statements"] = 'required|string';
+                $rules["questions.$index.correct_answers"] = 'required|string';
+                $rules["questions.$index.custom_labels"] = 'required|string';
             } elseif ($questionType === 'pgk_mcma') {
-                $validator->sometimes("questions.$index.option_a", 'required|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.option_b", 'required|string', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
-                $validator->sometimes("questions.$index.correct_answers", 'required|json', function () use ($questionType) {
-                    return $questionType === 'pgk_mcma';
-                });
+                $rules["questions.$index.option_a"] = 'required|string';
+                $rules["questions.$index.option_b"] = 'required|string';
+                $rules["questions.$index.option_c"] = 'nullable|string';
+                $rules["questions.$index.option_d"] = 'nullable|string';
+                $rules["questions.$index.option_e"] = 'nullable|string';
+                $rules["questions.$index.correct_answers"] = 'required|string';
             }
         }
 
+        $validator = Validator::make($request->all(), $rules);
+
+        // Custom JSON validation
+        $validator->after(function ($validator) use ($request) {
+            foreach ($request->questions as $index => $question) {
+                $questionType = $question['question_type'];
+
+                if ($questionType === 'pgk_kategori') {
+                    // Validasi statements
+                    if (isset($question['statements']) && !$this->isValidJson($question['statements'])) {
+                        $validator->errors()->add("questions.$index.statements", 'Field statements harus berupa JSON yang valid.');
+                    }
+
+                    // Validasi correct_answers
+                    if (isset($question['correct_answers']) && !$this->isValidJson($question['correct_answers'])) {
+                        $validator->errors()->add("questions.$index.correct_answers", 'Field correct_answers harus berupa JSON yang valid.');
+                    }
+
+                    // Validasi custom_labels
+                    if (isset($question['custom_labels']) && !$this->isValidJson($question['custom_labels'])) {
+                        $validator->errors()->add("questions.$index.custom_labels", 'Field custom_labels harus berupa JSON yang valid.');
+                    }
+                } elseif ($questionType === 'pgk_mcma') {
+                    // Validasi correct_answers untuk pgk_mcma
+                    if (isset($question['correct_answers']) && !$this->isValidJson($question['correct_answers'])) {
+                        $validator->errors()->add("questions.$index.correct_answers", 'Field correct_answers harus berupa JSON yang valid.');
+                    }
+                }
+            }
+        });
+
         if ($validator->fails()) {
+            Log::error('Validation failed:', $validator->errors()->toArray());
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
