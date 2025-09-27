@@ -29,26 +29,18 @@
                         <!-- Tabs untuk jenis soal -->
                         <div class="mb-4">
                             <div class="flex flex-wrap gap-2 mb-3">
-                                @if (isset($questionRanges['multiple_choice']))
-                                    <button type="button"
-                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all active"
-                                        data-type="multiple_choice">
-                                        {{ $questionRanges['multiple_choice']['range'] }}
-                                    </button>
-                                @endif
-                                @if (isset($questionRanges['pgk_kategori']))
-                                    <button type="button"
-                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all"
-                                        data-type="pgk_kategori">
-                                        {{ $questionRanges['pgk_kategori']['range'] }}
-                                    </button>
-                                @endif
-                                @if (isset($questionRanges['pgk_mcma']))
-                                    <button type="button"
-                                        class="tab-button px-3 py-1 text-xs rounded-full border transition-all"
-                                        data-type="pgk_mcma">
-                                        {{ $questionRanges['pgk_mcma']['range'] }}
-                                    </button>
+                                @if (isset($questionRanges) && !empty($questionRanges))
+                                    @php
+                                        // Urutkan questionRanges berdasarkan order
+                                        $sortedRanges = collect($questionRanges)->sortBy('order');
+                                    @endphp
+                                    @foreach ($sortedRanges as $type => $data)
+                                        <button type="button"
+                                            class="tab-button px-3 py-1 text-xs rounded-full border transition-all {{ $loop->first ? 'active' : '' }}"
+                                            data-type="{{ $type }}">
+                                            {{ $data['range'] }}
+                                        </button>
+                                    @endforeach
                                 @endif
                             </div>
                         </div>
@@ -477,12 +469,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Auto-activate first tab on page load
-            const firstTab = document.querySelector('.tab-button');
-            if (firstTab) {
-                firstTab.classList.add('active');
+            const firstVisibleTab = document.querySelector('.tab-button');
+            if (firstVisibleTab) {
+                firstVisibleTab.classList.add('active');
 
                 // Apply filter based on first tab
-                const selectedType = firstTab.dataset.type;
+                const selectedType = firstVisibleTab.dataset.type;
                 document.querySelectorAll('.question-nav').forEach(navBtn => {
                     const questionType = navBtn.dataset.questionType;
                     if (questionType === selectedType) {
@@ -492,7 +484,6 @@
                     }
                 });
             }
-
             // Tab button event listeners
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.addEventListener('click', function() {

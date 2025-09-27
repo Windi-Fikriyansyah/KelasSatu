@@ -149,23 +149,35 @@ class KelasSayaController extends Controller
 
         $questionRanges = [];
         if ($quiz->mapel === 'wajib') {
-            $currentNumber = 1; // Gunakan counter terpisah untuk nomor urut
-            $typeGroups = [];
+            $currentNumber = 1;
+            $typeOrder = []; // Untuk menyimpan urutan kemunculan tipe
 
-            // Kelompokkan soal dan beri nomor urut yang benar
+            // Kelompokkan soal berdasarkan urutan kemunculan
             foreach ($questions as $question) {
-                $typeGroups[$question->question_type][] = $currentNumber;
-                $currentNumber++;
+                if (!in_array($question->question_type, $typeOrder)) {
+                    $typeOrder[] = $question->question_type;
+                }
             }
 
-            // Buat range untuk setiap tipe
-            foreach ($typeGroups as $type => $questionNumbers) {
+            // Buat range berdasarkan urutan kemunculan tipe
+            foreach ($typeOrder as $type) {
+                $questionNumbers = [];
+                $currentNumber = 1;
+
+                foreach ($questions as $question) {
+                    if ($question->question_type === $type) {
+                        $questionNumbers[] = $currentNumber;
+                    }
+                    $currentNumber++;
+                }
+
                 if (!empty($questionNumbers)) {
                     $min = min($questionNumbers);
                     $max = max($questionNumbers);
                     $questionRanges[$type] = [
                         'range' => $min === $max ? "$min" : "$min-$max",
-                        'questions' => $questionNumbers
+                        'questions' => $questionNumbers,
+                        'order' => array_search($type, $typeOrder) // Tambahkan order
                     ];
                 }
             }
@@ -246,23 +258,35 @@ class KelasSayaController extends Controller
 
         $questionRanges = [];
         if ($quiz->mapel === 'wajib') {
-            $currentNumber = 1; // Gunakan counter terpisah untuk nomor urut
-            $typeGroups = [];
+            $currentNumber = 1;
+            $typeOrder = []; // Untuk menyimpan urutan kemunculan tipe
 
-            // Kelompokkan soal dan beri nomor urut yang benar
+            // Kelompokkan soal berdasarkan urutan kemunculan
             foreach ($questions as $question) {
-                $typeGroups[$question->question_type][] = $currentNumber;
-                $currentNumber++;
+                if (!in_array($question->question_type, $typeOrder)) {
+                    $typeOrder[] = $question->question_type;
+                }
             }
 
-            // Buat range untuk setiap tipe
-            foreach ($typeGroups as $type => $questionNumbers) {
+            // Buat range berdasarkan urutan kemunculan tipe
+            foreach ($typeOrder as $type) {
+                $questionNumbers = [];
+                $currentNumber = 1;
+
+                foreach ($questions as $question) {
+                    if ($question->question_type === $type) {
+                        $questionNumbers[] = $currentNumber;
+                    }
+                    $currentNumber++;
+                }
+
                 if (!empty($questionNumbers)) {
                     $min = min($questionNumbers);
                     $max = max($questionNumbers);
                     $questionRanges[$type] = [
                         'range' => $min === $max ? "$min" : "$min-$max",
-                        'questions' => $questionNumbers
+                        'questions' => $questionNumbers,
+                        'order' => array_search($type, $typeOrder) // Tambahkan order
                     ];
                 }
             }
