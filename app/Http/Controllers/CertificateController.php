@@ -66,6 +66,7 @@ class CertificateController extends Controller
             ->orderBy('created_at', 'asc')
             ->first();
 
+        dd($transaction);
         if (!$transaction) {
             return null;
         }
