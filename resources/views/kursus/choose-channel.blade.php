@@ -32,13 +32,7 @@
                     @endif
                 @endforeach
             </div>
-            @if (config('app.debug'))
-                <div class="mt-8 p-4 bg-gray-100 rounded-lg">
-                    <h4 class="font-bold">Debug Info:</h4>
-                    <p>Selected Modules: {{ $selectedModules ?? 'null' }}</p>
-                    <p>Referral Code: {{ $referralCode ?? 'null' }}</p>
-                </div>
-            @endif
+
         </div>
     </section>
 @endsection
