@@ -121,7 +121,7 @@ class CertificateController extends Controller
             $image->text($user->name, 1280, 820, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
-                    $font->filename($fontPath);
+                    $font->file($fontPath);
                 }
                 $font->size(52);
                 $font->color('#000000');
@@ -134,7 +134,7 @@ class CertificateController extends Controller
             $image->text($certificateNumber, 1350, 540, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
-                    $font->filename($fontPath);
+                    $font->file($fontPath);
                 }
                 $font->size(40);
                 $font->color('#000000');
@@ -147,7 +147,7 @@ class CertificateController extends Controller
                 $image->text($purchaseDate, 1675, 1225, function ($font) {
                     $fontPath = public_path('fonts/arialbd.ttf');
                     if (file_exists($fontPath)) {
-                        $font->filename($fontPath);
+                        $font->file($fontPath);
                     }
                     $font->size(50);
                     $font->color('#000000');
