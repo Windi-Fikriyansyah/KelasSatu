@@ -36,6 +36,7 @@ class CertificateController extends Controller
 
     private function generateCertificateNumber($userId, $courseId)
     {
+
         // Ambil semua user yang beli kursus ini, urut berdasarkan created_at
         $purchases = DB::table('transactions')
             ->where('course_id', $courseId)
