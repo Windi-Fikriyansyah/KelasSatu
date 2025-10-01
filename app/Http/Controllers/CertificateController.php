@@ -59,6 +59,7 @@ class CertificateController extends Controller
 
     private function getPurchaseDate($userId, $courseId)
     {
+        dd($userId);
         $transaction = DB::table('transactions')
             ->where('user_id', $userId)
             ->where('course_id', $courseId)
@@ -66,7 +67,7 @@ class CertificateController extends Controller
             ->orderBy('created_at', 'asc')
             ->first();
 
-        dd($transaction);
+
         if (!$transaction) {
             return null;
         }
