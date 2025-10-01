@@ -59,7 +59,7 @@ class CertificateController extends Controller
 
     private function getPurchaseDate($userId, $courseId)
     {
-        dd($courseId);
+
         $transaction = DB::table('transactions')
             ->where('user_id', $userId)
             ->where('course_id', $courseId)
@@ -175,6 +175,7 @@ class CertificateController extends Controller
     public function download(Request $request)
     {
 
+        dd($request->all());
         $user = Auth::user();
         $courseId = $request->get('course');
         $format = $request->get('format', 'pdf');
