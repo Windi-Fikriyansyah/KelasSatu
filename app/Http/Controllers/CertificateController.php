@@ -59,7 +59,7 @@ class CertificateController extends Controller
 
     private function getPurchaseDate($userId, $courseId)
     {
-        dd($userId);
+        dd($courseId);
         $transaction = DB::table('transactions')
             ->where('user_id', $userId)
             ->where('course_id', $courseId)
