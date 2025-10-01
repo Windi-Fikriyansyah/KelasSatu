@@ -36,7 +36,6 @@ class CertificateController extends Controller
 
     private function generateCertificateNumber($userId, $courseId)
     {
-
         // Ambil semua user yang beli kursus ini, urut berdasarkan created_at
         $purchases = DB::table('transactions')
             ->where('course_id', $courseId)
@@ -59,14 +58,12 @@ class CertificateController extends Controller
 
     private function getPurchaseDate($userId, $courseId)
     {
-
         $transaction = DB::table('transactions')
             ->where('user_id', $userId)
             ->where('course_id', $courseId)
             ->where('status', 'PAID')
             ->orderBy('created_at', 'asc')
             ->first();
-
 
         if (!$transaction) {
             return null;
@@ -123,7 +120,7 @@ class CertificateController extends Controller
             $image->text($user->name, 1280, 820, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
-                    $font->file($fontPath);
+                    $font->filename($fontPath);
                 }
                 $font->size(52);
                 $font->color('#000000');
@@ -136,7 +133,7 @@ class CertificateController extends Controller
             $image->text($certificateNumber, 1350, 540, function ($font) {
                 $fontPath = public_path('fonts/arialbd.ttf');
                 if (file_exists($fontPath)) {
-                    $font->file($fontPath);
+                    $font->filename($fontPath);
                 }
                 $font->size(40);
                 $font->color('#000000');
@@ -149,7 +146,7 @@ class CertificateController extends Controller
                 $image->text($purchaseDate, 1675, 1225, function ($font) {
                     $fontPath = public_path('fonts/arialbd.ttf');
                     if (file_exists($fontPath)) {
-                        $font->file($fontPath);
+                        $font->filename($fontPath);
                     }
                     $font->size(50);
                     $font->color('#000000');
@@ -175,7 +172,6 @@ class CertificateController extends Controller
     public function download(Request $request)
     {
 
-        dd($request->all());
         $user = Auth::user();
         $courseId = $request->get('course');
         $format = $request->get('format', 'pdf');
