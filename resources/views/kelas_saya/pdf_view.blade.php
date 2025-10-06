@@ -52,9 +52,17 @@
                 });
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                canvas.classList.add('mx-auto', 'block', 'rounded', 'shadow-sm');
+
+                // Sesuaikan ukuran canvas agar responsif di mobile
+                const ratio = window.devicePixelRatio || 1;
+                canvas.width = viewport.width * ratio;
+                canvas.height = viewport.height * ratio;
+                ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                canvas.style.width = '100%';
+                canvas.style.height = 'auto';
+                canvas.classList.add('mx-auto', 'block', 'rounded', 'shadow-sm', 'mb-4');
+
                 container.appendChild(canvas);
 
                 return page.render({
@@ -63,26 +71,27 @@
                 }).promise;
             }
 
-            pdfjsLib.getDocument(url).promise.then(pdf => {
-                loading.style.display = 'none';
-                const scale = window.innerWidth < 768 ? (container.clientWidth - 32) / pdf.getPage(1).then(
-                    p => p.getViewport({
-                        scale: 1
-                    }).width) : 1.2;
+            pdfjsLib.getDocument(url).promise
+                .then(pdf => {
+                    loading.style.display = 'none';
 
-                let renderPromises = [];
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    renderPromises.push(pdf.getPage(i).then(page => renderPage(page, scale)));
-                }
+                    // Dapatkan lebar container aktual untuk menentukan scale
+                    const baseScale = window.innerWidth < 768 ? 1.0 : 1.2;
 
-                Promise.all(renderPromises).catch(err => {
+                    // Render semua halaman
+                    const renderPromises = [];
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        renderPromises.push(
+                            pdf.getPage(i).then(page => renderPage(page, baseScale))
+                        );
+                    }
+
+                    return Promise.all(renderPromises);
+                })
+                .catch(err => {
                     console.error(err);
                     showError();
                 });
-            }).catch(err => {
-                console.error(err);
-                showError();
-            });
         });
     </script>
 @endpush
