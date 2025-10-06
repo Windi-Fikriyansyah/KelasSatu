@@ -50,6 +50,7 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::put('/{id}', [UserController::class, 'update'])->name('update');
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
         Route::get('/export', [UserController::class, 'export'])->name('export');
+        Route::post('/toggle-status', [UserController::class, 'toggleStatus'])->name('toggleStatus');
     });
 
     Route::prefix('landing')->name('landing.')->group(function () {

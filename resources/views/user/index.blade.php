@@ -62,6 +62,27 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <style>
+        .form-check-input {
+            width: 45px;
+            height: 22px;
+            cursor: pointer;
+            background-color: #dc3545;
+            /* merah saat nonaktif */
+            border-color: #dc3545;
+        }
+
+        .form-check-input:checked {
+            background-color: #28a745 !important;
+            /* hijau saat aktif */
+            border-color: #28a745 !important;
+        }
+
+        .status-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+    </style>
 @endpush
 
 @push('js')
@@ -164,6 +185,50 @@
                         });
                     }
                 });
+            });
+        });
+
+
+        // Toggle status aktif/nonaktif
+        $(document).on('change', '.toggle-status', function() {
+            const checkbox = $(this);
+            const id = checkbox.data('id');
+            const status = checkbox.is(':checked') ? 1 : 2;
+            const label = checkbox.closest('.toggle-container').find('.status-label');
+
+            $.ajax({
+                url: "{{ route('pengguna.toggleStatus') }}",
+                type: "POST",
+                data: {
+                    id: id,
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Ubah label warna dan teks sesuai status
+                        if (status === 1) {
+                            label.text('Aktif').removeClass('text-danger').addClass('text-success');
+                        } else {
+                            label.text('Nonaktif').removeClass('text-success').addClass('text-danger');
+                        }
+
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Status berhasil diperbarui',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat memperbarui status.'
+                    });
+                }
             });
         });
     </script>

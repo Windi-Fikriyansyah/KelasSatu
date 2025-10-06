@@ -35,6 +35,7 @@ class User extends Authenticatable
         'provinsi',
         'alamat',
         'instansi',
+        'status',
     ];
 
     /**

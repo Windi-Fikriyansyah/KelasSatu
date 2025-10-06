@@ -19,8 +19,10 @@ class KelasSayaController extends Controller
         $courses = DB::table('enrollments')
             ->join('courses', 'enrollments.course_id', '=', 'courses.id')
             ->join('kategori', 'courses.id_kategori', '=', 'kategori.id')
+            ->join('users', 'enrollments.user_id', '=', 'users.id')
             ->select('courses.id', 'courses.title', 'courses.description', 'courses.thumbnail', 'courses.price', 'courses.features', 'enrollments.user_id', 'enrollments.payment_status', 'kategori.nama_kategori')
             ->where('enrollments.user_id', Auth::id())
+            ->where('users.status', 1)
             ->get();
 
         // Kirim data ke view (misalnya ke halaman landing page kamu)

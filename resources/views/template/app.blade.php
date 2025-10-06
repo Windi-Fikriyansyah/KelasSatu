@@ -21,6 +21,7 @@
   data-template="vertical-menu-template-free"
 >
   @include('template.head')
+  @stack('css')
 
   <body>
     <!-- Layout wrapper -->

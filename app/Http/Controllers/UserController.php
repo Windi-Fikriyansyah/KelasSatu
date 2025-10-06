@@ -35,6 +35,7 @@ class UserController extends Controller
                     'kabupaten',
                     'provinsi',
                     'instansi',
+                    'status',
                     'created_at'
                 ])
                 ->orderBy('created_at', 'desc');
@@ -45,8 +46,21 @@ class UserController extends Controller
                     $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('pengguna.destroy', $row->id);
 
-                    $buttons = '<div class="btn-group" role="group">';
+                    $isActive = $row->status == 1;
 
+                    $checked = $isActive ? 'checked' : '';
+                    $label = $isActive ? 'Aktif' : 'Nonaktif';
+                    $labelClass = $isActive ? 'text-success' : 'text-danger';
+
+                    $buttons = '
+        <div class="d-flex align-items-center gap-2">
+            <div class="toggle-container d-flex align-items-center gap-1">
+                <div class="form-check form-switch m-0">
+                    <input type="checkbox" class="form-check-input toggle-status"
+                           data-id="' . $row->id . '" ' . $checked . '>
+                </div>
+                <span class="status-label ' . $labelClass . '">' . $label . '</span>
+            </div>';
                     if ($row->id != $currentUserId) {
                         $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     }
@@ -61,6 +75,27 @@ class UserController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function toggleStatus(Request $request)
+    {
+        try {
+            $user = User::findOrFail($request->id);
+            $user->status = $request->status;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status pengguna berhasil diperbarui.'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating status: ' . $e->getMessage());
+            return response()->json([
+                'error' => true,
+                'message' => 'Gagal memperbarui status pengguna.'
             ], 500);
         }
     }
