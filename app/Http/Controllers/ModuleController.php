@@ -28,7 +28,9 @@ class ModuleController extends Controller
                 ->select([
                     'cm.id',
                     'c.title as title_kursus',
+                    'c.mapel',
                     'cm.title',
+                    'cm.status_selesai',
                     'cm.order',
                     'cm.created_at',
                     'cm.updated_at'
@@ -44,8 +46,15 @@ class ModuleController extends Controller
                 ->addColumn('action', function ($row) {
                     $encryptedId = Crypt::encrypt($row->id);
                     $deleteUrl = route('module.destroy', $row->id);
-
                     $buttons = '<div class="btn-group" role="group">';
+
+                    if ($row->mapel === 'pilihan') {
+                        $toggleUrl = route('module.toggle', $row->id);
+                        $statusBtn = $row->status_selesai == 1
+                            ? '<button class="btn btn-sm btn-success toggle-status" data-id="' . $row->id . '" data-status="2" title="Nonaktifkan"><i class="bi bi-toggle-on"></i></button>'
+                            : '<button class="btn btn-sm btn-secondary toggle-status" data-id="' . $row->id . '" data-status="1" title="Aktifkan"><i class="bi bi-toggle-off"></i></button>';
+                        $buttons .= $statusBtn;
+                    }
                     $buttons .= '<a href="' . route('module.edit', $encryptedId) . '" class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></a>';
                     $buttons .= '<button class="btn btn-sm btn-danger delete-btn" title="Hapus" data-id="' . $row->id . '" data-url="' . $deleteUrl . '"><i class="bi bi-trash"></i></button>';
                     $buttons .= '</div>';
@@ -59,6 +68,30 @@ class ModuleController extends Controller
             return response()->json([
                 'error' => true,
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function toggle($id, Request $request)
+    {
+        try {
+            $newStatus = $request->status; // 1 atau 2
+
+            DB::table('course_modules')
+                ->where('id', $id)
+                ->update(['status_selesai' => $newStatus]);
+
+            return response()->json([
+                'success' => true,
+                'message' => $newStatus == 1
+                    ? 'Modul berhasil diaktifkan.'
+                    : 'Modul berhasil dinonaktifkan.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengubah status: ' . $e->getMessage()
             ], 500);
         }
     }

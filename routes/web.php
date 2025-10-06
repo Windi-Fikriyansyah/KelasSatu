@@ -100,6 +100,7 @@ Route::middleware(['auth', 'role:owner,admin'])->group(function () {
         Route::get('/{id}/edit', [ModuleController::class, 'edit'])->name('edit');
         Route::put('/{id}', [ModuleController::class, 'update'])->name('update');
         Route::delete('/{id}', [ModuleController::class, 'destroy'])->name('destroy');
+        Route::post('/toggle/{id}', [ModuleController::class, 'toggle'])->name('toggle');
     });
 
     Route::prefix('latihan')->name('latihan.')->group(function () {

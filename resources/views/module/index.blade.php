@@ -179,5 +179,43 @@
                 });
             });
         });
+
+        // Toggle status aktif/nonaktif
+        $(document).on('click', '.toggle-status', function() {
+            const id = $(this).data('id');
+            const newStatus = $(this).data('status');
+            const url = "{{ route('module.toggle', ':id') }}".replace(':id', id);
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    status: newStatus
+                },
+                success: function(response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: response.message
+                        });
+                        $('#kursus-table').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: xhr.responseJSON?.message || 'Terjadi kesalahan'
+                    });
+                }
+            });
+        });
     </script>
 @endpush

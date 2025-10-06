@@ -131,12 +131,16 @@
                                         class="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto hidden">
                                         @foreach ($modules as $module)
                                             <label
-                                                class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                                                class="flex items-center gap-2 px-4 py-2 {{ $module->status_selesai == 2 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer' }}">
                                                 <input type="checkbox" name="modules[]" value="{{ $module->id }}"
-                                                    class="module-checkbox">
-                                                <span>{{ $module->title }}</span>
+                                                    class="module-checkbox"
+                                                    {{ $module->status_selesai == 2 ? 'disabled' : '' }}>
+                                                <span>
+                                                    {{ $module->title }}
+                                                </span>
                                             </label>
                                         @endforeach
+
                                     </div>
                                 </div>
 
@@ -195,18 +199,10 @@
                                     Dapatkan Gratis Sekarang
                                 </a>
                             @else
-                                @if ($course->perbaikan == 1)
-                                    <button disabled
-                                        class="w-full px-6 py-4 rounded-xl text-white font-semibold text-center block bg-gray-400 cursor-not-allowed">
-                                        Bayar Sekarang (Sedang Proses Penyempurnaan)
-                                    </button>
-                                @else
-                                    <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}"
-                                        id="pay-now-btn"
-                                        class="w-full btn-primary px-6 py-4 rounded-xl text-white font-semibold text-center block transition-all duration-300 transform hover:scale-105">
-                                        Bayar Sekarang
-                                    </a>
-                                @endif
+                                <a href="{{ route('payment.index', Crypt::encryptString($course->id)) }}" id="pay-now-btn"
+                                    class="w-full btn-primary px-6 py-4 rounded-xl text-white font-semibold text-center block transition-all duration-300 transform hover:scale-105">
+                                    Bayar Sekarang
+                                </a>
                             @endif
 
 

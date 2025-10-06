@@ -308,6 +308,8 @@ class KursusController extends Controller
 
         $modules = DB::table('course_modules')
             ->where('course_id', $course->id)
+            ->orderByRaw('CASE WHEN status_selesai = 2 THEN 1 ELSE 0 END')
+            ->orderBy('id', 'asc')
             ->get();
 
         return view('kursus.detail', compact('course', 'modules'));

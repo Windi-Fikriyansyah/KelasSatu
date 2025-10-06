@@ -375,14 +375,14 @@
                             </a>
                         @endif
 
-                        {{-- @if ($landingFooter->footer_tiktok)
+                        @if ($landingFooter->footer_tiktok)
                             <a href="{{ $landingFooter->footer_tiktok }}" target="_blank"
                                 class="hover:text-white transition-colors">
                                 <i class="fab fa-tiktok text-2xl"></i>
                             </a>
                         @endif
 
-                        @if ($landingFooter->footer_facebook)
+                        {{-- @if ($landingFooter->footer_facebook)
                             <a href="{{ $landingFooter->footer_facebook }}" target="_blank"
                                 class="hover:text-white transition-colors">
                                 <i class="fab fa-facebook text-2xl"></i>
